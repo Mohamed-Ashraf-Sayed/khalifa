@@ -6,6 +6,8 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractorController;
+use App\Http\Controllers\ContractorExtractController;
+use App\Http\Controllers\ContractorPaymentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
@@ -65,6 +67,10 @@ Route::middleware('auth')->group(function () {
     // موجة 2 — موردون
     Route::resource('purchase-orders', PurchaseOrderController::class)->names('purchase_orders')->except('show');
     Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments')->except('show');
+
+    // موجة 3 — مقاولون
+    Route::resource('contractor-extracts', ContractorExtractController::class)->names('contractor_extracts')->except('show');
+    Route::resource('contractor-payments', ContractorPaymentController::class)->names('contractor_payments')->except('show');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 });

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contractor extends Model
 {
@@ -22,5 +23,29 @@ class Contractor extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function extracts(): HasMany
+    {
+        return $this->hasMany(ContractorExtract::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(ContractorPayment::class);
+    }
+
+    /**
+     * رصيد المقاول المستحقّ = صافي المستخلصات المعتمدة − إجمالي الدفعات.
+     * مشتقّ من المصدر مباشرةً.
+     */
+    public function balanceDue(): string
+    {
+        $earned = (string) $this->extracts()
+            ->whereIn('status', ['approved', 'partial', 'paid'])
+            ->sum('net_amount');
+        $paid = (string) $this->payments()->sum('amount');
+
+        return bcsub($earned, $paid, 2);
     }
 }
