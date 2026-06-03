@@ -15,7 +15,7 @@ class TaxController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:taxes.view', only: ['index']),
+            new Middleware('can:taxes.view', only: ['index', 'show']),
             new Middleware('can:taxes.create', only: ['create', 'store']),
             new Middleware('can:taxes.edit', only: ['edit', 'update']),
             new Middleware('can:taxes.delete', only: ['destroy']),
@@ -36,6 +36,13 @@ class TaxController extends Controller implements HasMiddleware
             ->withQueryString();
 
         return view('taxes.index', compact('taxes', 'search', 'status'));
+    }
+
+    public function show(Tax $tax): View
+    {
+        $tax->load(['project', 'creator']);
+
+        return view('taxes.show', compact('tax'));
     }
 
     public function create(): View

@@ -44,6 +44,7 @@
                                     @if ($revenue->bankAccount)<i class="fa-solid fa-building-columns text-muted small" title="{{ $revenue->bankAccount->name }}"></i>@endif
                                 </td>
                                 <td class="text-end">
+                                    <a href="{{ route('revenues.show', $revenue) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('revenues.edit')
                                         <a href="{{ route('revenues.edit', $revenue) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

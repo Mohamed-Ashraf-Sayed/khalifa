@@ -15,7 +15,7 @@ class PartnerTransactionController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:partners.view', only: ['index']),
+            new Middleware('can:partners.view', only: ['index', 'show']),
             new Middleware('can:partners.create', only: ['create', 'store']),
             new Middleware('can:partners.edit', only: ['edit', 'update']),
             new Middleware('can:partners.delete', only: ['destroy']),
@@ -36,6 +36,13 @@ class PartnerTransactionController extends Controller implements HasMiddleware
             ->withQueryString();
 
         return view('partner_transactions.index', compact('transactions', 'search', 'type'));
+    }
+
+    public function show(PartnerTransaction $partner_transaction): View
+    {
+        $partner_transaction->load(['partner', 'creator']);
+
+        return view('partner_transactions.show', ['transaction' => $partner_transaction]);
     }
 
     public function create(): View

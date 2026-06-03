@@ -16,7 +16,7 @@ class UserController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:users.view', only: ['index']),
+            new Middleware('can:users.view', only: ['index', 'show']),
             new Middleware('can:users.create', only: ['create', 'store']),
             new Middleware('can:users.edit', only: ['edit', 'update']),
             new Middleware('can:users.delete', only: ['destroy']),
@@ -28,6 +28,13 @@ class UserController extends Controller implements HasMiddleware
         $users = User::with('roles')->latest()->paginate(15);
 
         return view('users.index', compact('users'));
+    }
+
+    public function show(User $user): View
+    {
+        $user->load('roles');
+
+        return view('users.show', compact('user'));
     }
 
     public function create(): View

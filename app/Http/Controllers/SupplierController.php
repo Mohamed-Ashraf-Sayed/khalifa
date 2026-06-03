@@ -38,6 +38,17 @@ class SupplierController extends Controller implements HasMiddleware
         return view('suppliers.index', compact('suppliers', 'search'));
     }
 
+    public function show(Supplier $supplier): View
+    {
+        $supplier->load([
+            'creator',
+            'purchaseOrders' => fn ($q) => $q->latest(),
+            'payments' => fn ($q) => $q->latest(),
+        ]);
+
+        return view('suppliers.show', compact('supplier'));
+    }
+
     public function create(): View
     {
         return view('suppliers.form', ['supplier' => new Supplier()]);

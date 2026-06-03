@@ -22,7 +22,7 @@ class ContractorPaymentController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:contractors.view', only: ['index']),
+            new Middleware('can:contractors.view', only: ['index', 'show']),
             new Middleware('can:contractors.create', only: ['create', 'store']),
             new Middleware('can:contractors.edit', only: ['edit', 'update']),
             new Middleware('can:contractors.delete', only: ['destroy']),
@@ -40,6 +40,13 @@ class ContractorPaymentController extends Controller implements HasMiddleware
         $total = ContractorPayment::sum('amount');
 
         return view('contractor_payments.index', compact('payments', 'total'));
+    }
+
+    public function show(ContractorPayment $contractor_payment): View
+    {
+        $contractor_payment->load(['contractor', 'extract', 'bankAccount', 'creator']);
+
+        return view('contractor_payments.show', ['payment' => $contractor_payment]);
     }
 
     public function create(): View

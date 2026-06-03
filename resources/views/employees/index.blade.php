@@ -46,6 +46,9 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
+                                    <a href="{{ route('employees.show', $employee) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
                                     @can('employees.edit')
                                         <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fa-solid fa-pen"></i>

@@ -21,7 +21,7 @@ class ExpenseController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:expenses.view', only: ['index']),
+            new Middleware('can:expenses.view', only: ['index', 'show']),
             new Middleware('can:expenses.create', only: ['create', 'store']),
             new Middleware('can:expenses.edit', only: ['edit', 'update']),
             new Middleware('can:expenses.delete', only: ['destroy']),
@@ -42,6 +42,13 @@ class ExpenseController extends Controller implements HasMiddleware
         $total = Expense::when($category !== '', fn ($q) => $q->where('category', $category))->sum('amount');
 
         return view('expenses.index', compact('expenses', 'category', 'total'));
+    }
+
+    public function show(Expense $expense): View
+    {
+        $expense->load(['project', 'bankAccount', 'creator']);
+
+        return view('expenses.show', compact('expense'));
     }
 
     public function create(): View

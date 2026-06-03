@@ -47,6 +47,7 @@
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Project::STATUSES[$project->status] ?? $project->status }}</span></td>
                                 <td>{{ $project->start_date?->format('Y-m-d') }}</td>
                                 <td class="text-end">
+                                    <a href="{{ route('projects.show', $project) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('projects.edit')
                                         <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

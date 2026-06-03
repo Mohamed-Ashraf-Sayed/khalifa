@@ -16,7 +16,7 @@ class EmployeeTransactionController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:employees.view', only: ['index']),
+            new Middleware('can:employees.view', only: ['index', 'show']),
             new Middleware('can:employees.create', only: ['create', 'store']),
             new Middleware('can:employees.edit', only: ['edit', 'update']),
             new Middleware('can:employees.delete', only: ['destroy']),
@@ -37,6 +37,13 @@ class EmployeeTransactionController extends Controller implements HasMiddleware
             ->withQueryString();
 
         return view('employee_transactions.index', compact('transactions', 'search', 'type'));
+    }
+
+    public function show(EmployeeTransaction $employee_transaction): View
+    {
+        $employee_transaction->load(['employee', 'project', 'creator']);
+
+        return view('employee_transactions.show', ['transaction' => $employee_transaction]);
     }
 
     public function create(): View

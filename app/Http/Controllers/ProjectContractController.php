@@ -42,6 +42,13 @@ class ProjectContractController extends Controller implements HasMiddleware
         return view('contracts.index', compact('contracts', 'search', 'status'));
     }
 
+    public function show(ProjectContract $contract): View
+    {
+        $contract->load(['project', 'creator']);
+
+        return view('contracts.show', compact('contract'));
+    }
+
     public function create(): View
     {
         return view('contracts.form', [

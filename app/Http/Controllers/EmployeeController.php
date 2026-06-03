@@ -39,6 +39,13 @@ class EmployeeController extends Controller implements HasMiddleware
         return view('employees.index', compact('employees', 'search'));
     }
 
+    public function show(Employee $employee): View
+    {
+        $employee->load(['transactions' => fn ($q) => $q->latest()]);
+
+        return view('employees.show', compact('employee'));
+    }
+
     public function create(): View
     {
         return view('employees.form', ['employee' => new Employee()]);

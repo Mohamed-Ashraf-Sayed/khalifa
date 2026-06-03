@@ -39,6 +39,13 @@ class ProjectController extends Controller implements HasMiddleware
         return view('projects.index', compact('projects', 'search', 'status'));
     }
 
+    public function show(Project $project): View
+    {
+        $project->load(['client', 'manager', 'creator']);
+
+        return view('projects.show', compact('project'));
+    }
+
     public function create(): View
     {
         return view('projects.form', [

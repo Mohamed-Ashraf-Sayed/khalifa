@@ -21,7 +21,7 @@ class RevenueController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:revenues.view', only: ['index']),
+            new Middleware('can:revenues.view', only: ['index', 'show']),
             new Middleware('can:revenues.create', only: ['create', 'store']),
             new Middleware('can:revenues.edit', only: ['edit', 'update']),
             new Middleware('can:revenues.delete', only: ['destroy']),
@@ -38,6 +38,13 @@ class RevenueController extends Controller implements HasMiddleware
         $total = Revenue::sum('amount');
 
         return view('revenues.index', compact('revenues', 'total'));
+    }
+
+    public function show(Revenue $revenue): View
+    {
+        $revenue->load(['project', 'bankAccount', 'creator']);
+
+        return view('revenues.show', compact('revenue'));
     }
 
     public function create(): View

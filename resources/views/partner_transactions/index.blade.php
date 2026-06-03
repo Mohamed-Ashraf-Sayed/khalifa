@@ -38,6 +38,7 @@
                                 <td><span class="badge text-bg-light">{{ \App\Models\PartnerTransaction::TYPES[$transaction->type] ?? $transaction->type }}</span></td>
                                 <td class="fw-bold">{{ number_format($transaction->amount, 2) }}</td>
                                 <td class="text-end">
+                                    <a href="{{ route('partner_transactions.show', $transaction) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('partners.edit')
                                         <a href="{{ route('partner_transactions.edit', $transaction) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

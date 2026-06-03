@@ -47,6 +47,7 @@
                                 <td>{{ number_format($contract->contract_value, 2) }} ج</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\ProjectContract::STATUSES[$contract->status] ?? $contract->status }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('contracts.show', $contract) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('contracts.edit')
                                         <a href="{{ route('contracts.edit', $contract) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

@@ -47,6 +47,7 @@
                                 <td class="fw-bold">{{ number_format($purchaseOrder->total_amount, 2) }} ج</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\PurchaseOrder::STATUSES[$purchaseOrder->status] ?? $purchaseOrder->status }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('purchase_orders.show', $purchaseOrder) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('purchase_orders.edit')
                                         <a href="{{ route('purchase_orders.edit', $purchaseOrder) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

@@ -46,6 +46,7 @@
                                 <td>{{ $tax->due_date?->format('Y-m-d') ?? '—' }}</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Tax::STATUSES[$tax->status] ?? $tax->status }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('taxes.show', $tax) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('taxes.edit')
                                         <a href="{{ route('taxes.edit', $tax) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

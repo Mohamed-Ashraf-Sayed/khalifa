@@ -51,6 +51,7 @@
                                 <td class="fw-bold">{{ number_format($extract->net_amount, 2) }}</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\ContractorExtract::STATUSES[$extract->status] ?? $extract->status }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('contractor_extracts.show', $extract) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('contractors.edit')
                                         <a href="{{ route('contractor_extracts.edit', $extract) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

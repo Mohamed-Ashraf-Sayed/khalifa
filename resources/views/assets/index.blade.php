@@ -47,6 +47,9 @@
                                 <td>{{ number_format($asset->purchase_value, 2) }} ج</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Asset::STATUSES[$asset->status] ?? $asset->status }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('assets.show', $asset) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
                                     @can('assets.edit')
                                         <a href="{{ route('assets.edit', $asset) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

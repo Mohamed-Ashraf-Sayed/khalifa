@@ -36,6 +36,9 @@
                                 <td>{{ optional($partner->join_date)->format('Y-m-d') ?: '—' }}</td>
                                 <td><span class="badge text-bg-light">{{ \App\Models\Partner::STATUSES[$partner->status] ?? $partner->status }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('partners.show', $partner) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
                                     @can('partners.edit')
                                         <a href="{{ route('partners.edit', $partner) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fa-solid fa-pen"></i>

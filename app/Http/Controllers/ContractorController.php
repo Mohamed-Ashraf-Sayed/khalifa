@@ -40,6 +40,17 @@ class ContractorController extends Controller implements HasMiddleware
         return view('contractors.index', compact('contractors', 'search'));
     }
 
+    public function show(Contractor $contractor): View
+    {
+        $contractor->load([
+            'creator',
+            'extracts' => fn ($q) => $q->latest(),
+            'payments' => fn ($q) => $q->latest(),
+        ]);
+
+        return view('contractors.show', compact('contractor'));
+    }
+
     public function create(): View
     {
         return view('contractors.form', ['contractor' => new Contractor()]);

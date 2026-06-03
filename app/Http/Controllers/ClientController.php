@@ -39,6 +39,13 @@ class ClientController extends Controller implements HasMiddleware
         return view('clients.index', compact('clients', 'search'));
     }
 
+    public function show(Client $client): View
+    {
+        $client->load(['projects' => fn ($q) => $q->latest()]);
+
+        return view('clients.show', compact('client'));
+    }
+
     public function create(): View
     {
         return view('clients.form', ['client' => new Client()]);

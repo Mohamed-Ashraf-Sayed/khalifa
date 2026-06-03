@@ -48,6 +48,7 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
+                                    <a href="{{ route('contractor_payments.show', $payment) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('contractors.edit')
                                         <a href="{{ route('contractor_payments.edit', $payment) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

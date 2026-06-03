@@ -17,7 +17,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:purchase_orders.view', only: ['index']),
+            new Middleware('can:purchase_orders.view', only: ['index', 'show']),
             new Middleware('can:purchase_orders.create', only: ['create', 'store']),
             new Middleware('can:purchase_orders.edit', only: ['edit', 'update']),
             new Middleware('can:purchase_orders.delete', only: ['destroy']),
@@ -38,6 +38,13 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             ->withQueryString();
 
         return view('purchase_orders.index', compact('purchaseOrders', 'search', 'status'));
+    }
+
+    public function show(PurchaseOrder $purchase_order): View
+    {
+        $purchase_order->load(['supplier', 'project', 'creator']);
+
+        return view('purchase_orders.show', ['purchaseOrder' => $purchase_order]);
     }
 
     public function create(): View

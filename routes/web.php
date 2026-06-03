@@ -46,12 +46,12 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
-    Route::resource('clients', ClientController::class)->except('show');
-    Route::resource('projects', ProjectController::class)->except('show');
-    Route::resource('contractors', ContractorController::class)->except('show');
-    Route::resource('suppliers', SupplierController::class)->except('show');
-    Route::resource('employees', EmployeeController::class)->except('show');
-    Route::resource('partners', PartnerController::class)->except('show');
+    Route::resource('clients', ClientController::class);
+    Route::resource('projects', ProjectController::class);
+    Route::resource('contractors', ContractorController::class);
+    Route::resource('suppliers', SupplierController::class);
+    Route::resource('employees', EmployeeController::class);
+    Route::resource('partners', PartnerController::class);
 
     // الحسابات البنكية + حركاتها (عبر BankLedgerService)
     Route::resource('bank-accounts', BankAccountController::class)
@@ -62,28 +62,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('bank-transactions/{bank_transaction}', [BankTransactionController::class, 'destroy'])
         ->name('bank_transactions.destroy');
 
-    Route::resource('expenses', ExpenseController::class)->except('show');
-    Route::resource('revenues', RevenueController::class)->except('show');
+    Route::resource('expenses', ExpenseController::class);
+    Route::resource('revenues', RevenueController::class);
 
-    Route::resource('users', UserController::class)->except('show');
+    Route::resource('users', UserController::class);
 
     // موجة 1 — كتالوج
-    Route::resource('materials', MaterialController::class)->except('show');
-    Route::resource('assets', AssetController::class)->except('show');
-    Route::resource('contracts', ProjectContractController::class)->except('show');
-    Route::resource('taxes', TaxController::class)->except('show');
+    Route::resource('materials', MaterialController::class);
+    Route::resource('assets', AssetController::class);
+    Route::resource('contracts', ProjectContractController::class);
+    Route::resource('taxes', TaxController::class);
 
     // موجة 2 — موردون
-    Route::resource('purchase-orders', PurchaseOrderController::class)->names('purchase_orders')->except('show');
-    Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments')->except('show');
+    Route::resource('purchase-orders', PurchaseOrderController::class)->names('purchase_orders');
+    Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments');
 
     // موجة 3 — مقاولون
-    Route::resource('contractor-extracts', ContractorExtractController::class)->names('contractor_extracts')->except('show');
-    Route::resource('contractor-payments', ContractorPaymentController::class)->names('contractor_payments')->except('show');
+    Route::resource('contractor-extracts', ContractorExtractController::class)->names('contractor_extracts');
+    Route::resource('contractor-payments', ContractorPaymentController::class)->names('contractor_payments');
 
     // موجة 4+5 — معاملات الموظفين والشركاء
-    Route::resource('employee-transactions', EmployeeTransactionController::class)->names('employee_transactions')->except('show');
-    Route::resource('partner-transactions', PartnerTransactionController::class)->names('partner_transactions')->except('show');
+    Route::resource('employee-transactions', EmployeeTransactionController::class)->names('employee_transactions');
+    Route::resource('partner-transactions', PartnerTransactionController::class)->names('partner_transactions');
 
     // موجة 6 — الفواتير (مع صفحة عرض البنود)
     Route::resource('invoices', InvoiceController::class);

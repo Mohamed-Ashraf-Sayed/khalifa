@@ -42,6 +42,7 @@
                                 <td class="fw-bold">{{ number_format($transaction->amount, 2) }}</td>
                                 <td>{{ $transaction->project?->name ?? '—' }}</td>
                                 <td class="text-end">
+                                    <a href="{{ route('employee_transactions.show', $transaction) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('employees.edit')
                                         <a href="{{ route('employee_transactions.edit', $transaction) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

@@ -39,6 +39,13 @@ class MaterialController extends Controller implements HasMiddleware
         return view('materials.index', compact('materials', 'search', 'category'));
     }
 
+    public function show(Material $material): View
+    {
+        $material->load(['project', 'supplier', 'creator']);
+
+        return view('materials.show', compact('material'));
+    }
+
     public function create(): View
     {
         return view('materials.form', [

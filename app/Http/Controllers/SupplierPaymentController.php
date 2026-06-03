@@ -21,7 +21,7 @@ class SupplierPaymentController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:suppliers.view', only: ['index']),
+            new Middleware('can:suppliers.view', only: ['index', 'show']),
             new Middleware('can:suppliers.create', only: ['create', 'store']),
             new Middleware('can:suppliers.edit', only: ['edit', 'update']),
             new Middleware('can:suppliers.delete', only: ['destroy']),
@@ -39,6 +39,13 @@ class SupplierPaymentController extends Controller implements HasMiddleware
         $total = SupplierPayment::sum('amount');
 
         return view('supplier_payments.index', compact('payments', 'total'));
+    }
+
+    public function show(SupplierPayment $supplier_payment): View
+    {
+        $supplier_payment->load(['supplier', 'bankAccount', 'creator']);
+
+        return view('supplier_payments.show', ['payment' => $supplier_payment]);
     }
 
     public function create(): View

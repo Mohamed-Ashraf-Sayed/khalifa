@@ -16,7 +16,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:contractors.view', only: ['index']),
+            new Middleware('can:contractors.view', only: ['index', 'show']),
             new Middleware('can:contractors.create', only: ['create', 'store']),
             new Middleware('can:contractors.edit', only: ['edit', 'update']),
             new Middleware('can:contractors.delete', only: ['destroy']),
@@ -37,6 +37,13 @@ class ContractorExtractController extends Controller implements HasMiddleware
             ->withQueryString();
 
         return view('contractor_extracts.index', compact('extracts', 'search', 'status'));
+    }
+
+    public function show(ContractorExtract $contractor_extract): View
+    {
+        $contractor_extract->load(['contractor', 'project', 'creator']);
+
+        return view('contractor_extracts.show', ['extract' => $contractor_extract]);
     }
 
     public function create(): View

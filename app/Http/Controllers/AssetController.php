@@ -40,6 +40,13 @@ class AssetController extends Controller implements HasMiddleware
         return view('assets.index', compact('assets', 'search', 'status'));
     }
 
+    public function show(Asset $asset): View
+    {
+        $asset->load('creator');
+
+        return view('assets.show', compact('asset'));
+    }
+
     public function create(): View
     {
         return view('assets.form', [

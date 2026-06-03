@@ -33,6 +33,7 @@
                                 <td><span class="badge text-bg-secondary">{{ $roleLabels[$role] ?? $role ?? '—' }}</span></td>
                                 <td><span class="badge text-bg-{{ $user->is_active ? 'success' : 'secondary' }}">{{ $user->is_active ? 'نشط' : 'معطّل' }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('users.edit')
                                         <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan

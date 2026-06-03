@@ -38,8 +38,11 @@
                                 <td>{{ $client->city ?: '—' }}</td>
                                 <td><span class="badge text-bg-light">{{ $client->projects_count }}</span></td>
                                 <td class="text-end">
+                                    <a href="{{ route('clients.show', $client) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
                                     @can('clients.edit')
-                                        <a href="{{ route('clients.edit', $client) }}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ route('clients.edit', $client) }}" class="btn btn-sm btn-outline-primary" title="تعديل">
                                             <i class="fa-solid fa-pen"></i>
                                         </a>
                                     @endcan
