@@ -3,6 +3,47 @@
 @section('title', 'سجل النشاطات')
 
 @section('content')
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ route('activity_logs.index') }}" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small">المستخدم</label>
+                    <select name="user_id" class="form-select form-select-sm">
+                        <option value="">الكل</option>
+                        @foreach ($users as $u)
+                            <option value="{{ $u->id }}" @selected(request('user_id') == $u->id)>{{ $u->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">الإجراء</label>
+                    <input type="text" name="action" value="{{ request('action') }}" class="form-control form-control-sm" placeholder="مثل: login" list="actionsList">
+                    <datalist id="actionsList">
+                        @foreach ($actions as $a)
+                            <option value="{{ $a }}">
+                        @endforeach
+                    </datalist>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">نوع العنصر</label>
+                    <input type="text" name="model_type" value="{{ request('model_type') }}" class="form-control form-control-sm" placeholder="مثل: User">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">من تاريخ</label>
+                    <input type="date" name="from" value="{{ request('from') }}" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small">إلى تاريخ</label>
+                    <input type="date" name="to" value="{{ request('to') }}" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-1 d-flex gap-1">
+                    <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <a href="{{ route('activity_logs.index') }}" class="btn btn-sm btn-light" title="مسح"><i class="fa-solid fa-rotate-left"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">

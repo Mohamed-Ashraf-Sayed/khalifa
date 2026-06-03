@@ -21,6 +21,7 @@ use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoicePaymentController;
+use App\Http\Controllers\LoginLogController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerDepositController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCostController;
 use App\Http\Controllers\ProjectEmployeeController;
 use App\Http\Controllers\ProjectFileController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectMaterialConsumptionController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
@@ -56,6 +58,14 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    // الملف الشخصي + سجل الدخول
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::delete('profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+    Route::get('login-logs', [LoginLogController::class, 'index'])->name('login_logs.index');
 
     Route::resource('clients', ClientController::class);
     Route::resource('projects', ProjectController::class);

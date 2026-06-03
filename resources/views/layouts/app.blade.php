@@ -97,6 +97,7 @@
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan
                 @can('users.view')      <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}"><i class="fa-solid fa-user-gear"></i> المستخدمون</a> @endcan
                 @can('users.view')      <a class="nav-link {{ request()->routeIs('activity_logs.*') ? 'active' : '' }}" href="{{ route('activity_logs.index') }}"><i class="fa-solid fa-clock-rotate-left"></i> سجل النشاطات</a> @endcan
+                @can('users.view')      <a class="nav-link {{ request()->routeIs('login_logs.*') ? 'active' : '' }}" href="{{ route('login_logs.index') }}"><i class="fa-solid fa-right-to-bracket"></i> سجل الدخول</a> @endcan
                 @can('settings.view')   <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.edit') }}"><i class="fa-solid fa-gear"></i> الإعدادات</a> @endcan
             @endcanany
         </nav>
@@ -107,10 +108,19 @@
             <h5 class="m-0">@yield('title', 'لوحة التحكم')</h5>
             <div class="dropdown">
                 <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="fa-solid fa-user-circle ms-1"></i> {{ $u->name }}
+                    @if ($u->avatar)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url($u->avatar) }}" alt="" class="rounded-circle ms-1" style="width:24px;height:24px;object-fit:cover">
+                    @else
+                        <i class="fa-solid fa-user-circle ms-1"></i>
+                    @endif
+                    {{ $u->name }}
                     <span class="badge text-bg-secondary">{{ $u->getRoleNames()->first() }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fa-solid fa-user ms-1"></i> الملف الشخصي</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
+use App\Models\LoginAttempt;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +39,13 @@ class LoginController extends Controller
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::hit($key, 60);
+            // تسجيل محاولة دخول فاشلة (audit)
+            LoginAttempt::create([
+                'email' => $credentials['email'],
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 255),
+                'successful' => false,
+            ]);
             // رسالة عامة — مش بنكشف إذا كان الإيميل موجود أو لا
             throw ValidationException::withMessages([
                 'email' => 'بيانات الدخول غير صحيحة.',
@@ -45,6 +54,14 @@ class LoginController extends Controller
 
         // منع دخول الحسابات المعطّلة
         if (! Auth::user()->is_active) {
+            // تسجيل محاولة دخول فاشلة لحساب معطّل (audit) قبل الخروج
+            LoginAttempt::create([
+                'email' => $credentials['email'],
+                'user_id' => Auth::id(),
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 255),
+                'successful' => false,
+            ]);
             Auth::logout();
             throw ValidationException::withMessages([
                 'email' => 'هذا الحساب معطّل. تواصل مع المدير.',
@@ -54,11 +71,26 @@ class LoginController extends Controller
         RateLimiter::clear($key);
         $request->session()->regenerate(); // يمنع session fixation
 
+        // تسجيل دخول ناجح (audit)
+        LoginAttempt::create([
+            'email' => $credentials['email'],
+            'user_id' => Auth::id(),
+            'ip_address' => $request->ip(),
+            'user_agent' => substr((string) $request->userAgent(), 0, 255),
+            'successful' => true,
+        ]);
+        ActivityLog::record('login', Auth::user());
+
         return redirect()->intended(route('dashboard'));
     }
 
     public function destroy(Request $request): RedirectResponse
     {
+        // تسجيل خروج (audit) قبل إنهاء الجلسة
+        if ($user = $request->user()) {
+            ActivityLog::record('logout', $user);
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
