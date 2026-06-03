@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryMovement;
 use App\Models\Material;
 use App\Models\Project;
 use App\Models\PurchaseOrder;
@@ -10,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -20,7 +22,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
         return [
             new Middleware('can:purchase_orders.view', only: ['index', 'show']),
             new Middleware('can:purchase_orders.create', only: ['create', 'store']),
-            new Middleware('can:purchase_orders.edit', only: ['edit', 'update', 'approve']),
+            new Middleware('can:purchase_orders.edit', only: ['edit', 'update', 'approve', 'receive']),
             new Middleware('can:purchase_orders.delete', only: ['destroy']),
         ];
     }
@@ -98,6 +100,57 @@ class PurchaseOrderController extends Controller implements HasMiddleware
         ]);
 
         return back()->with('success', 'تم اعتماد أمر الشراء.');
+    }
+
+    /**
+     * استلام أمر الشراء: يحدّد الكميات المستلَمة، ويضيف الأصناف للمخزون
+     * (لو add_to_inventory مفعّل) عبر حركات مخزون من نوع in مع تحديث الرصيد.
+     */
+    public function receive(Request $request, PurchaseOrder $purchaseOrder): RedirectResponse
+    {
+        if ($purchaseOrder->status === 'received') {
+            return back()->with('error', 'أمر الشراء مستلَم بالفعل.');
+        }
+
+        DB::transaction(function () use ($purchaseOrder, $request) {
+            foreach ($purchaseOrder->items as $item) {
+                $item->update(['received_quantity' => $item->quantity]);
+
+                if ($purchaseOrder->add_to_inventory && $item->material_id) {
+                    $material = Material::lockForUpdate()->find($item->material_id);
+                    if ($material) {
+                        $before = (string) $material->current_stock;
+                        $after = bcadd($before, (string) $item->quantity, 2);
+
+                        InventoryMovement::create([
+                            'material_id' => $material->id,
+                            'type' => 'in',
+                            'quantity' => $item->quantity,
+                            'unit_price' => $item->unit_price,
+                            'total_value' => bcmul((string) $item->quantity, (string) $item->unit_price, 2),
+                            'stock_before' => $before,
+                            'stock_after' => $after,
+                            'movement_date' => now()->toDateString(),
+                            'project_id' => $purchaseOrder->project_id,
+                            'reason' => 'استلام أمر شراء '.$purchaseOrder->order_number,
+                            'reference_type' => 'purchase_order',
+                            'reference_id' => $purchaseOrder->id,
+                            'created_by' => $request->user()->id,
+                        ]);
+
+                        $material->current_stock = $after;
+                        $material->save();
+                    }
+                }
+            }
+
+            $purchaseOrder->update([
+                'status' => 'received',
+                'actual_delivery' => $purchaseOrder->actual_delivery ?? now()->toDateString(),
+            ]);
+        });
+
+        return back()->with('success', 'تم استلام أمر الشراء'.($purchaseOrder->add_to_inventory ? ' وإضافة الأصناف للمخزون.' : '.'));
     }
 
     public function destroy(PurchaseOrder $purchaseOrder): RedirectResponse

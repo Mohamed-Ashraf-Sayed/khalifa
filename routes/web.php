@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
 
     // موجة 1 — كتالوج
+    Route::get('materials/report', [MaterialController::class, 'report'])->name('materials.report');
     Route::resource('materials', MaterialController::class);
     Route::resource('assets', AssetController::class);
     Route::resource('contracts', ProjectContractController::class);
@@ -99,6 +100,7 @@ Route::middleware('auth')->group(function () {
     // موجة 2 — موردون
     Route::resource('purchase-orders', PurchaseOrderController::class)->names('purchase_orders');
     Route::post('purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase_orders.approve');
+    Route::post('purchase-orders/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase_orders.receive');
     Route::post('purchase-orders/{purchase_order}/items', [PurchaseOrderItemController::class, 'store'])->name('purchase_order_items.store');
     Route::delete('purchase-order-items/{purchase_order_item}', [PurchaseOrderItemController::class, 'destroy'])->name('purchase_order_items.destroy');
     Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments');

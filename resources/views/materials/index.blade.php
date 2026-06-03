@@ -3,24 +3,59 @@
 @section('title', 'المواد')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['عدد الأصناف', number_format($stats['count']), 'fa-boxes-stacked', 'text-primary'],
+            ['قيمة المخزون', number_format($stats['value'], 2).' ج', 'fa-sack-dollar', 'text-success'],
+            ['أصناف تحت الحد', number_format($stats['low_stock']), 'fa-triangle-exclamation', 'text-danger'],
+        ] as [$label, $val, $icon, $color])
+        <div class="col-md-4 col-6">
+            <div class="card h-100"><div class="card-body py-3">
+                <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+                <div class="fs-4 fw-bold">{{ $val }}</div>
+                <div class="small text-muted">{{ $label }}</div>
+            </div></div>
+        </div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2" method="GET">
+                <form class="d-flex gap-2 flex-wrap align-items-center" method="GET">
                     <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث باسم المادة">
-                    <select name="category" class="form-select" style="min-width:160px" onchange="this.form.submit()">
+                    <select name="category" class="form-select" style="min-width:150px" onchange="this.form.submit()">
                         <option value="">كل التصنيفات</option>
                         @foreach (\App\Models\Material::CATEGORIES as $key => $label)
                             <option value="{{ $key }}" @selected($category === $key)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    <select name="supplier_id" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                        <option value="">كل المورّدين</option>
+                        @foreach ($suppliers as $s)
+                            <option value="{{ $s->id }}" @selected($supplierId === (string) $s->id)>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="project_id" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                        <option value="">كل المشاريع</option>
+                        @foreach ($projects as $p)
+                            <option value="{{ $p->id }}" @selected($projectId === (string) $p->id)>{{ $p->name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-check ms-1">
+                        <input type="checkbox" class="form-check-input" id="low_stock" name="low_stock" value="1" @checked($lowStock === '1') onchange="this.form.submit()">
+                        <label class="form-check-label" for="low_stock">تحت الحد فقط</label>
+                    </div>
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
-                @can('materials.create')
-                    <a href="{{ route('materials.create') }}" class="btn" style="background:#8b7355;color:#fff">
-                        <i class="fa-solid fa-plus ms-1"></i> مادة جديدة
-                    </a>
-                @endcan
+                <div class="d-flex gap-2">
+                    <a href="{{ route('materials.report') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير المخزون</a>
+                    @can('materials.create')
+                        <a href="{{ route('materials.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                            <i class="fa-solid fa-plus ms-1"></i> مادة جديدة
+                        </a>
+                    @endcan
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -37,14 +72,14 @@
                     </thead>
                     <tbody>
                         @forelse ($materials as $material)
-                            <tr>
+                            <tr @class(['table-danger' => $material->isLowStock()])>
                                 <td class="fw-semibold">{{ $material->name }}</td>
                                 <td><span class="badge text-bg-secondary">{{ \App\Models\Material::CATEGORIES[$material->category] ?? $material->category }}</span></td>
                                 <td>{{ $material->unit }}</td>
                                 <td>{{ number_format($material->unit_price, 2) }} ج</td>
                                 <td>
                                     {{ number_format($material->current_stock, 2) }}
-                                    @if ($material->current_stock <= $material->min_stock)
+                                    @if ($material->isLowStock())
                                         <span class="badge text-bg-danger ms-1">مخزون منخفض</span>
                                     @endif
                                 </td>

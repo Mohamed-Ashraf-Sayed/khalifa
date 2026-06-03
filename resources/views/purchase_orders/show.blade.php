@@ -16,6 +16,12 @@
                         <button class="btn btn-sm btn-success"><i class="fa-solid fa-check ms-1"></i> اعتماد</button>
                     </form>
                 @endif
+                @if (! in_array($purchaseOrder->status, ['received', 'cancelled']))
+                    <form method="POST" action="{{ route('purchase_orders.receive', $purchaseOrder) }}" class="d-inline" onsubmit="return confirm('تأكيد استلام الأصناف{{ $purchaseOrder->add_to_inventory ? ' وإضافتها للمخزون' : '' }}؟')">
+                        @csrf
+                        <button class="btn btn-sm" style="background:#0f7a4f;color:#fff"><i class="fa-solid fa-truck-ramp-box ms-1"></i> استلام</button>
+                    </form>
+                @endif
                 <a href="{{ route('purchase_orders.edit', $purchaseOrder) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
             @endcan
             <a href="{{ route('purchase_orders.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>

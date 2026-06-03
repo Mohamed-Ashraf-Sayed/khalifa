@@ -30,8 +30,22 @@
                         <input type="number" step="0.01" min="0.01" name="quantity" value="{{ old('quantity') }}" class="form-control" required>
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">سعر الوحدة</label>
+                        <input type="number" step="0.01" min="0" name="unit_price" value="{{ old('unit_price') }}" class="form-control" placeholder="افتراضي: سعر المادة">
+                        <small class="text-muted">يُستخدم لحساب قيمة الحركة. لو فارغ يُؤخذ سعر المادة.</small>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">التاريخ <span class="text-danger">*</span></label>
                         <input type="date" name="movement_date" value="{{ old('movement_date', date('Y-m-d')) }}" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">اتجاه التسوية</label>
+                        <select name="adjustment_direction" class="form-select">
+                            <option value="">— (مطلوب عند تسوية جرد) —</option>
+                            <option value="increase" @selected(old('adjustment_direction') === 'increase')>زيادة</option>
+                            <option value="decrease" @selected(old('adjustment_direction') === 'decrease')>نقص</option>
+                        </select>
+                        <small class="text-muted">يُستخدم فقط مع نوع "تسوية جرد".</small>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">المشروع</label>
@@ -41,6 +55,29 @@
                                 <option value="{{ $p->id }}" @selected((int) old('project_id') === $p->id)>{{ $p->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">إلى مشروع (للتحويل)</label>
+                        <select name="to_project_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($projects as $p)
+                                <option value="{{ $p->id }}" @selected((int) old('to_project_id') === $p->id)>{{ $p->name }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">مطلوب عند نوع "تحويل بين المشاريع".</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">المستلِم</label>
+                        <select name="employee_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($employees as $e)
+                                <option value="{{ $e->id }}" @selected((int) old('employee_id') === $e->id)>{{ $e->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">موقع المخزن</label>
+                        <input type="text" name="warehouse_location" value="{{ old('warehouse_location') }}" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">السبب</label>

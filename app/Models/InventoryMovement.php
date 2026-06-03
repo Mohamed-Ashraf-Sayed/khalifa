@@ -10,10 +10,14 @@ class InventoryMovement extends Model
     public const TYPES = [
         'in' => 'إضافة للمخزون',
         'out' => 'صرف من المخزون',
+        'transfer' => 'تحويل بين المشاريع',
+        'adjustment' => 'تسوية جرد',
     ];
 
     protected $fillable = [
         'material_id', 'type', 'quantity', 'movement_date', 'project_id', 'reason', 'notes', 'created_by',
+        'unit_price', 'total_value', 'stock_before', 'stock_after', 'employee_id', 'to_project_id',
+        'reference_type', 'reference_id', 'warehouse_location',
     ];
 
     protected function casts(): array
@@ -21,6 +25,10 @@ class InventoryMovement extends Model
         return [
             'quantity' => 'decimal:2',
             'movement_date' => 'date',
+            'unit_price' => 'decimal:2',
+            'total_value' => 'decimal:2',
+            'stock_before' => 'decimal:2',
+            'stock_after' => 'decimal:2',
         ];
     }
 
@@ -32,6 +40,16 @@ class InventoryMovement extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function toProject(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'to_project_id');
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
     }
 
     public function creator(): BelongsTo
