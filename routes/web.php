@@ -7,8 +7,10 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,4 +42,7 @@ Route::middleware('auth')->group(function () {
         ->name('bank_transactions.store');
     Route::delete('bank-transactions/{bank_transaction}', [BankTransactionController::class, 'destroy'])
         ->name('bank_transactions.destroy');
+
+    Route::resource('expenses', ExpenseController::class)->except('show');
+    Route::resource('revenues', RevenueController::class)->except('show');
 });
