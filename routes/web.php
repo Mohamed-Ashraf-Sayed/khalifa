@@ -10,9 +10,11 @@ use App\Http\Controllers\ContractorExtractController;
 use App\Http\Controllers\ContractorPaymentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeTransactionController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\PartnerTransactionController;
 use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseOrderController;
@@ -71,6 +73,10 @@ Route::middleware('auth')->group(function () {
     // موجة 3 — مقاولون
     Route::resource('contractor-extracts', ContractorExtractController::class)->names('contractor_extracts')->except('show');
     Route::resource('contractor-payments', ContractorPaymentController::class)->names('contractor_payments')->except('show');
+
+    // موجة 4+5 — معاملات الموظفين والشركاء
+    Route::resource('employee-transactions', EmployeeTransactionController::class)->names('employee_transactions')->except('show');
+    Route::resource('partner-transactions', PartnerTransactionController::class)->names('partner_transactions')->except('show');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 });
