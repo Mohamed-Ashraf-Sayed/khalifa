@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -21,4 +25,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('clients', ClientController::class)->except('show');
     Route::resource('projects', ProjectController::class)->except('show');
+    Route::resource('contractors', ContractorController::class)->except('show');
+    Route::resource('suppliers', SupplierController::class)->except('show');
+    Route::resource('employees', EmployeeController::class)->except('show');
+    Route::resource('partners', PartnerController::class)->except('show');
 });

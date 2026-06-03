@@ -40,10 +40,10 @@
             </a>
             @can('projects.view')   <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}"><i class="fa-solid fa-diagram-project"></i> المشاريع</a> @endcan
             @can('clients.view')    <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" href="{{ route('clients.index') }}"><i class="fa-solid fa-users"></i> العملاء</a> @endcan
-            @can('contractors.view')<a class="nav-link" href="#"><i class="fa-solid fa-hard-hat"></i> المقاولون</a> @endcan
-            @can('suppliers.view')  <a class="nav-link" href="#"><i class="fa-solid fa-truck"></i> الموردون</a> @endcan
-            @can('employees.view')  <a class="nav-link" href="#"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
-            @can('partners.view')   <a class="nav-link" href="#"><i class="fa-solid fa-handshake"></i> الشركاء</a> @endcan
+            @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractors.*') ? 'active' : '' }}" href="{{ route('contractors.index') }}"><i class="fa-solid fa-hard-hat"></i> المقاولون</a> @endcan
+            @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}"><i class="fa-solid fa-truck"></i> الموردون</a> @endcan
+            @can('employees.view')  <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" href="{{ route('employees.index') }}"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
+            @can('partners.view')   <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" href="{{ route('partners.index') }}"><i class="fa-solid fa-handshake"></i> الشركاء</a> @endcan
             @can('expenses.view')   <a class="nav-link" href="#"><i class="fa-solid fa-money-bill-wave"></i> المصروفات</a> @endcan
             @can('revenues.view')   <a class="nav-link" href="#"><i class="fa-solid fa-sack-dollar"></i> الإيرادات</a> @endcan
             @can('bank_accounts.view')<a class="nav-link" href="#"><i class="fa-solid fa-building-columns"></i> الحسابات البنكية</a> @endcan
