@@ -13,9 +13,11 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +61,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('assets', AssetController::class)->except('show');
     Route::resource('contracts', ProjectContractController::class)->except('show');
     Route::resource('taxes', TaxController::class)->except('show');
+
+    // موجة 2 — موردون
+    Route::resource('purchase-orders', PurchaseOrderController::class)->names('purchase_orders')->except('show');
+    Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments')->except('show');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 });
