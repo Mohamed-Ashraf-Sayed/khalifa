@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CostCenter;
 use App\Models\Project;
 use App\Models\ProjectContract;
 use App\Models\ProjectCost;
@@ -184,6 +185,7 @@ class ProjectCostController extends Controller implements HasMiddleware
         return [
             'cost' => $projectCost,
             'projects' => Project::orderBy('name')->get(),
+            'costCenters' => CostCenter::where('is_active', true)->orderBy('name')->get(),
         ];
     }
 
@@ -191,6 +193,7 @@ class ProjectCostController extends Controller implements HasMiddleware
     {
         $data = $request->validate([
             'project_id' => ['required', 'exists:projects,id'],
+            'cost_center_id' => ['nullable', 'exists:cost_centers,id'],
             'work_item' => ['required', 'string', 'max:255'],
             'contractor_supplier' => ['nullable', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:255'],

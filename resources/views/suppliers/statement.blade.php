@@ -51,7 +51,7 @@
                     <tbody>
                         <tr class="table-light">
                             <td colspan="4" class="fw-semibold">رصيد افتتاحي</td>
-                            <td class="text-end fw-semibold">0.00</td>
+                            <td class="text-end fw-semibold">{{ number_format((float) $opening, 2) }}</td>
                         </tr>
                         @forelse ($rows as $row)
                             <tr>

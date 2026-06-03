@@ -32,6 +32,15 @@
                         <input type="text" name="category" value="{{ old('category', $cost->category) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">مركز التكلفة</label>
+                        <select name="cost_center_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($costCenters as $cc)
+                                <option value="{{ $cc->id }}" @selected((int) old('cost_center_id', $cost->cost_center_id) === $cc->id)>{{ $cc->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">الوصف</label>
                         <input type="text" name="description" value="{{ old('description', $cost->description) }}" class="form-control">
                     </div>

@@ -47,7 +47,24 @@
                     <tr class="border-top"><td class="fw-bold">الصافي</td><td class="text-end fw-bold fs-5 text-success">{{ number_format($extract->net_amount, 2) }}</td></tr>
                     <tr><td class="text-muted">المدفوع</td><td class="text-end">{{ number_format($extract->paid_amount, 2) }}</td></tr>
                     <tr><td class="text-muted">المتبقّي</td><td class="text-end fw-semibold text-warning">{{ number_format($extract->remaining(), 2) }}</td></tr>
+                    <tr>
+                        <td class="text-muted">المحتجز ({{ rtrim(rtrim(number_format($extract->retention_percent, 2), '0'), '.') }}%)</td>
+                        <td class="text-end">
+                            {{ number_format($extract->retention_amount, 2) }}
+                            @if ($extract->retention_released)
+                                <span class="badge text-bg-success ms-1">مُحرَّر</span>
+                            @endif
+                        </td>
+                    </tr>
                 </table>
+                @can('contractors.edit')
+                    @if (bccomp((string) $extract->retention_amount, '0', 2) > 0 && ! $extract->retention_released)
+                        <form method="POST" action="{{ route('contractor_extracts.release_retention', $extract) }}" onsubmit="return confirm('تحرير المبلغ المحتجز؟')">
+                            @csrf
+                            <button class="btn btn-sm w-100 mt-2" style="background:#8b7355;color:#fff"><i class="fa-solid fa-unlock ms-1"></i> تحرير المحتجز</button>
+                        </form>
+                    @endif
+                @endcan
             </div></div>
         </div>
     </div>

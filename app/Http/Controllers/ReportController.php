@@ -84,31 +84,60 @@ class ReportController extends Controller implements HasMiddleware
      */
     public function balanceSheet(Request $request)
     {
+        // تاريخ "كما في" اختياري. عند غيابه يبقى السلوك الافتراضي (لقطة اليوم) كما هو.
+        $asOfDate = $request->date('as_of');
+        $asOf = $asOfDate ? $asOfDate->toDateString() : now()->toDateString();
+
         // ===== الأصول =====
         // النقدية: أرصدة الحسابات البنكية النشطة.
-        $cash = (string) BankAccount::where('is_active', true)->sum('current_balance');
+        if ($asOfDate) {
+            // كما في تاريخ معيّن: الافتتاحي + الإيداعات − المسحوبات حتى التاريخ، لكل حساب نشط، بـ bcmath.
+            $cash = BankAccount::where('is_active', true)->get()->reduce(
+                function (string $carry, BankAccount $acc) use ($asOfDate) {
+                    $deposits = (string) $acc->transactions()
+                        ->where('type', 'deposit')
+                        ->whereDate('transaction_date', '<=', $asOfDate)
+                        ->sum('amount');
+                    $withdrawals = (string) $acc->transactions()
+                        ->where('type', 'withdrawal')
+                        ->whereDate('transaction_date', '<=', $asOfDate)
+                        ->sum('amount');
+                    $balance = bcadd(bcsub((string) $acc->opening_balance, $withdrawals, 2), $deposits, 2);
 
-        // المخزون: مجموع قيمة المواد (الكمية × سعر الوحدة).
+                    return bcadd($carry, $balance, 2);
+                },
+                '0'
+            );
+        } else {
+            $cash = (string) BankAccount::where('is_active', true)->sum('current_balance');
+        }
+
+        // المخزون: مجموع قيمة المواد (الكمية × سعر الوحدة). يبقى بالقيمة الحالية.
         $inventory = Material::all()->reduce(
             fn (string $carry, Material $m) => bcadd($carry, $m->stockValue(), 2),
             '0'
         );
 
-        // الأصول الثابتة: صافي القيمة الدفترية بعد الإهلاك للأصول النشطة.
+        // الأصول الثابتة: صافي القيمة الدفترية بعد الإهلاك للأصول النشطة. تبقى بالقيمة الحالية.
         $fixedAssets = Asset::all()->reduce(
             fn (string $carry, Asset $a) => bcadd($carry, $this->assetNetBookValue($a), 2),
             '0'
         );
 
         // الذمم المدينة: المتبقّي على الفواتير غير الملغاة + المتبقّي على الإيرادات غير المحصّلة بالكامل.
-        $invoiceReceivables = Invoice::where('status', '!=', 'cancelled')->get()->reduce(
-            fn (string $carry, Invoice $inv) => bcadd($carry, $inv->remaining(), 2),
-            '0'
-        );
-        $revenueReceivables = Revenue::where('payment_status', '!=', 'collected')->get()->reduce(
-            fn (string $carry, Revenue $rev) => bcadd($carry, $rev->remaining(), 2),
-            '0'
-        );
+        // كما في تاريخ معيّن: الفواتير المُصدرة حتى التاريخ، والإيرادات بتاريخ إيراد حتى التاريخ.
+        $invoiceReceivables = Invoice::where('status', '!=', 'cancelled')
+            ->when($asOfDate, fn ($q) => $q->whereDate('issue_date', '<=', $asOfDate))
+            ->get()->reduce(
+                fn (string $carry, Invoice $inv) => bcadd($carry, $inv->remaining(), 2),
+                '0'
+            );
+        $revenueReceivables = Revenue::where('payment_status', '!=', 'collected')
+            ->when($asOfDate, fn ($q) => $q->whereDate('revenue_date', '<=', $asOfDate))
+            ->get()->reduce(
+                fn (string $carry, Revenue $rev) => bcadd($carry, $rev->remaining(), 2),
+                '0'
+            );
         $receivables = bcadd($invoiceReceivables, $revenueReceivables, 2);
 
         $totalAssets = array_reduce(
@@ -136,9 +165,13 @@ class ReportController extends Controller implements HasMiddleware
             '0'
         );
 
-        // الأرباح المحتجزة = إجمالي الإيرادات − إجمالي المصروفات.
-        $totalRevenue = (string) Revenue::sum('amount');
-        $totalExpense = (string) Expense::sum('amount');
+        // الأرباح المحتجزة = إجمالي الإيرادات − إجمالي المصروفات (حتى تاريخ "كما في" إن وُجد).
+        $totalRevenue = (string) Revenue::query()
+            ->when($asOfDate, fn ($q) => $q->whereDate('revenue_date', '<=', $asOfDate))
+            ->sum('amount');
+        $totalExpense = (string) Expense::query()
+            ->when($asOfDate, fn ($q) => $q->whereDate('expense_date', '<=', $asOfDate))
+            ->sum('amount');
         $retainedEarnings = bcsub($totalRevenue, $totalExpense, 2);
 
         $totalEquity = bcadd($partnerCapital, $retainedEarnings, 2);
@@ -196,7 +229,7 @@ class ReportController extends Controller implements HasMiddleware
             'totalEquity' => $totalEquity,
             'totalLiabilitiesPlusEquity' => $totalLiabilitiesPlusEquity,
             'settlementDifference' => $settlementDifference,
-            'asOf' => now()->toDateString(),
+            'asOf' => $asOf,
         ]);
     }
 

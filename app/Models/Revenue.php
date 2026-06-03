@@ -24,6 +24,7 @@ class Revenue extends Model
         'project_id', 'description', 'amount', 'paid_amount', 'payment_status',
         'revenue_date', 'due_date', 'payment_method', 'bank_account_id',
         'check_number', 'deferred_check', 'is_confirmed', 'notes', 'created_by',
+        'cost_center_id',
     ];
 
     protected function casts(): array
@@ -41,6 +42,11 @@ class Revenue extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 
     public function bankAccount(): BelongsTo

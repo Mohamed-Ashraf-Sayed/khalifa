@@ -126,7 +126,8 @@ class ContractorController extends Controller implements HasMiddleware
             ])
             ->values();
 
-        $running = '0';
+        $opening = (string) $contractor->opening_balance;
+        $running = $opening;
         $totalCredit = '0';
         $totalDebit = '0';
         $rows = $rows->map(function ($row) use (&$running, &$totalCredit, &$totalDebit) {
@@ -147,7 +148,7 @@ class ContractorController extends Controller implements HasMiddleware
 
             if ($format === 'xlsx') {
                 $headers = ['التاريخ', 'البيان', 'دائن (+)', 'مدين (−)', 'الرصيد الجاري'];
-                $excelRows = [['', 'رصيد افتتاحي', '', '', '0.00']];
+                $excelRows = [['', 'رصيد افتتاحي', '', '', number_format((float) $opening, 2)]];
                 foreach ($rows as $row) {
                     $excelRows[] = [
                         optional($row['date'])->format('Y-m-d') ?: '—',
@@ -167,7 +168,7 @@ class ContractorController extends Controller implements HasMiddleware
                 );
             }
 
-            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="4" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">0.00</td></tr>';
+            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="4" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">'.number_format((float) $opening, 2).'</td></tr>';
             foreach ($rows as $row) {
                 $bodyRows .= '<tr>'
                     .'<td>'.(optional($row['date'])->format('Y-m-d') ?: '—').'</td>'
@@ -199,6 +200,7 @@ class ContractorController extends Controller implements HasMiddleware
             'totalCredit' => $totalCredit,
             'totalDebit' => $totalDebit,
             'balance' => $balance,
+            'opening' => $opening,
         ]);
     }
 
@@ -305,6 +307,7 @@ class ContractorController extends Controller implements HasMiddleware
             'tax_number' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'opening_balance' => ['nullable', 'numeric'],
         ]) + ['is_active' => $request->boolean('is_active')];
     }
 }

@@ -11,12 +11,14 @@ class Contractor extends Model
     protected $fillable = [
         'contractor_code', 'name', 'company_name', 'phone', 'phone2', 'email',
         'specialty', 'national_id', 'tax_number', 'notes', 'is_active', 'created_by',
+        'opening_balance',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'opening_balance' => 'decimal:2',
         ];
     }
 
@@ -46,6 +48,15 @@ class Contractor extends Model
             ->sum('net_amount');
         $paid = (string) $this->payments()->sum('amount');
 
-        return bcsub($earned, $paid, 2);
+        return bcadd((string) $this->opening_balance, bcsub($earned, $paid, 2), 2);
+    }
+
+    /** إجمالي المبالغ المحتجزة غير المُحرَّرة على المستخلصات المعتمدة/الجزئية/المدفوعة. */
+    public function retentionHeld(): string
+    {
+        return (string) $this->extracts()
+            ->whereIn('status', ['approved', 'partial', 'paid'])
+            ->where('retention_released', false)
+            ->sum('retention_amount');
     }
 }

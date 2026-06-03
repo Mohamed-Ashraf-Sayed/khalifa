@@ -34,7 +34,7 @@ class Expense extends Model
         'project_id', 'category', 'description', 'amount', 'expense_date',
         'payment_method', 'bank_account_id', 'delivered_by_employee_id', 'notes', 'created_by',
         'paid_amount', 'payment_status', 'due_date', 'is_credit',
-        'recipient', 'reference_number', 'details',
+        'recipient', 'reference_number', 'details', 'cost_center_id',
     ];
 
     protected function casts(): array
@@ -51,6 +51,11 @@ class Expense extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 
     public function bankAccount(): BelongsTo

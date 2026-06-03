@@ -20,6 +20,7 @@ class ContractorExtract extends Model
         'extract_number', 'contractor_id', 'project_id', 'extract_date', 'description',
         'total_amount', 'additions', 'discount_percent', 'execution_percent', 'deductions',
         'net_amount', 'paid_amount', 'status', 'notes', 'attachment', 'created_by', 'approved_by', 'approved_at',
+        'retention_percent', 'retention_amount', 'retention_released',
     ];
 
     protected function casts(): array
@@ -34,6 +35,9 @@ class ContractorExtract extends Model
             'paid_amount' => 'decimal:2',
             'extract_date' => 'date',
             'approved_at' => 'datetime',
+            'retention_percent' => 'decimal:2',
+            'retention_amount' => 'decimal:2',
+            'retention_released' => 'boolean',
         ];
     }
 
@@ -71,6 +75,14 @@ class ContractorExtract extends Model
         $total = (string) $this->items()->sum('total_price');
         $this->total_amount = $total;
         $this->net_amount = bcsub(bcadd($total, (string) $this->additions, 2), (string) $this->deductions, 2);
+        $this->retention_amount = bcdiv(bcmul((string) $this->net_amount, (string) $this->retention_percent, 4), '100', 2);
+        $this->save();
+    }
+
+    /** تحرير المبلغ المحتجز على المستخلص. */
+    public function releaseRetention(): void
+    {
+        $this->retention_released = true;
         $this->save();
     }
 

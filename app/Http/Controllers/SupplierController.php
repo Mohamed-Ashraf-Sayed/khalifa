@@ -131,7 +131,8 @@ class SupplierController extends Controller implements HasMiddleware
             ])
             ->values();
 
-        $running = '0';
+        $opening = (string) $supplier->opening_balance;
+        $running = $opening;
         $totalDebit = '0';
         $totalCredit = '0';
         $rows = $rows->map(function ($row) use (&$running, &$totalDebit, &$totalCredit) {
@@ -152,7 +153,7 @@ class SupplierController extends Controller implements HasMiddleware
 
             if ($format === 'xlsx') {
                 $headers = ['التاريخ', 'البيان', 'مدين (+)', 'دائن (−)', 'الرصيد الجاري'];
-                $excelRows = [['', 'رصيد افتتاحي', '', '', '0.00']];
+                $excelRows = [['', 'رصيد افتتاحي', '', '', number_format((float) $opening, 2)]];
                 foreach ($rows as $row) {
                     $excelRows[] = [
                         optional($row['date'])->format('Y-m-d') ?: '—',
@@ -172,7 +173,7 @@ class SupplierController extends Controller implements HasMiddleware
                 );
             }
 
-            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="4" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">0.00</td></tr>';
+            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="4" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">'.number_format((float) $opening, 2).'</td></tr>';
             foreach ($rows as $row) {
                 $bodyRows .= '<tr>'
                     .'<td>'.(optional($row['date'])->format('Y-m-d') ?: '—').'</td>'
@@ -204,6 +205,7 @@ class SupplierController extends Controller implements HasMiddleware
             'totalDebit' => $totalDebit,
             'totalCredit' => $totalCredit,
             'balance' => $balance,
+            'opening' => $opening,
         ]);
     }
 
@@ -245,6 +247,9 @@ class SupplierController extends Controller implements HasMiddleware
             'commercial_register' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'opening_balance' => ['nullable', 'numeric'],
+            'credit_limit' => ['nullable', 'numeric'],
+            'payment_terms' => ['nullable', 'numeric'],
         ]);
     }
 }

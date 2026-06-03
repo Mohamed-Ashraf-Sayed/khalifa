@@ -97,7 +97,8 @@ class PartnerController extends Controller implements HasMiddleware
             ->orderBy('id')
             ->get();
 
-        $running = '0';
+        $opening = (string) $partner->opening_balance;
+        $running = $opening;
         $rows = $transactions->map(function ($txn) use (&$running) {
             $running = $txn->type === 'deposit'
                 ? bcadd($running, (string) $txn->amount, 2)
@@ -114,7 +115,7 @@ class PartnerController extends Controller implements HasMiddleware
 
             if ($format === 'xlsx') {
                 $headers = ['التاريخ', 'النوع', 'البيان', 'مدين (−)', 'دائن (+)', 'الرصيد الجاري'];
-                $excelRows = [['', '', 'رصيد افتتاحي', '', '', '0.00']];
+                $excelRows = [['', '', 'رصيد افتتاحي', '', '', number_format((float) $opening, 2)]];
                 foreach ($rows as $row) {
                     $excelRows[] = [
                         optional($row['txn']->transaction_date)->format('Y-m-d') ?: '—',
@@ -135,7 +136,7 @@ class PartnerController extends Controller implements HasMiddleware
                 );
             }
 
-            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="5" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">0.00</td></tr>';
+            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="5" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">'.number_format((float) $opening, 2).'</td></tr>';
             foreach ($rows as $row) {
                 $isDeposit = $row['txn']->type === 'deposit';
                 $bodyRows .= '<tr>'
@@ -163,7 +164,7 @@ class PartnerController extends Controller implements HasMiddleware
 
         $deposits = $partner->deposits()->latest('deposit_date')->get();
 
-        return view('partners.statement', compact('partner', 'rows', 'deposits'));
+        return view('partners.statement', compact('partner', 'rows', 'deposits', 'opening'));
     }
 
     /** يبني HTML عربي مكتفٍ ذاتياً (RTL) لكشف حساب لتصديره PDF. */
@@ -202,6 +203,7 @@ class PartnerController extends Controller implements HasMiddleware
             'status' => ['required', Rule::in(array_keys(Partner::STATUSES))],
             'project_id' => ['nullable', 'exists:projects,id'],
             'notes' => ['nullable', 'string'],
+            'opening_balance' => ['nullable', 'numeric'],
         ]);
     }
 }

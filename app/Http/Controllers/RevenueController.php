@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\CostCenter;
 use App\Models\Project;
 use App\Models\Revenue;
 use App\Services\BankLedgerService;
@@ -199,6 +200,7 @@ class RevenueController extends Controller implements HasMiddleware
             'revenue' => $revenue,
             'projects' => Project::orderBy('name')->get(),
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
+            'costCenters' => CostCenter::where('is_active', true)->orderBy('name')->get(),
         ];
     }
 
@@ -211,6 +213,7 @@ class RevenueController extends Controller implements HasMiddleware
 
         return $request->validate([
             'project_id' => ['nullable', 'exists:projects,id'],
+            'cost_center_id' => ['nullable', 'exists:cost_centers,id'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'revenue_date' => ['required', 'date'],

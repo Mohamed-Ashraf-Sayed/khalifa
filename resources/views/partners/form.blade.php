@@ -47,6 +47,10 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">رصيد افتتاحي</label>
+                        <input type="number" step="0.01" name="opening_balance" value="{{ old('opening_balance', $partner->opening_balance ?? 0) }}" class="form-control">
+                    </div>
                     <div class="col-12">
                         <label class="form-label">العنوان</label>
                         <textarea name="address" rows="2" class="form-control">{{ old('address', $partner->address) }}</textarea>

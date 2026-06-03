@@ -28,6 +28,15 @@
                         </select>
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">مركز التكلفة</label>
+                        <select name="cost_center_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($costCenters as $cc)
+                                <option value="{{ $cc->id }}" @selected((int) old('cost_center_id', $revenue->cost_center_id) === $cc->id)>{{ $cc->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">التاريخ <span class="text-danger">*</span></label>
                         <input type="date" name="revenue_date" value="{{ old('revenue_date', $revenue->revenue_date?->format('Y-m-d')) }}" class="form-control" required>
                     </div>

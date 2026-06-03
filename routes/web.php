@@ -7,8 +7,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\BankTransferController;
+use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractorController;
+use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\ContractorExtractController;
 use App\Http\Controllers\ContractorExtractItemController;
 use App\Http\Controllers\ContractorPaymentController;
@@ -103,6 +105,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('payment-methods', CustomPaymentMethodController::class)->names('payment_methods')->except(['show']);
 
     Route::resource('expense-categories', ExpenseCategoryController::class)->names('expense_categories')->except(['show']);
+    Route::get('cost-centers/report', [CostCenterController::class, 'report'])->name('cost_centers.report');
+    Route::resource('cost-centers', CostCenterController::class)->names('cost_centers')->except(['show']);
+
+    // سجل الشيكات
+    Route::resource('cheques', ChequeController::class);
+    Route::post('cheques/{cheque}/deposited', [ChequeController::class, 'markDeposited'])->name('cheques.deposited');
+    Route::post('cheques/{cheque}/cleared', [ChequeController::class, 'markCleared'])->name('cheques.cleared');
+    Route::post('cheques/{cheque}/bounced', [ChequeController::class, 'markBounced'])->name('cheques.bounced');
     Route::resource('expenses', ExpenseController::class);
     Route::post('expenses/{expense}/payments', [ExpensePaymentController::class, 'store'])->name('expense_payments.store');
     Route::delete('expense-payments/{expense_payment}', [ExpensePaymentController::class, 'destroy'])->name('expense_payments.destroy');
@@ -129,10 +139,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('purchase-order-items/{purchase_order_item}', [PurchaseOrderItemController::class, 'destroy'])->name('purchase_order_items.destroy');
     Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments');
     Route::resource('supplier-transactions', SupplierTransactionController::class)->names('supplier_transactions');
+    Route::get('supplier-payments/{supplier_payment}/certificate', [SupplierPaymentController::class, 'certificate'])->name('supplier_payments.certificate');
 
     // موجة 3 — مقاولون
     Route::resource('contractor-extracts', ContractorExtractController::class)->names('contractor_extracts');
     Route::post('contractor-extracts/{contractorExtract}/approve', [ContractorExtractController::class, 'approve'])->name('contractor_extracts.approve');
+    Route::post('contractor-extracts/{contractor_extract}/release-retention', [ContractorExtractController::class, 'releaseRetention'])->name('contractor_extracts.release_retention');
     Route::post('contractor-extracts/{contractor_extract}/items', [ContractorExtractItemController::class, 'store'])->name('contractor_extract_items.store');
     Route::delete('contractor-extract-items/{contractor_extract_item}', [ContractorExtractItemController::class, 'destroy'])->name('contractor_extract_items.destroy');
     Route::resource('contractor-payments', ContractorPaymentController::class)->names('contractor_payments');

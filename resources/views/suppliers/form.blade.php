@@ -46,6 +46,18 @@
                         <label class="form-label">السجل التجاري</label>
                         <input type="text" name="commercial_register" value="{{ old('commercial_register', $supplier->commercial_register) }}" class="form-control">
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">رصيد افتتاحي</label>
+                        <input type="number" step="0.01" name="opening_balance" value="{{ old('opening_balance', $supplier->opening_balance ?? 0) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">الحد الائتماني</label>
+                        <input type="number" step="0.01" min="0" name="credit_limit" value="{{ old('credit_limit', $supplier->credit_limit ?? 0) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">أيام السداد</label>
+                        <input type="number" min="0" name="payment_terms" value="{{ old('payment_terms', $supplier->payment_terms) }}" class="form-control">
+                    </div>
                     <div class="col-12">
                         <label class="form-label">العنوان</label>
                         <textarea name="address" rows="2" class="form-control">{{ old('address', $supplier->address) }}</textarea>

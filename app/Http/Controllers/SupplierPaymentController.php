@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\Setting;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
 use App\Services\BankLedgerService;
+use App\Services\ExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -21,7 +23,7 @@ class SupplierPaymentController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:suppliers.view', only: ['index', 'show']),
+            new Middleware('can:suppliers.view', only: ['index', 'show', 'certificate']),
             new Middleware('can:suppliers.create', only: ['create', 'store']),
             new Middleware('can:suppliers.edit', only: ['edit', 'update']),
             new Middleware('can:suppliers.delete', only: ['destroy']),
@@ -66,6 +68,61 @@ class SupplierPaymentController extends Controller implements HasMiddleware
         $supplier_payment->load(['supplier', 'bankAccount', 'creator']);
 
         return view('supplier_payments.show', ['payment' => $supplier_payment]);
+    }
+
+    /**
+     * شهادة خصم وإضافة (نموذج 41) — مستند قابل للطباعة بمكوّنات الاستقطاع.
+     * يدعم ?format=pdf عبر ExportService، وإلا يرجّع view قابل للطباعة + زرّ PDF.
+     */
+    public function certificate(SupplierPayment $supplier_payment)
+    {
+        $supplier_payment->load('supplier');
+
+        // بيانات الشركة من الإعدادات إن وُجدت.
+        $companyName = Setting::get('company_name', 'القروانة');
+        $companyTaxNumber = Setting::get('company_tax_number');
+        $companyAddress = Setting::get('company_address');
+        $companyPhone = Setting::get('company_phone');
+
+        // مكوّنات الاستقطاع التي قيمتها > 0 فقط (مع الترتيب والمسميات العربية).
+        $labels = [
+            'vat' => 'ضريبة القيمة المضافة',
+            'insurance_5_percent' => 'تأمين 5%',
+            'social_insurance' => 'تأمينات اجتماعية',
+            'commercial_profit_supply' => 'أرباح تجارية (توريدات)',
+            'commercial_profit_works' => 'أرباح تجارية (أعمال)',
+            'engineering_professions' => 'مهن هندسية',
+            'arts_specialists' => 'أخصائيو فنون',
+            'applied_professions' => 'مهن تطبيقية',
+            'bank_transfer_fee' => 'رسوم تحويل بنكي',
+            'other_deductions' => 'استقطاعات أخرى',
+        ];
+
+        $components = [];
+        foreach ($labels as $field => $label) {
+            if (bccomp((string) $supplier_payment->$field, '0', 2) > 0) {
+                $components[] = ['label' => $label, 'amount' => (string) $supplier_payment->$field];
+            }
+        }
+
+        $data = [
+            'payment' => $supplier_payment,
+            'companyName' => $companyName,
+            'companyTaxNumber' => $companyTaxNumber,
+            'companyAddress' => $companyAddress,
+            'companyPhone' => $companyPhone,
+            'components' => $components,
+        ];
+
+        if ($request_format = request()->query('format')) {
+            if ($request_format === 'pdf') {
+                $html = view('supplier_payments.certificate', array_merge($data, ['pdf' => true]))->render();
+
+                return app(ExportService::class)->pdf($html, 'wht-'.$supplier_payment->id.'.pdf');
+            }
+        }
+
+        return view('supplier_payments.certificate', array_merge($data, ['pdf' => false]));
     }
 
     public function create(): View

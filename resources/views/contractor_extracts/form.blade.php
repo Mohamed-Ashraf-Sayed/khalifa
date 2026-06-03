@@ -49,6 +49,10 @@
                         <input type="number" step="0.01" min="0" max="100" name="execution_percent" value="{{ old('execution_percent', $contractorExtract->execution_percent ?? 0) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">نسبة المحتجز %</label>
+                        <input type="number" step="0.01" min="0" max="100" name="retention_percent" value="{{ old('retention_percent', $contractorExtract->retention_percent ?? 0) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">الحالة</label>
                         <select name="status" class="form-select">
                             @foreach (\App\Models\ContractorExtract::STATUSES as $k => $label)

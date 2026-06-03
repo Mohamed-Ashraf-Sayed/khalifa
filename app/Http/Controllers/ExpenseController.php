@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\CostCenter;
 use App\Models\Employee;
 use App\Models\EmployeeTransaction;
 use App\Models\Expense;
@@ -147,6 +148,7 @@ class ExpenseController extends Controller implements HasMiddleware
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
             'employees' => Employee::where('is_active', true)->orderBy('name')->get(),
             'categories' => $this->categoryOptions(),
+            'costCenters' => CostCenter::where('is_active', true)->orderBy('name')->get(),
         ];
     }
 
@@ -170,6 +172,7 @@ class ExpenseController extends Controller implements HasMiddleware
 
         $data = $request->validate([
             'project_id' => ['nullable', 'exists:projects,id'],
+            'cost_center_id' => ['nullable', 'exists:cost_centers,id'],
             'category' => ['required', 'string', 'max:50'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'gt:0'],

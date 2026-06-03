@@ -34,6 +34,7 @@
                     @endif
                 </div></div>
                 <div class="col-md-4"><div class="text-muted small">الرصيد المستحقّ</div><div class="fw-semibold">{{ number_format((float) $contractor->balanceDue(), 2) }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">المحتجز (غير المُحرَّر)</div><div class="fw-semibold">{{ number_format((float) $contractor->retentionHeld(), 2) }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">أضيف بواسطة</div><div>{{ $contractor->creator?->name ?? '—' }}</div></div>
                 @if ($contractor->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $contractor->notes }}</div></div>@endif
             </div>

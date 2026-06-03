@@ -11,12 +11,14 @@ class Partner extends Model
     protected $fillable = [
         'name', 'phone', 'email', 'national_id', 'address',
         'join_date', 'status', 'project_id', 'notes', 'created_by',
+        'opening_balance',
     ];
 
     protected function casts(): array
     {
         return [
             'join_date' => 'date',
+            'opening_balance' => 'decimal:2',
         ];
     }
 
@@ -70,6 +72,6 @@ class Partner extends Model
         $deposits = (string) $this->transactions()->where('type', 'deposit')->sum('amount');
         $out = (string) $this->transactions()->whereIn('type', ['withdrawal', 'profit', 'settlement'])->sum('amount');
 
-        return bcsub($deposits, $out, 2);
+        return bcadd((string) $this->opening_balance, bcsub($deposits, $out, 2), 2);
     }
 }

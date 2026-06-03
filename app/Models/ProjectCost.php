@@ -10,6 +10,7 @@ class ProjectCost extends Model
     protected $fillable = [
         'project_id', 'work_item', 'contractor_supplier', 'category', 'description',
         'unit', 'quantity', 'unit_price', 'amount', 'cost_date', 'notes', 'created_by',
+        'cost_center_id',
     ];
 
     protected function casts(): array
@@ -25,6 +26,11 @@ class ProjectCost extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function costCenter(): BelongsTo
+    {
+        return $this->belongsTo(CostCenter::class);
     }
 
     public function creator(): BelongsTo

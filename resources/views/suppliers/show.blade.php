@@ -35,7 +35,17 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-md-4"><div class="text-muted small">الرصيد المستحق</div><div class="fw-semibold">{{ number_format((float) $supplier->balanceDue(), 2) }}</div></div>
+                <div class="col-md-4">
+                    <div class="text-muted small">الرصيد المستحق</div>
+                    <div class="fw-semibold">
+                        {{ number_format((float) $supplier->balanceDue(), 2) }}
+                        @if ($supplier->overCreditLimit())
+                            <span class="badge text-bg-danger ms-1">تجاوز الحد الائتماني</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-4"><div class="text-muted small">الحد الائتماني</div><div>{{ number_format((float) $supplier->credit_limit, 2) }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">أيام السداد</div><div>{{ $supplier->payment_terms !== null ? $supplier->payment_terms . ' يوم' : '—' }}</div></div>
                 @if ($supplier->creator)<div class="col-md-4"><div class="text-muted small">أُضيف بواسطة</div><div>{{ $supplier->creator->name }}</div></div>@endif
                 <div class="col-md-12"><div class="text-muted small">العنوان</div><div>{{ $supplier->address ?: '—' }}</div></div>
                 @if ($supplier->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $supplier->notes }}</div></div>@endif

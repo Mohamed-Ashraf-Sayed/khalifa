@@ -11,12 +11,15 @@ class Supplier extends Model
     protected $fillable = [
         'name', 'company_name', 'type', 'phone', 'phone2', 'email',
         'address', 'tax_number', 'commercial_register', 'notes', 'is_active', 'created_by',
+        'opening_balance', 'credit_limit', 'payment_terms',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'opening_balance' => 'decimal:2',
+            'credit_limit' => 'decimal:2',
         ];
     }
 
@@ -63,6 +66,13 @@ class Supplier extends Model
         $txnPaid = (string) $this->transactions()->sum('paid_amount');
         $paid = bcadd($paymentsPaid, $txnPaid, 2);
 
-        return bcsub($owed, $paid, 2);
+        return bcadd((string) $this->opening_balance, bcsub($owed, $paid, 2), 2);
+    }
+
+    /** هل تجاوز المورّد الحدّ الائتماني؟ (حد > 0 والرصيد المستحقّ أكبر منه). */
+    public function overCreditLimit(): bool
+    {
+        return bccomp((string) $this->credit_limit, '0', 2) > 0
+            && bccomp($this->balanceDue(), (string) $this->credit_limit, 2) > 0;
     }
 }

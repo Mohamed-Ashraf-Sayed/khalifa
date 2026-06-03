@@ -46,6 +46,10 @@
                         <label class="form-label">الرقم الضريبي</label>
                         <input type="text" name="tax_number" value="{{ old('tax_number', $contractor->tax_number) }}" class="form-control">
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">رصيد افتتاحي</label>
+                        <input type="number" step="0.01" name="opening_balance" value="{{ old('opening_balance', $contractor->opening_balance ?? 0) }}" class="form-control">
+                    </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>
                         <textarea name="notes" rows="2" class="form-control">{{ old('notes', $contractor->notes) }}</textarea>

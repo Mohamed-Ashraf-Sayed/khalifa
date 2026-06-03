@@ -18,7 +18,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
         return [
             new Middleware('can:contractors.view', only: ['index', 'show']),
             new Middleware('can:contractors.create', only: ['create', 'store']),
-            new Middleware('can:contractors.edit', only: ['edit', 'update', 'approve']),
+            new Middleware('can:contractors.edit', only: ['edit', 'update', 'approve', 'releaseRetention']),
             new Middleware('can:contractors.delete', only: ['destroy']),
         ];
     }
@@ -90,6 +90,13 @@ class ContractorExtractController extends Controller implements HasMiddleware
         return back()->with('success', 'تم اعتماد المستخلص.');
     }
 
+    public function releaseRetention(ContractorExtract $contractor_extract): RedirectResponse
+    {
+        $contractor_extract->releaseRetention();
+
+        return back()->with('success', 'تم تحرير المبلغ المحتجز.');
+    }
+
     public function destroy(ContractorExtract $contractorExtract): RedirectResponse
     {
         // منع حذف مستخلص عليه دفعات
@@ -130,6 +137,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
             'additions' => ['nullable', 'numeric', 'min:0'],
             'deductions' => ['nullable', 'numeric', 'min:0'],
             'execution_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'retention_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'status' => ['required', 'in:'.implode(',', array_keys(ContractorExtract::STATUSES))],
             'notes' => ['nullable', 'string'],
         ]);
