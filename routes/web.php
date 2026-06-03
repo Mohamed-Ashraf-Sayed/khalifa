@@ -12,6 +12,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeTransactionController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerTransactionController;
@@ -77,6 +79,11 @@ Route::middleware('auth')->group(function () {
     // موجة 4+5 — معاملات الموظفين والشركاء
     Route::resource('employee-transactions', EmployeeTransactionController::class)->names('employee_transactions')->except('show');
     Route::resource('partner-transactions', PartnerTransactionController::class)->names('partner_transactions')->except('show');
+
+    // موجة 6 — الفواتير (مع صفحة عرض البنود)
+    Route::resource('invoices', InvoiceController::class);
+    Route::post('invoices/{invoice}/items', [InvoiceItemController::class, 'store'])->name('invoice_items.store');
+    Route::delete('invoice-items/{invoice_item}', [InvoiceItemController::class, 'destroy'])->name('invoice_items.destroy');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 });
