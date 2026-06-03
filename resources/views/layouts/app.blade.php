@@ -46,7 +46,7 @@
             @can('partners.view')   <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" href="{{ route('partners.index') }}"><i class="fa-solid fa-handshake"></i> الشركاء</a> @endcan
             @can('expenses.view')   <a class="nav-link" href="#"><i class="fa-solid fa-money-bill-wave"></i> المصروفات</a> @endcan
             @can('revenues.view')   <a class="nav-link" href="#"><i class="fa-solid fa-sack-dollar"></i> الإيرادات</a> @endcan
-            @can('bank_accounts.view')<a class="nav-link" href="#"><i class="fa-solid fa-building-columns"></i> الحسابات البنكية</a> @endcan
+            @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_accounts.*') ? 'active' : '' }}" href="{{ route('bank_accounts.index') }}"><i class="fa-solid fa-building-columns"></i> الحسابات البنكية</a> @endcan
             @can('reports.view')    <a class="nav-link" href="#"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan
             @can('users.view')      <a class="nav-link" href="#"><i class="fa-solid fa-user-gear"></i> المستخدمون</a> @endcan
         </nav>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\DashboardController;
@@ -29,4 +31,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('suppliers', SupplierController::class)->except('show');
     Route::resource('employees', EmployeeController::class)->except('show');
     Route::resource('partners', PartnerController::class)->except('show');
+
+    // الحسابات البنكية + حركاتها (عبر BankLedgerService)
+    Route::resource('bank-accounts', BankAccountController::class)
+        ->names('bank_accounts')
+        ->parameters(['bank-accounts' => 'bank_account']);
+    Route::post('bank-accounts/{bank_account}/transactions', [BankTransactionController::class, 'store'])
+        ->name('bank_transactions.store');
+    Route::delete('bank-transactions/{bank_transaction}', [BankTransactionController::class, 'destroy'])
+        ->name('bank_transactions.destroy');
 });
