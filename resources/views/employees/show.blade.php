@@ -23,6 +23,7 @@
                 <div class="col-md-4"><div class="text-muted small">المسمى الوظيفي</div><div>{{ $employee->job_title }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">القسم</div><div>{{ $employee->department ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">الراتب</div><div class="fw-semibold">{{ number_format($employee->salary, 2) }} ج</div></div>
+                <div class="col-md-4"><div class="text-muted small">الحساب البنكي لصرف الراتب</div><div>{{ $employee->bankAccount?->name ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">الهاتف</div><div dir="ltr" class="text-end">{{ $employee->phone ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">البريد</div><div dir="ltr" class="text-end">{{ $employee->email ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">تاريخ التعيين</div><div>{{ $employee->hire_date ? $employee->hire_date->format('Y-m-d') : '—' }}</div></div>

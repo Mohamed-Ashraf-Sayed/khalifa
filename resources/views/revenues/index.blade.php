@@ -99,6 +99,11 @@
                                 <td>
                                     @php $sc = ['pending' => 'secondary', 'partial' => 'warning', 'collected' => 'success']; @endphp
                                     <span class="badge bg-{{ $sc[$revenue->payment_status] ?? 'secondary' }}">{{ \App\Models\Revenue::PAYMENT_STATUSES[$revenue->payment_status] ?? $revenue->payment_status }}</span>
+                                    @if ($revenue->is_confirmed)
+                                        <span class="badge bg-success">مؤكد</span>
+                                    @else
+                                        <span class="badge bg-secondary">قيد التأكيد</span>
+                                    @endif
                                 </td>
                                 <td>
                                     {{ \App\Models\Revenue::PAYMENT_METHODS[$revenue->payment_method] ?? $revenue->payment_method }}

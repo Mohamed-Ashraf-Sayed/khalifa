@@ -107,6 +107,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('expense-payments/{expense_payment}', [ExpensePaymentController::class, 'destroy'])->name('expense_payments.destroy');
 
     Route::resource('revenues', RevenueController::class);
+    Route::post('revenues/{revenue}/confirm', [RevenueController::class, 'confirm'])->name('revenues.confirm');
     Route::post('revenues/{revenue}/collections', [RevenueCollectionController::class, 'store'])->name('revenue_collections.store');
     Route::delete('revenue-collections/{revenue_collection}', [RevenueCollectionController::class, 'destroy'])->name('revenue_collections.destroy');
 

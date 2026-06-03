@@ -23,7 +23,7 @@ class Revenue extends Model
     protected $fillable = [
         'project_id', 'description', 'amount', 'paid_amount', 'payment_status',
         'revenue_date', 'due_date', 'payment_method', 'bank_account_id',
-        'check_number', 'deferred_check', 'notes', 'created_by',
+        'check_number', 'deferred_check', 'is_confirmed', 'notes', 'created_by',
     ];
 
     protected function casts(): array
@@ -34,6 +34,7 @@ class Revenue extends Model
             'revenue_date' => 'date',
             'due_date' => 'date',
             'deferred_check' => 'boolean',
+            'is_confirmed' => 'boolean',
         ];
     }
 

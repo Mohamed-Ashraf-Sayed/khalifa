@@ -10,7 +10,7 @@ class Employee extends Model
 {
     protected $fillable = [
         'employee_code', 'name', 'national_id', 'job_title', 'department',
-        'salary', 'phone', 'email', 'hire_date', 'is_active', 'notes', 'created_by',
+        'salary', 'phone', 'email', 'hire_date', 'is_active', 'bank_account_id', 'notes', 'created_by',
     ];
 
     protected function casts(): array
@@ -25,6 +25,11 @@ class Employee extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function bankAccount(): BelongsTo
+    {
+        return $this->belongsTo(BankAccount::class);
     }
 
     public function transactions(): HasMany

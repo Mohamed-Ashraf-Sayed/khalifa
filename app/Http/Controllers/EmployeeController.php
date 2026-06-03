@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAccount;
 use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,7 +49,7 @@ class EmployeeController extends Controller implements HasMiddleware
 
     public function create(): View
     {
-        return view('employees.form', ['employee' => new Employee()]);
+        return view('employees.form', $this->formData(new Employee()));
     }
 
     public function store(Request $request): RedirectResponse
@@ -62,7 +63,7 @@ class EmployeeController extends Controller implements HasMiddleware
 
     public function edit(Employee $employee): View
     {
-        return view('employees.form', compact('employee'));
+        return view('employees.form', $this->formData($employee));
     }
 
     public function update(Request $request, Employee $employee): RedirectResponse
@@ -118,6 +119,14 @@ class EmployeeController extends Controller implements HasMiddleware
         ]);
     }
 
+    private function formData(Employee $employee): array
+    {
+        return [
+            'employee' => $employee,
+            'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
+        ];
+    }
+
     private function validateData(Request $request, ?Employee $employee = null): array
     {
         return $request->validate([
@@ -134,6 +143,7 @@ class EmployeeController extends Controller implements HasMiddleware
             'email' => ['nullable', 'email', 'max:255'],
             'hire_date' => ['required', 'date'],
             'is_active' => ['nullable', 'boolean'],
+            'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
             'notes' => ['nullable', 'string'],
         ]);
     }

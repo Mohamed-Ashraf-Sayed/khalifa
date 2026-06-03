@@ -35,6 +35,15 @@
                         <input type="number" step="0.01" min="0" name="salary" value="{{ old('salary', $employee->salary) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">الحساب البنكي لصرف الراتب</label>
+                        <select name="bank_account_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($accounts as $a)
+                                <option value="{{ $a->id }}" @selected((int) old('bank_account_id', $employee->bank_account_id) === $a->id)>{{ $a->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">الهاتف</label>
                         <input type="text" name="phone" value="{{ old('phone', $employee->phone) }}" class="form-control">
                     </div>

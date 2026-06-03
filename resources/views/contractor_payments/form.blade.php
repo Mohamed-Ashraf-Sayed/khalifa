@@ -42,6 +42,9 @@
                             @foreach (\App\Models\ContractorPayment::PAYMENT_METHODS as $k => $label)
                                 <option value="{{ $k }}" @selected(old('payment_method', $contractorPayment->payment_method) === $k)>{{ $label }}</option>
                             @endforeach
+                            @foreach (\App\Models\CustomPaymentMethod::where('is_active', true)->get() as $m)
+                                <option value="{{ $m->code }}" @selected(old('payment_method', $contractorPayment->payment_method) === $m->code)>{{ $m->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-8">

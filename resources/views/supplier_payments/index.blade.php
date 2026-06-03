@@ -15,7 +15,23 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <h5 class="mb-0">مدفوعات الموردين</h5>
+                <form class="d-flex gap-2 flex-wrap" method="GET">
+                    <select name="supplier_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+                        <option value="">كل الموردين</option>
+                        @foreach ($suppliers as $s)
+                            <option value="{{ $s->id }}" @selected($supplierId == $s->id)>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="payment_method" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                        <option value="">كل طرق الدفع</option>
+                        @foreach (\App\Models\SupplierPayment::PAYMENT_METHODS as $k => $label)
+                            <option value="{{ $k }}" @selected($paymentMethod === $k)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <input type="date" name="date_from" value="{{ $dateFrom }}" class="form-control" style="min-width:150px" title="من تاريخ" onchange="this.form.submit()">
+                    <input type="date" name="date_to" value="{{ $dateTo }}" class="form-control" style="min-width:150px" title="إلى تاريخ" onchange="this.form.submit()">
+                    <a href="{{ route('supplier_payments.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
+                </form>
                 @can('suppliers.create')
                     <a href="{{ route('supplier_payments.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> دفعة جديدة</a>
                 @endcan

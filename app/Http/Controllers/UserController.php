@@ -23,11 +23,30 @@ class UserController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::with('roles')->latest()->paginate(15);
+        $role = (string) $request->input('role', '');
+        $isActive = (string) $request->input('is_active', '');
+        $search = (string) $request->input('search', '');
 
-        return view('users.index', compact('users'));
+        $users = User::query()
+            ->with('roles')
+            ->when($role !== '', fn ($q) => $q->whereHas('roles', fn ($r) => $r->where('name', $role)))
+            ->when($isActive !== '', fn ($q) => $q->where('is_active', (int) $isActive))
+            ->when($search !== '', fn ($q) => $q->where(fn ($w) => $w
+                ->where('name', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('users.index', [
+            'users' => $users,
+            'roles' => $this->roleList(),
+            'role' => $role,
+            'isActive' => $isActive,
+            'search' => $search,
+        ]);
     }
 
     public function show(User $user): View

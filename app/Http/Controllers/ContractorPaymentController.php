@@ -31,15 +31,35 @@ class ContractorPaymentController extends Controller implements HasMiddleware
 
     public function index(Request $request): View
     {
+        $contractorId = (string) $request->input('contractor_id', '');
+        $paymentMethod = (string) $request->input('payment_method', '');
+        $dateFrom = (string) $request->input('date_from', '');
+        $dateTo = (string) $request->input('date_to', '');
+
+        $filtered = fn ($q) => $q
+            ->when($contractorId !== '', fn ($q) => $q->where('contractor_id', $contractorId))
+            ->when($paymentMethod !== '', fn ($q) => $q->where('payment_method', $paymentMethod))
+            ->when($dateFrom !== '', fn ($q) => $q->whereDate('payment_date', '>=', $dateFrom))
+            ->when($dateTo !== '', fn ($q) => $q->whereDate('payment_date', '<=', $dateTo));
+
         $payments = ContractorPayment::query()
             ->with(['contractor', 'bankAccount', 'extract'])
+            ->tap($filtered)
             ->latest('payment_date')
             ->paginate(15)
             ->withQueryString();
 
-        $total = ContractorPayment::sum('amount');
+        $total = (float) ContractorPayment::query()->tap($filtered)->sum('amount');
 
-        return view('contractor_payments.index', compact('payments', 'total'));
+        return view('contractor_payments.index', [
+            'payments' => $payments,
+            'total' => $total,
+            'contractors' => Contractor::orderBy('name')->get(),
+            'contractorId' => $contractorId,
+            'paymentMethod' => $paymentMethod,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ]);
     }
 
     public function show(ContractorPayment $contractor_payment): View
@@ -146,12 +166,17 @@ class ContractorPaymentController extends Controller implements HasMiddleware
 
     private function validateData(Request $request): array
     {
+        $allowed = array_merge(
+            array_keys(ContractorPayment::PAYMENT_METHODS),
+            \App\Models\CustomPaymentMethod::where('is_active', true)->pluck('code')->all(),
+        );
+
         return $request->validate([
             'contractor_id' => ['required', 'exists:contractors,id'],
             'extract_id' => ['nullable', 'exists:contractor_extracts,id'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'payment_date' => ['required', 'date'],
-            'payment_method' => ['required', 'in:'.implode(',', array_keys(ContractorPayment::PAYMENT_METHODS))],
+            'payment_method' => ['required', 'in:'.implode(',', $allowed)],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
             'reference_number' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],

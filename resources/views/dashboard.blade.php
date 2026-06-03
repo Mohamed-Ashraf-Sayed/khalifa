@@ -21,21 +21,60 @@
     {{-- KPIs --}}
     <div class="row g-3 mb-3">
         @foreach ([
-            ['revenue','إجمالي الإيرادات','kpi-green','fa-sack-dollar'],
-            ['expense','إجمالي المصروفات','kpi-red','fa-money-bill-trend-up'],
-            ['net','صافي الربح','kpi-blue','fa-scale-balanced'],
-            ['bank_balance','السيولة بالبنوك','kpi-brown','fa-building-columns'],
-        ] as [$key,$label,$cls,$icon])
+            ['revenue','إجمالي الإيرادات','kpi-green','fa-sack-dollar','revenues.index'],
+            ['expense','إجمالي المصروفات','kpi-red','fa-money-bill-trend-up','expenses.index'],
+            ['net','صافي الربح','kpi-blue','fa-scale-balanced','reports.index'],
+            ['bank_balance','السيولة بالبنوك','kpi-brown','fa-building-columns','bank_accounts.index'],
+        ] as [$key,$label,$cls,$icon,$route])
         <div class="col-md-3 col-6">
-            <div class="kpi {{ $cls }} p-3 h-100">
-                <i class="fa-solid {{ $icon }} ic"></i>
-                <div class="l">{{ $label }}</div>
-                <div class="v">{{ number_format($stats[$key], 0) }}</div>
-                <div class="small opacity-75">ج.م</div>
-            </div>
+            <a href="{{ route($route) }}" class="text-decoration-none">
+                <div class="kpi {{ $cls }} p-3 h-100">
+                    <i class="fa-solid {{ $icon }} ic"></i>
+                    <div class="l">{{ $label }}</div>
+                    <div class="v">{{ number_format($stats[$key], 0) }}</div>
+                    <div class="small opacity-75">ج.م</div>
+                </div>
+            </a>
         </div>
         @endforeach
     </div>
+
+    {{-- شريط التنبيهات --}}
+    @if (count($alerts))
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        @foreach ($alerts as $a)
+            <a href="{{ $a['url'] }}" class="text-decoration-none">
+                <span class="badge rounded-pill bg-{{ $a['color'] }} py-2 px-3">
+                    <i class="fa-solid {{ $a['icon'] }} ms-1"></i>
+                    {{ $a['label'] }}
+                    <span class="badge bg-light text-dark ms-1">{{ $a['count'] }}</span>
+                </span>
+            </a>
+        @endforeach
+    </div>
+    @endif
+
+    {{-- فلتر النطاق الزمني للمؤشرات المالية --}}
+    <form method="GET" class="row g-2 align-items-end mb-3">
+        <div class="col-md-3 col-6">
+            <label class="form-label small mb-1">من تاريخ</label>
+            <input type="date" name="from" value="{{ $from }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label small mb-1">إلى تاريخ</label>
+            <input type="date" name="to" value="{{ $to }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-3 col-12">
+            <button type="submit" class="btn btn-sm" style="background:#8b7355;color:#fff">
+                <i class="fa-solid fa-filter ms-1"></i> تطبيق
+            </button>
+            @if ($from || $to)
+                <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-xmark ms-1"></i> مسح
+                </a>
+            @endif
+        </div>
+    </form>
 
     {{-- mini stats --}}
     <div class="row g-3 mb-3">
@@ -105,6 +144,75 @@
                     </div>
                 @empty
                     <div class="text-muted">لا يوجد.</div>
+                @endforelse
+            </div></div>
+        </div>
+    </div>
+
+    {{-- قوائم الاستحقاق --}}
+    <div class="row g-3 mt-1">
+        {{-- فواتير متأخرة --}}
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3"><i class="fa-solid fa-file-invoice text-danger ms-1"></i> فواتير متأخرة</h6>
+                @forelse ($overdueInvoices as $inv)
+                    <a href="{{ route('invoices.show', $inv) }}" class="text-decoration-none text-reset">
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span>
+                                {{ $inv->client?->name ?? '—' }}
+                                <span class="d-block small text-muted">استحقاق {{ $inv->due_date?->format('Y-m-d') }}</span>
+                            </span>
+                            <span class="text-start">
+                                <span class="fw-bold">{{ number_format($inv->total_amount, 0) }}</span>
+                                <span class="d-block small text-danger">متبقّي {{ number_format((float) $inv->remaining(), 0) }}</span>
+                            </span>
+                        </div>
+                    </a>
+                @empty
+                    <div class="text-muted">لا توجد فواتير متأخرة.</div>
+                @endforelse
+            </div></div>
+        </div>
+
+        {{-- مخزون منخفض --}}
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3"><i class="fa-solid fa-boxes-stacked text-warning ms-1"></i> مخزون منخفض</h6>
+                @forelse ($lowStockMaterials as $m)
+                    <a href="{{ route('materials.show', $m) }}" class="text-decoration-none text-reset">
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span>
+                                {{ $m->name }}
+                                <span class="d-block small text-muted">{{ $m->project?->name ?? 'مخزن عام' }}</span>
+                            </span>
+                            <span class="text-start">
+                                <span class="fw-bold text-danger">{{ number_format($m->current_stock, 0) }}</span>
+                                <span class="d-block small text-muted">حد {{ number_format($m->min_stock, 0) }} {{ $m->unit }}</span>
+                            </span>
+                        </div>
+                    </a>
+                @empty
+                    <div class="text-muted">لا يوجد مخزون منخفض.</div>
+                @endforelse
+            </div></div>
+        </div>
+
+        {{-- أرباح شركاء مستحقة --}}
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3"><i class="fa-solid fa-coins text-info ms-1"></i> أرباح شركاء مستحقة</h6>
+                @forelse ($duePartnerProfits as $s)
+                    <a href="{{ route('partner_deposits.show', $s->deposit) }}" class="text-decoration-none text-reset">
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span>
+                                {{ $s->deposit?->partner?->name ?? '—' }}
+                                <span class="d-block small text-muted">استحقاق {{ $s->due_date?->format('Y-m-d') }}</span>
+                            </span>
+                            <span class="fw-bold">{{ number_format($s->amount, 0) }}</span>
+                        </div>
+                    </a>
+                @empty
+                    <div class="text-muted">لا توجد أقساط مستحقة.</div>
                 @endforelse
             </div></div>
         </div>

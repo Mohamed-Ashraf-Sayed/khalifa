@@ -17,9 +17,10 @@
         body { background: var(--beige); color: #3a342b; }
         .sidebar {
             background: linear-gradient(180deg, var(--brown), var(--brown-dark));
-            height: 100vh; width: 260px; position: fixed; inset-inline-start: 0; top: 0;
-            overflow-y: auto; overflow-x: hidden;
+            height: 100vh; width: 260px; position: fixed; inset-inline-start: 0; top: 0; z-index: 1045;
+            overflow-y: auto; overflow-x: hidden; transition: inset-inline-start .25s ease;
         }
+        .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1040; display: none; }
         /* شريط تمرير رفيع وأنيق داخل القائمة */
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 3px; }
@@ -33,7 +34,18 @@
         .main { margin-inline-start: 260px; }
         .topbar { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 10; }
         .card { border: none; box-shadow: 0 2px 10px rgba(139,115,85,.08); border-radius: .8rem; }
-        @media (max-width: 768px) { .sidebar { inset-inline-start: -260px; } .main { margin-inline-start: 0; } }
+        @media (max-width: 768px) {
+            .sidebar { inset-inline-start: -270px; }
+            .sidebar.show { inset-inline-start: 0; }
+            .sidebar.show ~ .sidebar-backdrop { display: block; }
+            .main { margin-inline-start: 0; }
+        }
+        @media print {
+            .sidebar, .topbar, .sidebar-backdrop, .no-print { display: none !important; }
+            .main { margin-inline-start: 0 !important; }
+            body { background: #fff; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
     </style>
     @stack('styles')
 </head>
@@ -104,10 +116,38 @@
             @endcanany
         </nav>
     </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <div class="main">
         <header class="topbar d-flex align-items-center justify-content-between px-4 py-2 mb-4">
-            <h5 class="m-0">@yield('title', 'لوحة التحكم')</h5>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-light d-md-none" id="sidebarToggle" type="button" aria-label="القائمة"><i class="fa-solid fa-bars"></i></button>
+                <h5 class="m-0">@yield('title', 'لوحة التحكم')</h5>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+            @inject('alerts', 'App\Services\AlertService')
+            @php($alertItems = $alerts->items())
+            <div class="dropdown">
+                <button class="btn btn-light position-relative" data-bs-toggle="dropdown" aria-label="التنبيهات">
+                    <i class="fa-solid fa-bell"></i>
+                    @if (count($alertItems))
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger">{{ array_sum(array_column($alertItems, 'count')) }}</span>
+                    @endif
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width:300px">
+                    <li><h6 class="dropdown-header">التنبيهات</h6></li>
+                    @forelse ($alertItems as $a)
+                        <li>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ $a['url'] }}">
+                                <span><i class="fa-solid {{ $a['icon'] }} text-{{ $a['color'] }} ms-2"></i> {{ $a['label'] }}</span>
+                                <span class="badge text-bg-{{ $a['color'] }} rounded-pill">{{ $a['count'] }}</span>
+                            </a>
+                        </li>
+                    @empty
+                        <li><span class="dropdown-item text-muted">لا توجد تنبيهات حالياً ✓</span></li>
+                    @endforelse
+                </ul>
+            </div>
             <div class="dropdown">
                 <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
                     @if ($u->avatar)
@@ -133,6 +173,7 @@
                     </li>
                 </ul>
             </div>
+            </div>
         </header>
 
         <main class="px-4 pb-5">
@@ -154,6 +195,19 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const sb = document.querySelector('.sidebar');
+            const bd = document.getElementById('sidebarBackdrop');
+            const tg = document.getElementById('sidebarToggle');
+            const close = () => sb && sb.classList.remove('show');
+            tg && tg.addEventListener('click', () => sb.classList.toggle('show'));
+            bd && bd.addEventListener('click', close);
+            document.querySelectorAll('.sidebar .nav-link').forEach(l => l.addEventListener('click', () => { if (window.innerWidth <= 768) close(); }));
+            // إخفاء تنبيهات النجاح تلقائياً بعد 4 ثوانٍ
+            document.querySelectorAll('.alert-success').forEach(a => setTimeout(() => { try { bootstrap.Alert.getOrCreateInstance(a).close(); } catch (e) {} }, 4000));
+        })();
+    </script>
     @stack('scripts')
 </body>
 </html>

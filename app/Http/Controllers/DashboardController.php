@@ -8,17 +8,31 @@ use App\Models\Contractor;
 use App\Models\Employee;
 use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\Material;
+use App\Models\PartnerProfitSchedule;
 use App\Models\Project;
 use App\Models\Revenue;
 use App\Models\Supplier;
+use App\Services\AlertService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(Request $request): View
     {
-        $totalRevenue = (float) Revenue::sum('amount');
-        $totalExpense = (float) Expense::sum('amount');
+        $from = $request->date('from');
+        $to = $request->date('to');
+
+        $totalRevenue = (float) Revenue::query()
+            ->when($from, fn ($q) => $q->whereDate('revenue_date', '>=', $from))
+            ->when($to, fn ($q) => $q->whereDate('revenue_date', '<=', $to))
+            ->sum('amount');
+
+        $totalExpense = (float) Expense::query()
+            ->when($from, fn ($q) => $q->whereDate('expense_date', '>=', $from))
+            ->when($to, fn ($q) => $q->whereDate('expense_date', '<=', $to))
+            ->sum('amount');
 
         $stats = [
             'revenue' => $totalRevenue,
@@ -60,8 +74,41 @@ class DashboardController extends Controller
 
         $recentProjects = Project::with('client')->latest()->take(5)->get();
 
+        // مركز التنبيهات التشغيلية
+        $alerts = (new AlertService)->items();
+
+        // قوائم الاستحقاق
+        $today = now()->toDateString();
+
+        $overdueInvoices = Invoice::with('client')
+            ->whereIn('status', ['sent', 'partial', 'overdue'])
+            ->whereNotNull('due_date')
+            ->whereDate('due_date', '<', $today)
+            ->orderBy('due_date')
+            ->take(5)
+            ->get();
+
+        $lowStockMaterials = Material::with('project')
+            ->lowStock()
+            ->orderBy('current_stock')
+            ->take(5)
+            ->get();
+
+        $duePartnerProfits = PartnerProfitSchedule::with('deposit.partner')
+            ->where('is_paid', false)
+            ->whereDate('due_date', '<=', $today)
+            ->orderBy('due_date')
+            ->take(5)
+            ->get();
+
         return view('dashboard', [
             'stats' => $stats,
+            'from' => $from?->toDateString(),
+            'to' => $to?->toDateString(),
+            'alerts' => $alerts,
+            'overdueInvoices' => $overdueInvoices,
+            'lowStockMaterials' => $lowStockMaterials,
+            'duePartnerProfits' => $duePartnerProfits,
             'chartMonths' => $monthLabels->values(),
             'chartRevenue' => $months->map(fn ($m) => $revByMonth[$m] ?? 0)->values(),
             'chartExpense' => $months->map(fn ($m) => $expByMonth[$m] ?? 0)->values(),

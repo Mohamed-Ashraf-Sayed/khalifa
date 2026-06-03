@@ -30,15 +30,35 @@ class SupplierPaymentController extends Controller implements HasMiddleware
 
     public function index(Request $request): View
     {
+        $supplierId = (string) $request->input('supplier_id', '');
+        $paymentMethod = (string) $request->input('payment_method', '');
+        $dateFrom = (string) $request->input('date_from', '');
+        $dateTo = (string) $request->input('date_to', '');
+
+        $filtered = fn ($q) => $q
+            ->when($supplierId !== '', fn ($q) => $q->where('supplier_id', $supplierId))
+            ->when($paymentMethod !== '', fn ($q) => $q->where('payment_method', $paymentMethod))
+            ->when($dateFrom !== '', fn ($q) => $q->whereDate('payment_date', '>=', $dateFrom))
+            ->when($dateTo !== '', fn ($q) => $q->whereDate('payment_date', '<=', $dateTo));
+
         $payments = SupplierPayment::query()
             ->with(['supplier', 'bankAccount'])
+            ->tap($filtered)
             ->latest('payment_date')
             ->paginate(15)
             ->withQueryString();
 
-        $total = SupplierPayment::sum('amount');
+        $total = (float) SupplierPayment::query()->tap($filtered)->sum('amount');
 
-        return view('supplier_payments.index', compact('payments', 'total'));
+        return view('supplier_payments.index', [
+            'payments' => $payments,
+            'total' => $total,
+            'suppliers' => Supplier::orderBy('name')->get(),
+            'supplierId' => $supplierId,
+            'paymentMethod' => $paymentMethod,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ]);
     }
 
     public function show(SupplierPayment $supplier_payment): View
@@ -140,11 +160,16 @@ class SupplierPaymentController extends Controller implements HasMiddleware
 
     private function validateData(Request $request): array
     {
+        $allowed = array_merge(
+            array_keys(SupplierPayment::PAYMENT_METHODS),
+            \App\Models\CustomPaymentMethod::where('is_active', true)->pluck('code')->all(),
+        );
+
         $rules = [
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'payment_date' => ['required', 'date'],
-            'payment_method' => ['required', 'in:'.implode(',', array_keys(SupplierPayment::PAYMENT_METHODS))],
+            'payment_method' => ['required', 'in:'.implode(',', $allowed)],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
             'reference_number' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],

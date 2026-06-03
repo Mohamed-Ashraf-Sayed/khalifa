@@ -11,6 +11,14 @@
         <h5 class="m-0">{{ $revenue->description }}</h5>
         <div class="d-flex gap-2">
             @can('revenues.edit')
+                <form method="POST" action="{{ route('revenues.confirm', $revenue) }}" class="d-inline">
+                    @csrf
+                    @if ($revenue->is_confirmed)
+                        <button class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-rotate-left ms-1"></i> إلغاء التأكيد</button>
+                    @else
+                        <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-circle-check ms-1"></i> تأكيد الإيراد</button>
+                    @endif
+                </form>
                 <a href="{{ route('revenues.edit', $revenue) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
             @endcan
             <a href="{{ route('revenues.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
@@ -29,6 +37,16 @@
                 <div class="col-md-4"><div class="text-muted small">تاريخ الاستحقاق</div><div>{{ $revenue->due_date?->format('Y-m-d') ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">رقم الشيك</div><div>{{ $revenue->check_number ?: '—' }} @if($revenue->deferred_check)<span class="badge bg-info">شيك آجل</span>@endif</div></div>
                 <div class="col-md-4"><div class="text-muted small">سُجّل بواسطة</div><div>{{ $revenue->creator?->name ?: '—' }}</div></div>
+                <div class="col-md-4">
+                    <div class="text-muted small">حالة التأكيد</div>
+                    <div>
+                        @if ($revenue->is_confirmed)
+                            <span class="badge bg-success">مؤكد</span>
+                        @else
+                            <span class="badge bg-secondary">قيد التأكيد</span>
+                        @endif
+                    </div>
+                </div>
                 @if ($revenue->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $revenue->notes }}</div></div>@endif
             </div>
             <hr>

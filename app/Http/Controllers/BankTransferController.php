@@ -25,11 +25,31 @@ class BankTransferController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $transfers = BankTransfer::with(['fromAccount', 'toAccount'])->latest('transfer_date')->paginate(15);
+        $fromAccountId = (string) $request->input('from_account_id', '');
+        $toAccountId = (string) $request->input('to_account_id', '');
+        $dateFrom = (string) $request->input('date_from', '');
+        $dateTo = (string) $request->input('date_to', '');
 
-        return view('bank_transfers.index', compact('transfers'));
+        $transfers = BankTransfer::query()
+            ->with(['fromAccount', 'toAccount'])
+            ->when($fromAccountId !== '', fn ($q) => $q->where('from_account_id', $fromAccountId))
+            ->when($toAccountId !== '', fn ($q) => $q->where('to_account_id', $toAccountId))
+            ->when($dateFrom !== '', fn ($q) => $q->whereDate('transfer_date', '>=', $dateFrom))
+            ->when($dateTo !== '', fn ($q) => $q->whereDate('transfer_date', '<=', $dateTo))
+            ->latest('transfer_date')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('bank_transfers.index', [
+            'transfers' => $transfers,
+            'accounts' => BankAccount::orderBy('name')->get(),
+            'fromAccountId' => $fromAccountId,
+            'toAccountId' => $toAccountId,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ]);
     }
 
     public function create(): View

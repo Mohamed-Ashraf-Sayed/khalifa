@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\ActivityLog;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // ترقيم الصفحات بستايل Bootstrap 5 (النظام كله Bootstrap RTL)
+        Paginator::useBootstrapFive();
+
         // الـadmin يتجاوز كل فحوصات الصلاحيات (super-role)
         Gate::before(function ($user, $ability) {
             return $user->hasRole('admin') ? true : null;

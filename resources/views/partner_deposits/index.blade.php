@@ -33,7 +33,21 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <h6 class="m-0">الإيداعات</h6>
+                <form class="d-flex gap-2 flex-wrap" method="GET">
+                    <select name="partner_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+                        <option value="">كل الشركاء</option>
+                        @foreach ($partners as $p)
+                            <option value="{{ $p->id }}" @selected($partnerId == $p->id)>{{ $p->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="status" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                        <option value="">كل الحالات</option>
+                        @foreach (\App\Models\PartnerDeposit::STATUSES as $k => $label)
+                            <option value="{{ $k }}" @selected($status === $k)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('partner_deposits.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
+                </form>
                 @can('partners.create')
                     <a href="{{ route('partner_deposits.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إيداع جديد</a>
                 @endcan

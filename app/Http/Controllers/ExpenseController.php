@@ -163,13 +163,18 @@ class ExpenseController extends Controller implements HasMiddleware
 
     private function validateData(Request $request): array
     {
+        $allowed = array_merge(
+            array_keys(Expense::PAYMENT_METHODS),
+            \App\Models\CustomPaymentMethod::where('is_active', true)->pluck('code')->all(),
+        );
+
         $data = $request->validate([
             'project_id' => ['nullable', 'exists:projects,id'],
             'category' => ['required', 'string', 'max:50'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'expense_date' => ['required', 'date'],
-            'payment_method' => ['required', 'in:'.implode(',', array_keys(Expense::PAYMENT_METHODS))],
+            'payment_method' => ['required', 'in:'.implode(',', $allowed)],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
             'delivered_by_employee_id' => ['nullable', 'exists:employees,id'],
             'is_credit' => ['nullable', 'boolean'],

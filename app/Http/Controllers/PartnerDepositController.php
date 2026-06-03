@@ -30,10 +30,15 @@ class PartnerDepositController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        $partnerId = (string) $request->input('partner_id', '');
+        $status = (string) $request->input('status', '');
+
         $deposits = PartnerDeposit::query()
             ->with('partner')
+            ->when($partnerId !== '', fn ($q) => $q->where('partner_id', $partnerId))
+            ->when($status !== '', fn ($q) => $q->where('status', $status))
             ->latest('deposit_date')
             ->paginate(15)
             ->withQueryString();
@@ -45,7 +50,13 @@ class PartnerDepositController extends Controller implements HasMiddleware
             'count' => PartnerDeposit::count(),
         ];
 
-        return view('partner_deposits.index', compact('deposits', 'stats'));
+        return view('partner_deposits.index', [
+            'deposits' => $deposits,
+            'stats' => $stats,
+            'partners' => Partner::orderBy('name')->get(),
+            'partnerId' => $partnerId,
+            'status' => $status,
+        ]);
     }
 
     public function create(): View

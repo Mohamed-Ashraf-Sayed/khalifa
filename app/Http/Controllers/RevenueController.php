@@ -24,7 +24,7 @@ class RevenueController extends Controller implements HasMiddleware
         return [
             new Middleware('can:revenues.view', only: ['index', 'show']),
             new Middleware('can:revenues.create', only: ['create', 'store']),
-            new Middleware('can:revenues.edit', only: ['edit', 'update']),
+            new Middleware('can:revenues.edit', only: ['edit', 'update', 'confirm']),
             new Middleware('can:revenues.delete', only: ['destroy']),
         ];
     }
@@ -155,6 +155,14 @@ class RevenueController extends Controller implements HasMiddleware
         return back()->with('success', 'تم حذف الإيراد.');
     }
 
+    /** يبدّل حالة تأكيد الإيراد (مؤكد / قيد التأكيد). */
+    public function confirm(Revenue $revenue): RedirectResponse
+    {
+        $revenue->update(['is_confirmed' => ! $revenue->is_confirmed]);
+
+        return back()->with('success', $revenue->is_confirmed ? 'تم تأكيد الإيراد.' : 'تم إلغاء تأكيد الإيراد.');
+    }
+
     /**
      * يضمن تطابق الإيداع البنكي المرتبط مع حالة الإيراد:
      * يحذف أي إيداع سابق ثم يسجّل إيداعاً جديداً لو الإيراد مستلم في حساب بنكي.
@@ -196,12 +204,17 @@ class RevenueController extends Controller implements HasMiddleware
 
     private function validateData(Request $request): array
     {
+        $allowed = array_merge(
+            array_keys(Revenue::PAYMENT_METHODS),
+            \App\Models\CustomPaymentMethod::where('is_active', true)->pluck('code')->all(),
+        );
+
         return $request->validate([
             'project_id' => ['nullable', 'exists:projects,id'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'revenue_date' => ['required', 'date'],
-            'payment_method' => ['required', 'in:'.implode(',', array_keys(Revenue::PAYMENT_METHODS))],
+            'payment_method' => ['required', 'in:'.implode(',', $allowed)],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
             'due_date' => ['nullable', 'date'],
             'check_number' => ['nullable', 'string', 'max:50'],
