@@ -17,14 +17,19 @@
         body { background: var(--beige); color: #3a342b; }
         .sidebar {
             background: linear-gradient(180deg, var(--brown), var(--brown-dark));
-            min-height: 100vh; width: 260px; position: fixed; inset-inline-start: 0; top: 0;
+            height: 100vh; width: 260px; position: fixed; inset-inline-start: 0; top: 0;
+            overflow-y: auto; overflow-x: hidden;
         }
+        /* شريط تمرير رفيع وأنيق داخل القائمة */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 3px; }
+        .sidebar .brand { position: sticky; top: 0; z-index: 2; background: var(--brown-dark); }
         .sidebar .brand { color: #fff; font-weight: 700; padding: 1.25rem; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,.15); }
         .sidebar .nav-link { color: rgba(255,255,255,.85); border-radius: .5rem; margin: .15rem .6rem; padding: .6rem .9rem; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,.15); color: #fff; }
         .sidebar .nav-link i { width: 22px; }
         .main { margin-inline-start: 260px; }
-        .topbar { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+        .topbar { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 10; }
         .card { border: none; box-shadow: 0 2px 10px rgba(139,115,85,.08); border-radius: .8rem; }
         @media (max-width: 768px) { .sidebar { inset-inline-start: -260px; } .main { margin-inline-start: 0; } }
     </style>
