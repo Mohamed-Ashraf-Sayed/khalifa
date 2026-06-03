@@ -14,7 +14,7 @@ class SupplierController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:suppliers.view', only: ['index', 'show']),
+            new Middleware('can:suppliers.view', only: ['index', 'show', 'statement']),
             new Middleware('can:suppliers.create', only: ['create', 'store']),
             new Middleware('can:suppliers.edit', only: ['edit', 'update']),
             new Middleware('can:suppliers.delete', only: ['destroy']),
@@ -80,6 +80,73 @@ class SupplierController extends Controller implements HasMiddleware
         $supplier->delete();
 
         return back()->with('success', 'تم حذف المورد.');
+    }
+
+    /**
+     * كشف حساب المورّد: حركات مرتّبة زمنياً مع رصيد جارٍ محسوب بـ bcmath.
+     * مدين (+): توريدات المورّد + أوامر الشراء المستلَمة (ما علينا).
+     * دائن (−): مدفوعات المورّد (سداد).
+     */
+    public function statement(Supplier $supplier): View
+    {
+        $rows = collect();
+
+        foreach ($supplier->transactions()->get() as $txn) {
+            $rows->push([
+                'date' => $txn->transaction_date,
+                'id' => $txn->id,
+                'label' => 'توريد: '.($txn->item_description ?: '—'),
+                'debit' => (string) $txn->net_amount,
+                'credit' => '0',
+            ]);
+        }
+
+        foreach ($supplier->purchaseOrders()->whereIn('status', ['partial', 'received'])->get() as $po) {
+            $rows->push([
+                'date' => $po->order_date,
+                'id' => $po->id,
+                'label' => 'أمر شراء '.$po->order_number,
+                'debit' => (string) $po->net_amount,
+                'credit' => '0',
+            ]);
+        }
+
+        foreach ($supplier->payments()->get() as $payment) {
+            $rows->push([
+                'date' => $payment->payment_date,
+                'id' => $payment->id,
+                'label' => 'دفعة',
+                'debit' => '0',
+                'credit' => (string) $payment->amount,
+            ]);
+        }
+
+        $rows = $rows
+            ->sortBy([
+                fn ($a, $b) => optional($a['date'])->timestamp <=> optional($b['date'])->timestamp,
+                fn ($a, $b) => $a['id'] <=> $b['id'],
+            ])
+            ->values();
+
+        $running = '0';
+        $totalDebit = '0';
+        $totalCredit = '0';
+        $rows = $rows->map(function ($row) use (&$running, &$totalDebit, &$totalCredit) {
+            $running = bcsub(bcadd($running, $row['debit'], 2), $row['credit'], 2);
+            $totalDebit = bcadd($totalDebit, $row['debit'], 2);
+            $totalCredit = bcadd($totalCredit, $row['credit'], 2);
+            $row['running'] = $running;
+
+            return $row;
+        });
+
+        return view('suppliers.statement', [
+            'supplier' => $supplier,
+            'rows' => $rows,
+            'totalDebit' => $totalDebit,
+            'totalCredit' => $totalCredit,
+            'balance' => $supplier->balanceDue(),
+        ]);
     }
 
     private function validateData(Request $request): array

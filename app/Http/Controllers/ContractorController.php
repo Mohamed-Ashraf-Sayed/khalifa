@@ -9,13 +9,14 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ContractorController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('can:contractors.view', only: ['index', 'show']),
+            new Middleware('can:contractors.view', only: ['index', 'show', 'statement', 'report']),
             new Middleware('can:contractors.create', only: ['create', 'store']),
             new Middleware('can:contractors.edit', only: ['edit', 'update']),
             new Middleware('can:contractors.delete', only: ['destroy']),
@@ -82,6 +83,128 @@ class ContractorController extends Controller implements HasMiddleware
         $contractor->delete();
 
         return back()->with('success', 'تم حذف المقاول.');
+    }
+
+    /**
+     * كشف حساب المقاول: حركات مرتّبة زمنياً مع رصيد جارٍ محسوب بـ bcmath.
+     * دائن (+): المستخلصات المعتمدة/الجزئية/المدفوعة (ما علينا للمقاول).
+     * مدين (−): دفعات المقاول (سداد).
+     */
+    public function statement(Contractor $contractor): View
+    {
+        $rows = collect();
+
+        $extracts = $contractor->extracts()
+            ->whereIn('status', ['approved', 'partial', 'paid'])
+            ->get();
+        foreach ($extracts as $extract) {
+            $rows->push([
+                'date' => $extract->extract_date,
+                'id' => $extract->id,
+                'label' => 'مستخلص '.$extract->extract_number,
+                'credit' => (string) $extract->net_amount,
+                'debit' => '0',
+            ]);
+        }
+
+        foreach ($contractor->payments()->get() as $payment) {
+            $rows->push([
+                'date' => $payment->payment_date,
+                'id' => $payment->id,
+                'label' => 'دفعة',
+                'credit' => '0',
+                'debit' => (string) $payment->amount,
+            ]);
+        }
+
+        $rows = $rows
+            ->sortBy([
+                fn ($a, $b) => optional($a['date'])->timestamp <=> optional($b['date'])->timestamp,
+                fn ($a, $b) => $a['id'] <=> $b['id'],
+            ])
+            ->values();
+
+        $running = '0';
+        $totalCredit = '0';
+        $totalDebit = '0';
+        $rows = $rows->map(function ($row) use (&$running, &$totalCredit, &$totalDebit) {
+            $running = bcsub(bcadd($running, $row['credit'], 2), $row['debit'], 2);
+            $totalCredit = bcadd($totalCredit, $row['credit'], 2);
+            $totalDebit = bcadd($totalDebit, $row['debit'], 2);
+            $row['running'] = $running;
+
+            return $row;
+        });
+
+        return view('contractors.statement', [
+            'contractor' => $contractor,
+            'rows' => $rows,
+            'totalCredit' => $totalCredit,
+            'totalDebit' => $totalDebit,
+            'balance' => $contractor->balanceDue(),
+        ]);
+    }
+
+    /**
+     * تقرير المقاولين: لكل مقاول صافي المستحقّ، المدفوع، الرصيد + الإجماليات.
+     * يدعم تصدير CSV (UTF-8 BOM) عند export=csv.
+     */
+    public function report(Request $request): View|StreamedResponse
+    {
+        $contractors = Contractor::query()
+            ->orderBy('name')
+            ->get()
+            ->map(function (Contractor $contractor) {
+                $totalEarned = (string) $contractor->extracts()
+                    ->whereIn('status', ['approved', 'partial', 'paid'])
+                    ->sum('net_amount');
+                $totalPaid = (string) $contractor->payments()->sum('amount');
+
+                return [
+                    'contractor' => $contractor,
+                    'totalEarned' => $totalEarned,
+                    'totalPaid' => $totalPaid,
+                    'balance' => bcsub($totalEarned, $totalPaid, 2),
+                ];
+            });
+
+        $grandEarned = $contractors->reduce(fn ($carry, $row) => bcadd($carry, $row['totalEarned'], 2), '0');
+        $grandPaid = $contractors->reduce(fn ($carry, $row) => bcadd($carry, $row['totalPaid'], 2), '0');
+        $grandBalance = bcsub($grandEarned, $grandPaid, 2);
+
+        if ((string) $request->input('export') === 'csv') {
+            return $this->exportReportCsv($contractors);
+        }
+
+        return view('contractors.report', [
+            'contractors' => $contractors,
+            'grandEarned' => $grandEarned,
+            'grandPaid' => $grandPaid,
+            'grandBalance' => $grandBalance,
+        ]);
+    }
+
+    private function exportReportCsv($contractors): StreamedResponse
+    {
+        $filename = 'contractors_report_'.date('Ymd_His').'.csv';
+
+        return response()->streamDownload(function () use ($contractors) {
+            $out = fopen('php://output', 'w');
+            // UTF-8 BOM لضمان العرض الصحيح للعربية في Excel
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['name', 'totalEarned', 'totalPaid', 'balance']);
+            foreach ($contractors as $row) {
+                fputcsv($out, [
+                    $row['contractor']->name,
+                    $row['totalEarned'],
+                    $row['totalPaid'],
+                    $row['balance'],
+                ]);
+            }
+            fclose($out);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
     private function validateData(Request $request, ?Contractor $contractor = null): array

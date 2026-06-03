@@ -6,6 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="m-0">{{ $supplier->name }}</h5>
         <div class="d-flex gap-2">
+            <a href="{{ route('suppliers.statement', $supplier) }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
             @can('suppliers.edit')
                 <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
             @endcan

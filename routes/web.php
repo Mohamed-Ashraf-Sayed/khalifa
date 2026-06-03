@@ -146,4 +146,13 @@ Route::middleware('auth')->group(function () {
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance_sheet');
+    Route::get('reports/income-statement', [ReportController::class, 'incomeStatement'])->name('reports.income_statement');
+    Route::get('reports/taxes', [ReportController::class, 'taxReport'])->name('reports.taxes');
+
+    // كشوف حساب الكيانات + تقرير المقاولين
+    Route::get('suppliers/{supplier}/statement', [SupplierController::class, 'statement'])->name('suppliers.statement');
+    Route::get('contractors/{contractor}/statement', [ContractorController::class, 'statement'])->name('contractors.statement');
+    Route::get('employees/{employee}/statement', [EmployeeController::class, 'statement'])->name('employees.statement');
+    Route::get('contractor-report', [ContractorController::class, 'report'])->name('contractors.report');
 });

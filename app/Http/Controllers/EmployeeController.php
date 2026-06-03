@@ -15,7 +15,7 @@ class EmployeeController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:employees.view', only: ['index', 'show']),
+            new Middleware('can:employees.view', only: ['index', 'show', 'statement']),
             new Middleware('can:employees.create', only: ['create', 'store']),
             new Middleware('can:employees.edit', only: ['edit', 'update']),
             new Middleware('can:employees.delete', only: ['destroy']),
@@ -77,6 +77,45 @@ class EmployeeController extends Controller implements HasMiddleware
         $employee->delete();
 
         return back()->with('success', 'تم حذف الموظف.');
+    }
+
+    /**
+     * كشف حساب الموظف: حركات مرتّبة زمنياً مع رصيد جارٍ (صافي النقد المُسلَّم) بـ bcmath.
+     * موجب (+): راتب/سلفة/عهدة/مكافأة (مبالغ صُرفت أو في يد الموظف).
+     * سالب (−): سداد سلفة/رد عهدة/صرف من العهدة/خصم.
+     */
+    public function statement(Employee $employee): View
+    {
+        // الأنواع التي تخصم من صافي النقد المُسلَّم
+        $reducers = ['advance_return', 'custody_return', 'custody_expense', 'deduction'];
+
+        $transactions = $employee->transactions()
+            ->orderBy('transaction_date')
+            ->orderBy('id')
+            ->get();
+
+        $running = '0';
+        $rows = $transactions->map(function ($txn) use (&$running, $reducers) {
+            $isReducer = in_array($txn->type, $reducers, true);
+            $signed = $isReducer
+                ? bcsub('0', (string) $txn->amount, 2)
+                : (string) $txn->amount;
+            $running = bcadd($running, $signed, 2);
+
+            return [
+                'txn' => $txn,
+                'isReducer' => $isReducer,
+                'running' => $running,
+            ];
+        });
+
+        return view('employees.statement', [
+            'employee' => $employee,
+            'rows' => $rows,
+            'advanceBalance' => $employee->advanceBalance(),
+            'custodyBalance' => $employee->custodyBalance(),
+            'netGiven' => $running,
+        ]);
     }
 
     private function validateData(Request $request, ?Employee $employee = null): array

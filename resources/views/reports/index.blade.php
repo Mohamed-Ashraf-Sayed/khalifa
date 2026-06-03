@@ -3,6 +3,19 @@
 @section('title', 'التقارير المالية')
 
 @section('content')
+    {{-- روابط القوائم المالية --}}
+    <div class="card mb-3">
+        <div class="card-body d-flex flex-wrap gap-2 align-items-center">
+            <span class="text-muted small ms-2">القوائم المالية:</span>
+            <a href="{{ route('reports.balance_sheet') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-scale-balanced ms-1"></i> الميزانية العمومية</a>
+            <a href="{{ route('reports.income_statement') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-chart-line ms-1"></i> قائمة الدخل</a>
+            <a href="{{ route('reports.taxes') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-receipt ms-1"></i> تقرير الضرائب</a>
+            @can('contractors.view')<a href="{{ route('contractors.report') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-hard-hat ms-1"></i> تقرير المقاولين</a>@endcan
+            @can('projects.view')<a href="{{ route('project_costs.report') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-coins ms-1"></i> تكاليف المشاريع</a>@endcan
+            @can('materials.view')<a href="{{ route('materials.report') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-boxes-stacked ms-1"></i> تقرير المخزون</a>@endcan
+        </div>
+    </div>
+
     {{-- فلتر الفترة --}}
     <div class="card mb-3">
         <div class="card-body">
