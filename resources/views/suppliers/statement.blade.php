@@ -14,6 +14,8 @@
         <h5 class="m-0">كشف حساب — {{ $supplier->name }}</h5>
         <div class="d-flex gap-2">
             <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <a href="{{ route('suppliers.statement', ['supplier' => $supplier, 'format' => 'pdf']) }}" class="btn btn-sm btn-danger"><i class="fa-solid fa-file-pdf ms-1"></i> PDF</a>
+            <a href="{{ route('suppliers.statement', ['supplier' => $supplier, 'format' => 'xlsx']) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
             <a href="{{ route('suppliers.show', $supplier) }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
         </div>
     </div>

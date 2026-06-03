@@ -1,0 +1,68 @@
+@extends('layouts.app')
+
+@section('title', 'أداء المقاولين')
+
+@section('content')
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .sidebar, .topbar, nav.navbar, aside { display: none !important; }
+            .card { border: none !important; box-shadow: none !important; }
+            .an-grand { background: #8b7355 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+        .an-grand { background: #8b7355; color: #fff; font-weight: 700; }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+        <h5 class="m-0">أداء المقاولين</h5>
+        <div class="d-flex gap-2">
+            <a href="{{ route('analytics.contractor_performance', ['format' => 'xlsx']) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> تصدير Excel</a>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>المقاول</th>
+                            <th class="text-start">عدد المستخلصات</th>
+                            <th class="text-start">المستحقّ</th>
+                            <th class="text-start">المسدّد</th>
+                            <th class="text-start">الرصيد</th>
+                            <th class="text-start">متوسّط التنفيذ %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($rows as $r)
+                            <tr>
+                                <td>{{ $r['name'] }}</td>
+                                <td class="text-start">{{ $r['extractsCount'] }}</td>
+                                <td class="text-start fw-semibold">{{ number_format((float) $r['earned'], 2) }}</td>
+                                <td class="text-start text-success">{{ number_format((float) $r['paid'], 2) }}</td>
+                                <td class="text-start fw-bold {{ (float) $r['balance'] > 0 ? 'text-danger' : '' }}">{{ number_format((float) $r['balance'], 2) }}</td>
+                                <td class="text-start">{{ number_format($r['avgExecution'], 2) }}%</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="text-muted text-center py-3">لا يوجد مقاولون.</td></tr>
+                        @endforelse
+                    </tbody>
+                    @if (count($rows))
+                        <tfoot>
+                            <tr class="an-grand">
+                                <td>الإجمالي</td>
+                                <td class="text-start">—</td>
+                                <td class="text-start">{{ number_format((float) $totals['earned'], 2) }}</td>
+                                <td class="text-start">{{ number_format((float) $totals['paid'], 2) }}</td>
+                                <td class="text-start">{{ number_format((float) $totals['balance'], 2) }}</td>
+                                <td class="text-start">—</td>
+                            </tr>
+                        </tfoot>
+                    @endif
+                </table>
+            </div>
+        </div>
+    </div>
+@endsection

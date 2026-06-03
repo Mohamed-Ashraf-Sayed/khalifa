@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Asset;
 use App\Models\BankAccount;
+use App\Models\BankTransaction;
 use App\Models\Contractor;
 use App\Models\ContractorExtract;
 use App\Models\Expense;
@@ -16,6 +17,7 @@ use App\Models\Supplier;
 use App\Models\SupplierPayment;
 use App\Models\SupplierTransaction;
 use App\Models\Tax;
+use App\Services\ExportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -80,7 +82,7 @@ class ReportController extends Controller implements HasMiddleware
      * الأصول مقابل (الخصوم + حقوق الملكية). النموذج مبسّط وقد لا يتوازن تماماً،
      * فيُعرض الفرق كـ"فرق التسوية".
      */
-    public function balanceSheet(Request $request): View
+    public function balanceSheet(Request $request)
     {
         // ===== الأصول =====
         // النقدية: أرصدة الحسابات البنكية النشطة.
@@ -146,6 +148,38 @@ class ReportController extends Controller implements HasMiddleware
         // فرق التسوية (النموذج المبسّط قد لا يتوازن تماماً).
         $settlementDifference = bcsub($totalAssets, $totalLiabilitiesPlusEquity, 2);
 
+        $format = $request->query('format');
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $rows = [
+                ['الأصول', ''],
+                ['النقدية والحسابات البنكية', number_format((float) $cash, 2)],
+                ['المخزون (المواد)', number_format((float) $inventory, 2)],
+                ['الأصول الثابتة (صافي القيمة الدفترية)', number_format((float) $fixedAssets, 2)],
+                ['الذمم المدينة', number_format((float) $receivables, 2)],
+                ['إجمالي الأصول', number_format((float) $totalAssets, 2)],
+                ['الخصوم', ''],
+                ['مستحقّات المورّدين', number_format((float) $supplierPayables, 2)],
+                ['مستحقّات المقاولين', number_format((float) $contractorPayables, 2)],
+                ['إجمالي الخصوم', number_format((float) $payables, 2)],
+                ['حقوق الملكية', ''],
+                ['رأس مال الشركاء', number_format((float) $partnerCapital, 2)],
+                ['الأرباح المحتجزة', number_format((float) $retainedEarnings, 2)],
+                ['إجمالي حقوق الملكية', number_format((float) $totalEquity, 2)],
+                ['إجمالي الخصوم وحقوق الملكية', number_format((float) $totalLiabilitiesPlusEquity, 2)],
+                ['فرق التسوية', number_format((float) $settlementDifference, 2)],
+            ];
+            $headers = ['البند', 'القيمة'];
+            $title = 'الميزانية العمومية — لقطة بتاريخ '.$asOf;
+
+            if ($format === 'xlsx') {
+                return app(ExportService::class)->excel($headers, $rows, 'balance_sheet_'.$asOf, $title);
+            }
+
+            $html = $this->buildSimpleHtml($title, $headers, $rows);
+
+            return app(ExportService::class)->pdf($html, 'balance_sheet_'.$asOf.'.pdf');
+        }
+
         return view('reports.balance_sheet', [
             'cash' => $cash,
             'inventory' => $inventory,
@@ -170,7 +204,7 @@ class ReportController extends Controller implements HasMiddleware
      * قائمة الدخل — إيرادات ثم تكلفة المبيعات ثم مجمل الربح ثم المصروفات التشغيلية ثم صافي الربح.
      * فلتر تاريخ اختياري على أعمدة التاريخ الخاصة بكل مصدر.
      */
-    public function incomeStatement(Request $request): View
+    public function incomeStatement(Request $request)
     {
         $from = $request->date('from');
         $to = $request->date('to');
@@ -223,6 +257,36 @@ class ReportController extends Controller implements HasMiddleware
         $netMargin = bccomp($revenue, '0', 2) > 0
             ? (float) bcmul(bcdiv($netProfit, $revenue, 6), '100', 4)
             : 0.0;
+
+        $format = $request->query('format');
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $period = ($from || $to)
+                ? 'عن الفترة '.($from?->toDateString() ?: '...').' — '.($to?->toDateString() ?: '...')
+                : 'كل الفترات';
+            $rows = [
+                ['الإيرادات', ''],
+                ['إجمالي الإيرادات', number_format((float) $revenue, 2)],
+                ['تكلفة المبيعات', ''],
+                ['مستخلصات المقاولين المعتمدة', number_format((float) $extractsCogs, 2)],
+                ['توريدات المورّدين', number_format((float) $supplierCogs, 2)],
+                ['مصروفات مباشرة (مواد/عمالة/معدات/نقل)', number_format((float) $directExpenseCogs, 2)],
+                ['إجمالي تكلفة المبيعات', number_format((float) $cogs, 2)],
+                ['مجمل الربح', number_format((float) $grossProfit, 2)],
+                ['المصروفات التشغيلية', ''],
+                ['مصروفات تشغيلية (مرافق/إدارية/أخرى)', number_format((float) $operatingExpenses, 2)],
+                ['صافي الربح / الخسارة', number_format((float) $netProfit, 2)],
+            ];
+            $headers = ['البند', 'القيمة'];
+            $title = 'قائمة الدخل — '.$period;
+
+            if ($format === 'xlsx') {
+                return app(ExportService::class)->excel($headers, $rows, 'income_statement', $title);
+            }
+
+            $html = $this->buildSimpleHtml($title, $headers, $rows);
+
+            return app(ExportService::class)->pdf($html, 'income_statement.pdf');
+        }
 
         return view('reports.income_statement', [
             'from' => $from?->toDateString(),
@@ -281,6 +345,392 @@ class ReportController extends Controller implements HasMiddleware
             'netVat' => $netVat,
             'taxesByType' => $taxesByType,
         ]);
+    }
+
+    /**
+     * التدفّق النقدي للشركة من حركات الحسابات البنكية.
+     * التدفّقات الداخلة = الإيداعات، الخارجة = المسحوبات، مع استبعاد التحويلات بين الحسابات
+     * (related_type='bank_transfer') لأنها تتعادل داخلياً. مجمّعة حسب الشهر مع رصيد نقدي تراكمي.
+     */
+    public function cashFlow(Request $request)
+    {
+        $from = $request->date('from');
+        $to = $request->date('to');
+
+        $transactions = BankTransaction::query()
+            ->where(function ($q) {
+                $q->whereNull('related_type')->orWhere('related_type', '!=', 'bank_transfer');
+            })
+            ->when($from, fn ($q) => $q->whereDate('transaction_date', '>=', $from))
+            ->when($to, fn ($q) => $q->whereDate('transaction_date', '<=', $to))
+            ->orderBy('transaction_date')
+            ->get();
+
+        $grouped = $transactions->groupBy(fn ($t) => $t->transaction_date->format('Y-m'));
+
+        $running = '0';
+        $months = [];
+        $totalInflow = '0';
+        $totalOutflow = '0';
+
+        foreach ($grouped->sortKeys() as $month => $items) {
+            $inflow = '0';
+            $outflow = '0';
+            foreach ($items as $t) {
+                if ($t->type === 'deposit') {
+                    $inflow = bcadd($inflow, (string) $t->amount, 2);
+                } elseif ($t->type === 'withdrawal') {
+                    $outflow = bcadd($outflow, (string) $t->amount, 2);
+                }
+            }
+            $net = bcsub($inflow, $outflow, 2);
+            $running = bcadd($running, $net, 2);
+            $totalInflow = bcadd($totalInflow, $inflow, 2);
+            $totalOutflow = bcadd($totalOutflow, $outflow, 2);
+
+            $months[] = [
+                'month' => $month,
+                'inflow' => $inflow,
+                'outflow' => $outflow,
+                'net' => $net,
+                'running' => $running,
+            ];
+        }
+
+        $totalNet = bcsub($totalInflow, $totalOutflow, 2);
+
+        $format = $request->query('format');
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $headers = ['الشهر', 'تدفّق داخل', 'تدفّق خارج', 'الصافي', 'الرصيد التراكمي'];
+            $rows = [];
+            foreach ($months as $m) {
+                $rows[] = [
+                    $m['month'],
+                    number_format((float) $m['inflow'], 2),
+                    number_format((float) $m['outflow'], 2),
+                    number_format((float) $m['net'], 2),
+                    number_format((float) $m['running'], 2),
+                ];
+            }
+            $rows[] = [
+                'الإجمالي',
+                number_format((float) $totalInflow, 2),
+                number_format((float) $totalOutflow, 2),
+                number_format((float) $totalNet, 2),
+                number_format((float) $running, 2),
+            ];
+            $title = 'التدفّق النقدي'.(($from || $to) ? ' — '.($from?->toDateString() ?: '...').' إلى '.($to?->toDateString() ?: '...') : '');
+
+            if ($format === 'xlsx') {
+                return app(ExportService::class)->excel($headers, $rows, 'cash_flow', $title);
+            }
+
+            $html = $this->buildSimpleHtml($title, $headers, $rows);
+
+            return app(ExportService::class)->pdf($html, 'cash_flow.pdf');
+        }
+
+        return view('reports.cash_flow', [
+            'from' => $from?->toDateString(),
+            'to' => $to?->toDateString(),
+            'months' => $months,
+            'totalInflow' => $totalInflow,
+            'totalOutflow' => $totalOutflow,
+            'totalNet' => $totalNet,
+            'closingCash' => $running,
+        ]);
+    }
+
+    /**
+     * أعمار الذمم المدينة (AR Aging): الفواتير غير الملغاة ذات متبقّي > 0 (حسب تاريخ الاستحقاق/الإصدار)
+     * + الإيرادات غير المحصّلة بالكامل (حسب تاريخ الاستحقاق/الإيراد). مجمّعة حسب العميل
+     * مع شرائح أعمار: 0-30 / 31-60 / 61-90 / 90+.
+     */
+    public function arAging(Request $request)
+    {
+        $today = Carbon::today();
+        $clients = [];
+
+        $ensure = function (string &$key, string $name) use (&$clients) {
+            if (! isset($clients[$key])) {
+                $clients[$key] = [
+                    'name' => $name,
+                    'b0' => '0', 'b30' => '0', 'b60' => '0', 'b90' => '0', 'total' => '0',
+                ];
+            }
+        };
+
+        $invoices = Invoice::where('status', '!=', 'cancelled')
+            ->with('client')->get();
+        foreach ($invoices as $inv) {
+            $remaining = $inv->remaining();
+            if (bccomp($remaining, '0', 2) <= 0) {
+                continue;
+            }
+            $ageDate = $inv->due_date ?: $inv->issue_date;
+            $key = 'client_'.($inv->client_id ?: '0');
+            $name = $inv->client?->name ?: 'عميل غير محدّد';
+            $ensure($key, $name);
+            $this->addToBucket($clients[$key], $remaining, $ageDate, $today);
+        }
+
+        $revenues = Revenue::where('payment_status', '!=', 'collected')
+            ->with('project.client')->get();
+        foreach ($revenues as $rev) {
+            $remaining = $rev->remaining();
+            if (bccomp($remaining, '0', 2) <= 0) {
+                continue;
+            }
+            $ageDate = $rev->due_date ?: $rev->revenue_date;
+            $client = $rev->project?->client;
+            if ($client) {
+                $key = 'client_'.$client->id;
+                $name = $client->name;
+            } else {
+                $key = 'general';
+                $name = 'إيرادات عامة';
+            }
+            $ensure($key, $name);
+            $this->addToBucket($clients[$key], $remaining, $ageDate, $today);
+        }
+
+        // ترتيب حسب الإجمالي تنازلياً.
+        uasort($clients, fn ($a, $b) => bccomp($b['total'], $a['total'], 2));
+
+        $totals = ['b0' => '0', 'b30' => '0', 'b60' => '0', 'b90' => '0', 'total' => '0'];
+        foreach ($clients as $c) {
+            foreach (['b0', 'b30', 'b60', 'b90', 'total'] as $k) {
+                $totals[$k] = bcadd($totals[$k], $c[$k], 2);
+            }
+        }
+
+        $format = $request->query('format');
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $headers = ['العميل', '0-30 يوم', '31-60 يوم', '61-90 يوم', '90+ يوم', 'الإجمالي'];
+            $rows = [];
+            foreach ($clients as $c) {
+                $rows[] = [
+                    $c['name'],
+                    number_format((float) $c['b0'], 2),
+                    number_format((float) $c['b30'], 2),
+                    number_format((float) $c['b60'], 2),
+                    number_format((float) $c['b90'], 2),
+                    number_format((float) $c['total'], 2),
+                ];
+            }
+            $rows[] = [
+                'الإجمالي',
+                number_format((float) $totals['b0'], 2),
+                number_format((float) $totals['b30'], 2),
+                number_format((float) $totals['b60'], 2),
+                number_format((float) $totals['b90'], 2),
+                number_format((float) $totals['total'], 2),
+            ];
+            $title = 'أعمار الذمم المدينة بتاريخ '.$today->toDateString();
+
+            if ($format === 'xlsx') {
+                return app(ExportService::class)->excel($headers, $rows, 'ar_aging', $title);
+            }
+
+            $html = $this->buildSimpleHtml($title, $headers, $rows);
+
+            return app(ExportService::class)->pdf($html, 'ar_aging.pdf');
+        }
+
+        return view('reports.ar_aging', [
+            'clients' => array_values($clients),
+            'totals' => $totals,
+            'asOf' => $today->toDateString(),
+        ]);
+    }
+
+    /**
+     * أعمار الذمم الدائنة (AP Aging): المورّدون والمقاولون ذوو رصيد مستحقّ > 0.
+     * يُحتسب العمر من تاريخ أقدم مستند مصدر غير مسدّد (أقدم أمر شراء للمورّد / أقدم مستخلص غير مسدّد
+     * للمقاول، وإلا تاريخ اليوم). شرائح: 0-30 / 31-60 / 61-90 / 90+.
+     */
+    public function apAging(Request $request): View
+    {
+        $today = Carbon::today();
+        $rows = [];
+
+        $totals = ['b0' => '0', 'b30' => '0', 'b60' => '0', 'b90' => '0', 'total' => '0'];
+
+        $suppliers = Supplier::with(['purchaseOrders' => function ($q) {
+            $q->orderBy('order_date');
+        }])->get();
+        foreach ($suppliers as $s) {
+            $balance = $s->balanceDue();
+            if (bccomp($balance, '0', 2) <= 0) {
+                continue;
+            }
+            $oldest = $s->purchaseOrders
+                ->whereIn('status', ['partial', 'received'])
+                ->sortBy('order_date')
+                ->first()?->order_date;
+            $bucket = $this->initBucket($s->name, 'مورّد');
+            $this->addToBucket($bucket, $balance, $oldest ?: $today, $today);
+            $rows[] = $bucket;
+        }
+
+        $contractors = Contractor::with(['extracts' => function ($q) {
+            $q->orderBy('extract_date');
+        }])->get();
+        foreach ($contractors as $c) {
+            $balance = $c->balanceDue();
+            if (bccomp($balance, '0', 2) <= 0) {
+                continue;
+            }
+            $oldest = $c->extracts
+                ->whereIn('status', ['approved', 'partial', 'paid'])
+                ->filter(fn ($e) => bccomp($e->remaining(), '0', 2) > 0)
+                ->sortBy('extract_date')
+                ->first()?->extract_date;
+            $bucket = $this->initBucket($c->name, 'مقاول');
+            $this->addToBucket($bucket, $balance, $oldest ?: $today, $today);
+            $rows[] = $bucket;
+        }
+
+        usort($rows, fn ($a, $b) => bccomp($b['total'], $a['total'], 2));
+
+        foreach ($rows as $r) {
+            foreach (['b0', 'b30', 'b60', 'b90', 'total'] as $k) {
+                $totals[$k] = bcadd($totals[$k], $r[$k], 2);
+            }
+        }
+
+        return view('reports.ap_aging', [
+            'rows' => $rows,
+            'totals' => $totals,
+            'asOf' => $today->toDateString(),
+        ]);
+    }
+
+    /**
+     * مقارنة الفترات: الفترة الحالية مقابل فترة سابقة بنفس الطول.
+     * تُظهر الإيراد والمصروف والصافي مع القيمة السابقة ومقدار التغيّر ونسبته.
+     */
+    public function periodComparison(Request $request): View
+    {
+        $from = $request->date('from') ?: Carbon::today()->startOfMonth();
+        $to = $request->date('to') ?: Carbon::today();
+
+        // طول الفترة بالأيام (شامل).
+        $lengthDays = $from->diffInDays($to) + 1;
+        $prevTo = (clone $from)->subDay();
+        $prevFrom = (clone $prevTo)->subDays($lengthDays - 1);
+
+        $current = $this->periodFigures($from, $to);
+        $previous = $this->periodFigures($prevFrom, $prevTo);
+
+        $metrics = [];
+        foreach (['revenue' => 'الإيرادات', 'expense' => 'المصروفات', 'net' => 'الصافي'] as $key => $label) {
+            $cur = $current[$key];
+            $prev = $previous[$key];
+            $change = bcsub($cur, $prev, 2);
+            $absPrev = str_starts_with($prev, '-') ? substr($prev, 1) : $prev;
+            $pct = bccomp($absPrev, '0', 2) !== 0
+                ? (float) bcmul(bcdiv($change, $absPrev, 6), '100', 2)
+                : null;
+            $metrics[] = [
+                'label' => $label,
+                'current' => $cur,
+                'previous' => $prev,
+                'change' => $change,
+                'pct' => $pct,
+            ];
+        }
+
+        return view('reports.period_comparison', [
+            'from' => $from->toDateString(),
+            'to' => $to->toDateString(),
+            'prevFrom' => $prevFrom->toDateString(),
+            'prevTo' => $prevTo->toDateString(),
+            'metrics' => $metrics,
+        ]);
+    }
+
+    /** إيراد ومصروف وصافي فترة معيّنة (سلاسل bcmath). */
+    private function periodFigures(Carbon $from, Carbon $to): array
+    {
+        $revenue = (string) Revenue::whereDate('revenue_date', '>=', $from)
+            ->whereDate('revenue_date', '<=', $to)
+            ->sum('amount');
+        $expense = (string) Expense::whereDate('expense_date', '>=', $from)
+            ->whereDate('expense_date', '<=', $to)
+            ->sum('amount');
+
+        return [
+            'revenue' => bcadd($revenue, '0', 2),
+            'expense' => bcadd($expense, '0', 2),
+            'net' => bcsub($revenue, $expense, 2),
+        ];
+    }
+
+    /** يُهيّئ صفّ شريحة أعمار بقيم صفرية. */
+    private function initBucket(string $name, string $kind): array
+    {
+        return [
+            'name' => $name,
+            'kind' => $kind,
+            'b0' => '0', 'b30' => '0', 'b60' => '0', 'b90' => '0', 'total' => '0',
+        ];
+    }
+
+    /** يضيف مبلغاً إلى الشريحة المناسبة بحسب عمره بالأيام من اليوم. */
+    private function addToBucket(array &$bucket, string $amount, $ageDate, Carbon $today): void
+    {
+        $date = $ageDate instanceof Carbon ? $ageDate : Carbon::parse($ageDate);
+        $days = $date->startOfDay()->diffInDays($today, false);
+        $days = max(0, (int) $days);
+
+        if ($days <= 30) {
+            $bucket['b0'] = bcadd($bucket['b0'], $amount, 2);
+        } elseif ($days <= 60) {
+            $bucket['b30'] = bcadd($bucket['b30'], $amount, 2);
+        } elseif ($days <= 90) {
+            $bucket['b60'] = bcadd($bucket['b60'], $amount, 2);
+        } else {
+            $bucket['b90'] = bcadd($bucket['b90'], $amount, 2);
+        }
+        $bucket['total'] = bcadd($bucket['total'], $amount, 2);
+    }
+
+    /**
+     * يبني HTML عربي مستقلّ (RTL) لجدول بسيط للتصدير إلى PDF.
+     *
+     * @param  array<int, string>  $headers
+     * @param  array<int, array<int, string>>  $rows
+     */
+    private function buildSimpleHtml(string $title, array $headers, array $rows): string
+    {
+        $th = '';
+        foreach ($headers as $h) {
+            $th .= '<th>'.e($h).'</th>';
+        }
+
+        $tr = '';
+        foreach ($rows as $row) {
+            $tr .= '<tr>';
+            foreach ($row as $i => $cell) {
+                $align = $i === 0 ? 'right' : 'left';
+                $tr .= '<td style="text-align:'.$align.'">'.e((string) $cell).'</td>';
+            }
+            $tr .= '</tr>';
+        }
+
+        return '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8">'
+            .'<style>'
+            .'body{font-family:dejavusans,sans-serif;direction:rtl;color:#2c2417;}'
+            .'h2{text-align:center;color:#5c4a32;margin:0 0 12px;}'
+            .'table{width:100%;border-collapse:collapse;font-size:12px;}'
+            .'th,td{border:1px solid #cbb79a;padding:6px 8px;}'
+            .'th{background:#8b7355;color:#fff;text-align:center;}'
+            .'tbody tr:nth-child(even){background:#faf7f2;}'
+            .'</style></head><body>'
+            .'<h2>'.e($title).'</h2>'
+            .'<table><thead><tr>'.$th.'</tr></thead><tbody>'.$tr.'</tbody></table>'
+            .'</body></html>';
     }
 
     /**

@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\Employee;
+use App\Models\EmployeeTransaction;
+use App\Models\Setting;
+use App\Services\ExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EmployeeController extends Controller implements HasMiddleware
 {
@@ -85,7 +89,7 @@ class EmployeeController extends Controller implements HasMiddleware
      * موجب (+): راتب/سلفة/عهدة/مكافأة (مبالغ صُرفت أو في يد الموظف).
      * سالب (−): سداد سلفة/رد عهدة/صرف من العهدة/خصم.
      */
-    public function statement(Employee $employee): View
+    public function statement(Employee $employee, Request $request): View|\Illuminate\Http\Response|StreamedResponse
     {
         // الأنواع التي تخصم من صافي النقد المُسلَّم
         $reducers = ['advance_return', 'custody_return', 'custody_expense', 'deduction'];
@@ -110,13 +114,92 @@ class EmployeeController extends Controller implements HasMiddleware
             ];
         });
 
+        $netGiven = $running;
+        $format = (string) $request->input('format');
+
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $company = Setting::get('company_name', 'القروانة');
+            $entity = $employee->name.($employee->job_title ? ' — '.$employee->job_title : '');
+
+            if ($format === 'xlsx') {
+                $headers = ['التاريخ', 'النوع', 'البيان', 'صُرف (+)', 'خصم/ردّ (−)', 'صافي جارٍ'];
+                $excelRows = [['', '', 'رصيد افتتاحي', '', '', '0.00']];
+                foreach ($rows as $row) {
+                    $excelRows[] = [
+                        optional($row['txn']->transaction_date)->format('Y-m-d') ?: '—',
+                        EmployeeTransaction::TYPES[$row['txn']->type] ?? $row['txn']->type,
+                        $row['txn']->description ?: '—',
+                        $row['isReducer'] ? '' : number_format((float) $row['txn']->amount, 2),
+                        $row['isReducer'] ? number_format((float) $row['txn']->amount, 2) : '',
+                        number_format((float) $row['running'], 2),
+                    ];
+                }
+                $excelRows[] = ['', '', 'صافي النقد المُسلَّم', '', '', number_format((float) $netGiven, 2)];
+
+                return app(ExportService::class)->excel(
+                    $headers,
+                    $excelRows,
+                    'statement-employee-'.$employee->id,
+                    $company.' — كشف حساب موظف: '.$entity
+                );
+            }
+
+            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="5" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">0.00</td></tr>';
+            foreach ($rows as $row) {
+                $bodyRows .= '<tr>'
+                    .'<td>'.(optional($row['txn']->transaction_date)->format('Y-m-d') ?: '—').'</td>'
+                    .'<td>'.e(EmployeeTransaction::TYPES[$row['txn']->type] ?? $row['txn']->type).'</td>'
+                    .'<td>'.e($row['txn']->description ?: '—').'</td>'
+                    .'<td style="text-align:left;color:#1a7d3c">'.($row['isReducer'] ? '' : number_format((float) $row['txn']->amount, 2)).'</td>'
+                    .'<td style="text-align:left;color:#b02a37">'.($row['isReducer'] ? number_format((float) $row['txn']->amount, 2) : '').'</td>'
+                    .'<td style="text-align:left;font-weight:600">'.number_format((float) $row['running'], 2).'</td>'
+                    .'</tr>';
+            }
+
+            $html = $this->statementHtml(
+                $company,
+                'كشف حساب موظف',
+                $entity,
+                ['التاريخ', 'النوع', 'البيان', 'صُرف (+)', 'خصم/ردّ (−)', 'صافي جارٍ'],
+                $bodyRows,
+                '<tr style="background:#f4f1ec;font-weight:700"><td colspan="5">صافي النقد المُسلَّم</td>'
+                    .'<td style="text-align:left">'.number_format((float) $netGiven, 2).'</td></tr>'
+            );
+
+            return app(ExportService::class)->pdf($html, 'statement-employee-'.$employee->id.'.pdf');
+        }
+
         return view('employees.statement', [
             'employee' => $employee,
             'rows' => $rows,
             'advanceBalance' => $employee->advanceBalance(),
             'custodyBalance' => $employee->custodyBalance(),
-            'netGiven' => $running,
+            'netGiven' => $netGiven,
         ]);
+    }
+
+    /** يبني HTML عربي مكتفٍ ذاتياً (RTL) لكشف حساب لتصديره PDF. */
+    private function statementHtml(string $company, string $title, string $entity, array $headers, string $bodyRows, string $footRow): string
+    {
+        $ths = '';
+        foreach ($headers as $h) {
+            $ths .= '<th style="border:1px solid #ccc;padding:6px;background:#8b7355;color:#fff;text-align:right">'.e($h).'</th>';
+        }
+
+        return '<html><head><meta charset="utf-8"><style>'
+            .'body{font-family:dejavusans;direction:rtl;font-size:12px;color:#222}'
+            .'h2,h4{margin:0;text-align:center}'
+            .'.head{text-align:center;margin-bottom:14px}'
+            .'.muted{color:#666;font-size:11px}'
+            .'table{width:100%;border-collapse:collapse;margin-top:10px}'
+            .'td{border:1px solid #ccc;padding:6px}'
+            .'</style></head><body>'
+            .'<div class="head"><h2>'.e($company).'</h2><h4>'.e($title).'</h4>'
+            .'<div class="muted">'.e($entity).'</div>'
+            .'<div class="muted">تاريخ الإصدار: '.now()->format('Y-m-d').'</div></div>'
+            .'<table><thead><tr>'.$ths.'</tr></thead>'
+            .'<tbody>'.$bodyRows.'</tbody>'
+            .'<tfoot>'.$footRow.'</tfoot></table></body></html>';
     }
 
     private function formData(Employee $employee): array

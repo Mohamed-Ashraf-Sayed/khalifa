@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankAccountController;
@@ -173,6 +174,18 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance_sheet');
     Route::get('reports/income-statement', [ReportController::class, 'incomeStatement'])->name('reports.income_statement');
     Route::get('reports/taxes', [ReportController::class, 'taxReport'])->name('reports.taxes');
+    Route::get('reports/cash-flow', [ReportController::class, 'cashFlow'])->name('reports.cash_flow');
+    Route::get('reports/ar-aging', [ReportController::class, 'arAging'])->name('reports.ar_aging');
+    Route::get('reports/ap-aging', [ReportController::class, 'apAging'])->name('reports.ap_aging');
+    Route::get('reports/period-comparison', [ReportController::class, 'periodComparison'])->name('reports.period_comparison');
+
+    // التحليلات (ربحية/موازنة/أداء/مرتبات/توقّع)
+    Route::get('analytics/project-profitability', [AnalyticsController::class, 'projectProfitability'])->name('analytics.project_profitability');
+    Route::get('analytics/budget-vs-actual', [AnalyticsController::class, 'budgetVsActual'])->name('analytics.budget_vs_actual');
+    Route::get('analytics/supplier-performance', [AnalyticsController::class, 'supplierPerformance'])->name('analytics.supplier_performance');
+    Route::get('analytics/contractor-performance', [AnalyticsController::class, 'contractorPerformance'])->name('analytics.contractor_performance');
+    Route::get('analytics/payroll', [AnalyticsController::class, 'payroll'])->name('analytics.payroll');
+    Route::get('analytics/partner-forecast', [AnalyticsController::class, 'partnerForecast'])->name('analytics.partner_forecast');
 
     // كشوف حساب الكيانات + تقرير المقاولين
     Route::get('suppliers/{supplier}/statement', [SupplierController::class, 'statement'])->name('suppliers.statement');

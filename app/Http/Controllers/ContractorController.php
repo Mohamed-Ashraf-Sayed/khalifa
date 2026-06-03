@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contractor;
+use App\Models\Setting;
+use App\Services\ExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -90,7 +92,7 @@ class ContractorController extends Controller implements HasMiddleware
      * دائن (+): المستخلصات المعتمدة/الجزئية/المدفوعة (ما علينا للمقاول).
      * مدين (−): دفعات المقاول (سداد).
      */
-    public function statement(Contractor $contractor): View
+    public function statement(Contractor $contractor, Request $request): View|\Illuminate\Http\Response|StreamedResponse
     {
         $rows = collect();
 
@@ -136,13 +138,92 @@ class ContractorController extends Controller implements HasMiddleware
             return $row;
         });
 
+        $balance = $contractor->balanceDue();
+        $format = (string) $request->input('format');
+
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $company = Setting::get('company_name', 'القروانة');
+            $entity = $contractor->name.($contractor->company_name ? ' — '.$contractor->company_name : '');
+
+            if ($format === 'xlsx') {
+                $headers = ['التاريخ', 'البيان', 'دائن (+)', 'مدين (−)', 'الرصيد الجاري'];
+                $excelRows = [['', 'رصيد افتتاحي', '', '', '0.00']];
+                foreach ($rows as $row) {
+                    $excelRows[] = [
+                        optional($row['date'])->format('Y-m-d') ?: '—',
+                        $row['label'],
+                        bccomp($row['credit'], '0', 2) > 0 ? number_format((float) $row['credit'], 2) : '',
+                        bccomp($row['debit'], '0', 2) > 0 ? number_format((float) $row['debit'], 2) : '',
+                        number_format((float) $row['running'], 2),
+                    ];
+                }
+                $excelRows[] = ['', 'الإجمالي', number_format((float) $totalCredit, 2), number_format((float) $totalDebit, 2), number_format((float) $balance, 2)];
+
+                return app(ExportService::class)->excel(
+                    $headers,
+                    $excelRows,
+                    'statement-contractor-'.$contractor->id,
+                    $company.' — كشف حساب مقاول: '.$entity
+                );
+            }
+
+            $bodyRows = '<tr style="background:#f4f1ec"><td colspan="4" style="font-weight:600">رصيد افتتاحي</td><td style="text-align:left;font-weight:600">0.00</td></tr>';
+            foreach ($rows as $row) {
+                $bodyRows .= '<tr>'
+                    .'<td>'.(optional($row['date'])->format('Y-m-d') ?: '—').'</td>'
+                    .'<td>'.e($row['label']).'</td>'
+                    .'<td style="text-align:left;color:#1a7d3c">'.(bccomp($row['credit'], '0', 2) > 0 ? number_format((float) $row['credit'], 2) : '').'</td>'
+                    .'<td style="text-align:left;color:#b02a37">'.(bccomp($row['debit'], '0', 2) > 0 ? number_format((float) $row['debit'], 2) : '').'</td>'
+                    .'<td style="text-align:left;font-weight:600">'.number_format((float) $row['running'], 2).'</td>'
+                    .'</tr>';
+            }
+
+            $html = $this->statementHtml(
+                $company,
+                'كشف حساب مقاول',
+                $entity,
+                ['التاريخ', 'البيان', 'دائن (+)', 'مدين (−)', 'الرصيد الجاري'],
+                $bodyRows,
+                '<tr style="background:#f4f1ec;font-weight:700"><td colspan="2">الإجمالي</td>'
+                    .'<td style="text-align:left;color:#1a7d3c">'.number_format((float) $totalCredit, 2).'</td>'
+                    .'<td style="text-align:left;color:#b02a37">'.number_format((float) $totalDebit, 2).'</td>'
+                    .'<td style="text-align:left">'.number_format((float) $balance, 2).'</td></tr>'
+            );
+
+            return app(ExportService::class)->pdf($html, 'statement-contractor-'.$contractor->id.'.pdf');
+        }
+
         return view('contractors.statement', [
             'contractor' => $contractor,
             'rows' => $rows,
             'totalCredit' => $totalCredit,
             'totalDebit' => $totalDebit,
-            'balance' => $contractor->balanceDue(),
+            'balance' => $balance,
         ]);
+    }
+
+    /** يبني HTML عربي مكتفٍ ذاتياً (RTL) لكشف حساب لتصديره PDF. */
+    private function statementHtml(string $company, string $title, string $entity, array $headers, string $bodyRows, string $footRow): string
+    {
+        $ths = '';
+        foreach ($headers as $h) {
+            $ths .= '<th style="border:1px solid #ccc;padding:6px;background:#8b7355;color:#fff;text-align:right">'.e($h).'</th>';
+        }
+
+        return '<html><head><meta charset="utf-8"><style>'
+            .'body{font-family:dejavusans;direction:rtl;font-size:12px;color:#222}'
+            .'h2,h4{margin:0;text-align:center}'
+            .'.head{text-align:center;margin-bottom:14px}'
+            .'.muted{color:#666;font-size:11px}'
+            .'table{width:100%;border-collapse:collapse;margin-top:10px}'
+            .'td{border:1px solid #ccc;padding:6px}'
+            .'</style></head><body>'
+            .'<div class="head"><h2>'.e($company).'</h2><h4>'.e($title).'</h4>'
+            .'<div class="muted">'.e($entity).'</div>'
+            .'<div class="muted">تاريخ الإصدار: '.now()->format('Y-m-d').'</div></div>'
+            .'<table><thead><tr>'.$ths.'</tr></thead>'
+            .'<tbody>'.$bodyRows.'</tbody>'
+            .'<tfoot>'.$footRow.'</tfoot></table></body></html>';
     }
 
     /**
