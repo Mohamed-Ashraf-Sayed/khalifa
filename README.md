@@ -1,58 +1,41 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# نظام القروانة لإدارة المقاولات
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+نظام متكامل لإدارة شركات المقاولات — إعادة بناء آمنة على **Laravel 13** بواجهة عربية (RTL) بخط Cairo.
 
-## About Laravel
+## الوحدات
+- **الأساس:** تسجيل دخول آمن · 4 أدوار (مدير/مدير عام/محاسب/موظف) · صلاحيات مفصّلة · إدارة مستخدمين · سجل نشاطات · إعدادات
+- **العمليات:** مشاريع · عملاء · مقاولون · موردون · موظفون · شركاء · مواد · حركات مخزون · أصول ثابتة · عقود · ملفات مشاريع
+- **المالية:** حسابات بنكية (دفتر أستاذ صحيح) · تحويلات بنكية · مصروفات · إيرادات · فواتير (ببنود وضريبة) · ضرائب
+- **المقاولون/الموردون:** أوامر شراء · مدفوعات موردين · مستخلصات مقاولين · دفعات مقاولين (مع أرصدة مشتقّة)
+- **الموظفون/الشركاء:** معاملات (رواتب/سلف/عهدة) · إيداعات وحركات الشركاء
+- **التحليل:** لوحة تحكم بإحصائيات · تقارير مالية (ربحية المشاريع)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## المتطلبات
+- PHP 8.4+ · Composer · MySQL/MariaDB (أو SQLite للتطوير)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+## التشغيل محلياً
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env        # واضبط القيم
+php artisan key:generate
+php artisan migrate --seed   # ينشئ الأدوار والمستخدم الأول
+php artisan serve
 ```
+المستخدم الأول يُحدَّد عبر `ADMIN_EMAIL` و`ADMIN_PASSWORD` في `.env` (لو فاضي يتولّد باسورد عشوائي يظهر في الـconsole مرة واحدة).
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## الأمان (مُطبَّق في الأساس)
+- صلاحيات حقيقية (spatie/laravel-permission) على كل مسار — مفيش "الكل admin".
+- CSRF على كل النماذج · حماية brute-force · تجديد الجلسة عند الدخول · منع الحسابات المعطّلة.
+- الإخراج آمن من XSS (Blade) · الاستعلامات عبر Eloquent (لا SQL injection).
+- رفع الملفات: allow-list للامتدادات + تخزين **خارج** جذر الويب + تنزيل عبر مسار محمي.
+- الأرصدة المالية مشتقّة من مصدر موثوق داخل DB transactions (لا انحراف في رصيد البنك/العهدة).
+- لا أسرار في الكود — كله في `.env`.
 
-## Contributing
+## النشر على Hostinger
+- اضبط جذر الدومين على مجلد `public/`.
+- اضبط `APP_ENV=production` و`APP_DEBUG=false` و`APP_KEY` وبيانات قاعدة البيانات في `.env`.
+- `composer install --no-dev --optimize-autoloader` ثم `php artisan migrate --force` و`php artisan config:cache`.
+- استخدم PHP 8.4 من لوحة الاستضافة.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+بُني بمعمارية MVC منظّمة، مع توثيق كل التغييرات في سجل git.
