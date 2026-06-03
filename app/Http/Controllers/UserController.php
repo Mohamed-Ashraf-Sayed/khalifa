@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
+
+class UserController extends Controller implements HasMiddleware
+{
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:users.view', only: ['index']),
+            new Middleware('can:users.create', only: ['create', 'store']),
+            new Middleware('can:users.edit', only: ['edit', 'update']),
+            new Middleware('can:users.delete', only: ['destroy']),
+        ];
+    }
+
+    public function index(): View
+    {
+        $users = User::with('roles')->latest()->paginate(15);
+
+        return view('users.index', compact('users'));
+    }
+
+    public function create(): View
+    {
+        return view('users.form', ['user' => new User(['is_active' => true]), 'roles' => $this->roleList()]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', Rule::in($this->roleList())],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'is_active' => ['sometimes'],
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => $data['password'], // يتشفّر عبر cast
+            'phone' => $data['phone'] ?? null,
+            'is_active' => $request->boolean('is_active'),
+        ]);
+        $user->syncRoles([$data['role']]);
+
+        return redirect()->route('users.index')->with('success', 'تمت إضافة المستخدم.');
+    }
+
+    public function edit(User $user): View
+    {
+        return view('users.form', ['user' => $user, 'roles' => $this->roleList()]);
+    }
+
+    public function update(Request $request, User $user): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
+            'password' => ['nullable', 'string', 'min:8'],
+            'role' => ['required', Rule::in($this->roleList())],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'is_active' => ['sometimes'],
+        ]);
+
+        // امنع المدير من إلغاء تفعيل/تخفيض نفسه (قفل النفس خارج النظام)
+        $isSelf = $request->user()->id === $user->id;
+
+        $user->fill([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
+            'is_active' => $isSelf ? true : $request->boolean('is_active'),
+        ]);
+        if (! empty($data['password'])) {
+            $user->password = $data['password'];
+        }
+        $user->save();
+
+        if (! $isSelf) {
+            $user->syncRoles([$data['role']]);
+        }
+
+        return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم.');
+    }
+
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        if ($request->user()->id === $user->id) {
+            return back()->with('error', 'لا يمكنك حذف حسابك الخاص.');
+        }
+
+        // امنع حذف آخر مدير
+        if ($user->hasRole('admin') && User::role('admin')->count() <= 1) {
+            return back()->with('error', 'لا يمكن حذف آخر مدير في النظام.');
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'تم حذف المستخدم.');
+    }
+
+    private function roleList(): array
+    {
+        return Role::orderBy('id')->pluck('name')->all();
+    }
+}
