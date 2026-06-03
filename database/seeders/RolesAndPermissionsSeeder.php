@@ -15,7 +15,7 @@ class RolesAndPermissionsSeeder extends Seeder
     private const CRUD_MODULES = [
         'projects', 'clients', 'contractors', 'suppliers', 'employees',
         'partners', 'materials', 'expenses', 'revenues', 'invoices',
-        'bank_accounts', 'purchase_orders',
+        'bank_accounts', 'purchase_orders', 'assets', 'contracts', 'taxes',
     ];
 
     /**
@@ -65,12 +65,12 @@ class RolesAndPermissionsSeeder extends Seeder
     private function managerPermissions(): array
     {
         $perms = [];
-        foreach (['projects', 'clients', 'contractors', 'suppliers', 'employees', 'partners', 'materials', 'purchase_orders'] as $m) {
+        foreach (['projects', 'clients', 'contractors', 'suppliers', 'employees', 'partners', 'materials', 'purchase_orders', 'assets', 'contracts'] as $m) {
             foreach (['view', 'create', 'edit', 'delete'] as $a) {
                 $perms[] = "{$m}.{$a}";
             }
         }
-        foreach (['expenses', 'revenues', 'invoices', 'bank_accounts'] as $m) {
+        foreach (['expenses', 'revenues', 'invoices', 'bank_accounts', 'taxes'] as $m) {
             foreach (['view', 'create', 'edit'] as $a) {
                 $perms[] = "{$m}.{$a}";
             }

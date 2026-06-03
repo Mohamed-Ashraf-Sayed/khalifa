@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankTransactionController;
@@ -8,11 +9,14 @@ use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +53,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('revenues', RevenueController::class)->except('show');
 
     Route::resource('users', UserController::class)->except('show');
+
+    // موجة 1 — كتالوج
+    Route::resource('materials', MaterialController::class)->except('show');
+    Route::resource('assets', AssetController::class)->except('show');
+    Route::resource('contracts', ProjectContractController::class)->except('show');
+    Route::resource('taxes', TaxController::class)->except('show');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 });
