@@ -2,84 +2,148 @@
 
 @section('title', 'لوحة التحكم')
 
+@push('styles')
+<style>
+    .kpi { border-radius: 1rem; color: #fff; position: relative; overflow: hidden; }
+    .kpi .ic { position: absolute; inset-inline-end: 1rem; top: 1rem; font-size: 2.2rem; opacity: .25; }
+    .kpi .v { font-size: 1.7rem; font-weight: 700; line-height: 1.1; }
+    .kpi .l { opacity: .9; font-size: .9rem; }
+    .kpi-green { background: linear-gradient(135deg,#1f9d6b,#0f7a4f); }
+    .kpi-red   { background: linear-gradient(135deg,#d9534f,#b52b27); }
+    .kpi-blue  { background: linear-gradient(135deg,#3a7bd5,#2456a6); }
+    .kpi-brown { background: linear-gradient(135deg,#8b7355,#6f5b43); }
+    .mini-stat { background:#fff; border-radius:.8rem; padding:1rem; box-shadow:0 2px 10px rgba(139,115,85,.08); }
+    .mini-stat .n { font-size:1.4rem; font-weight:700; }
+</style>
+@endpush
+
 @section('content')
-    <p class="text-muted">أهلاً، {{ auth()->user()->name }} 👋</p>
-
-    {{-- مؤشرات مالية --}}
-    <div class="row g-3 mb-2">
-        <div class="col-md-3 col-6">
-            <div class="card h-100"><div class="card-body">
-                <div class="text-muted small"><i class="fa-solid fa-sack-dollar text-success ms-1"></i> الإيرادات</div>
-                <div class="fs-5 fw-bold text-success">{{ number_format($stats['revenue'], 2) }}</div>
-            </div></div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card h-100"><div class="card-body">
-                <div class="text-muted small"><i class="fa-solid fa-money-bill-wave text-danger ms-1"></i> المصروفات</div>
-                <div class="fs-5 fw-bold text-danger">{{ number_format($stats['expense'], 2) }}</div>
-            </div></div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card h-100"><div class="card-body">
-                <div class="text-muted small"><i class="fa-solid fa-scale-balanced ms-1"></i> صافي الربح</div>
-                <div class="fs-5 fw-bold {{ $stats['net'] >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($stats['net'], 2) }}</div>
-            </div></div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card h-100"><div class="card-body">
-                <div class="text-muted small"><i class="fa-solid fa-building-columns text-primary ms-1"></i> أرصدة البنوك</div>
-                <div class="fs-5 fw-bold">{{ number_format($stats['bank_balance'], 2) }}</div>
-            </div></div>
-        </div>
-    </div>
-
-    {{-- عدّادات --}}
+    {{-- KPIs --}}
     <div class="row g-3 mb-3">
-        @php($counters = [
-            ['المشاريع', $stats['projects'], 'fa-diagram-project', 'projects.view', 'projects.index'],
-            ['العملاء', $stats['clients'], 'fa-users', 'clients.view', 'clients.index'],
-            ['المقاولون', $stats['contractors'], 'fa-hard-hat', 'contractors.view', 'contractors.index'],
-            ['الموردون', $stats['suppliers'], 'fa-truck', 'suppliers.view', 'suppliers.index'],
-            ['الموظفون', $stats['employees'], 'fa-id-badge', 'employees.view', 'employees.index'],
-        ])
-        @foreach ($counters as [$label, $count, $icon, $perm, $route])
-            @can($perm)
-            <div class="col-md col-6">
-                <a href="{{ route($route) }}" class="text-decoration-none text-reset">
-                    <div class="card h-100 text-center"><div class="card-body">
-                        <i class="fa-solid {{ $icon }} fa-lg text-secondary"></i>
-                        <div class="fs-4 fw-bold mt-1">{{ $count }}</div>
-                        <div class="small text-muted">{{ $label }}</div>
-                    </div></div>
-                </a>
+        @foreach ([
+            ['revenue','إجمالي الإيرادات','kpi-green','fa-sack-dollar'],
+            ['expense','إجمالي المصروفات','kpi-red','fa-money-bill-trend-up'],
+            ['net','صافي الربح','kpi-blue','fa-scale-balanced'],
+            ['bank_balance','السيولة بالبنوك','kpi-brown','fa-building-columns'],
+        ] as [$key,$label,$cls,$icon])
+        <div class="col-md-3 col-6">
+            <div class="kpi {{ $cls }} p-3 h-100">
+                <i class="fa-solid {{ $icon }} ic"></i>
+                <div class="l">{{ $label }}</div>
+                <div class="v">{{ number_format($stats[$key], 0) }}</div>
+                <div class="small opacity-75">ج.م</div>
             </div>
-            @endcan
+        </div>
         @endforeach
     </div>
 
-    {{-- أحدث المشاريع --}}
-    @can('projects.view')
-    <div class="card">
-        <div class="card-body">
-            <h6 class="mb-3">أحدث المشاريع</h6>
-            <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th>المشروع</th><th>العميل</th><th>قيمة العقد</th><th>الحالة</th></tr></thead>
-                    <tbody>
-                        @forelse ($recentProjects as $p)
-                            <tr>
-                                <td class="fw-semibold">{{ $p->name }}</td>
-                                <td>{{ $p->client?->name ?? '—' }}</td>
-                                <td>{{ number_format($p->contract_value, 2) }}</td>
-                                <td><span class="badge text-bg-light">{{ \App\Models\Project::STATUSES[$p->status] ?? $p->status }}</span></td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4" class="text-center text-muted py-3">لا توجد مشاريع بعد.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+    {{-- mini stats --}}
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['fa-diagram-project','المشاريع',$stats['projects'].' ('.$stats['projects_active'].' نشط)','projects.index','text-primary'],
+            ['fa-users','العملاء',$stats['clients'],'clients.index','text-info'],
+            ['fa-hard-hat','المقاولون',$stats['contractors'],'contractors.index','text-warning'],
+            ['fa-truck','الموردون',$stats['suppliers'],'suppliers.index','text-secondary'],
+            ['fa-id-badge','الموظفون',$stats['employees'],'employees.index','text-success'],
+            ['fa-file-lines','فواتير غير مدفوعة',$stats['invoices_unpaid'],'invoices.index','text-danger'],
+        ] as [$icon,$label,$val,$route,$color])
+        <div class="col-md-2 col-6">
+            <a href="{{ route($route) }}" class="text-decoration-none text-reset">
+                <div class="mini-stat h-100">
+                    <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+                    <div class="n">{{ $val }}</div>
+                    <div class="small text-muted">{{ $label }}</div>
+                </div>
+            </a>
+        </div>
+        @endforeach
+    </div>
+
+    {{-- charts --}}
+    <div class="row g-3 mb-3">
+        <div class="col-lg-8">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3">الإيرادات مقابل المصروفات — آخر 6 شهور</h6>
+                <canvas id="trendChart" height="110"></canvas>
+            </div></div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3">المصروفات حسب الفئة</h6>
+                <canvas id="catChart" height="200"></canvas>
+            </div></div>
         </div>
     </div>
-    @endcan
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3">المشاريع حسب الحالة</h6>
+                <canvas id="statusChart" height="200"></canvas>
+            </div></div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3">أرصدة البنوك</h6>
+                @forelse ($banks as $b)
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span><i class="fa-solid fa-building-columns text-muted ms-1"></i> {{ $b->name }}</span>
+                        <span class="fw-bold">{{ number_format($b->current_balance, 0) }}</span>
+                    </div>
+                @empty
+                    <div class="text-muted">لا توجد حسابات.</div>
+                @endforelse
+            </div></div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="mb-3">أعلى المقاولين رصيداً مستحقاً</h6>
+                @forelse ($topContractors as $c)
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span>{{ $c['name'] }}</span>
+                        <span class="fw-bold text-danger">{{ number_format($c['balance'], 0) }}</span>
+                    </div>
+                @empty
+                    <div class="text-muted">لا يوجد.</div>
+                @endforelse
+            </div></div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+    Chart.defaults.font.family = 'Cairo, sans-serif';
+    const egp = v => new Intl.NumberFormat('ar-EG').format(v);
+
+    new Chart(document.getElementById('trendChart'), {
+        type: 'bar',
+        data: {
+            labels: @json($chartMonths),
+            datasets: [
+                { label: 'إيرادات', data: @json($chartRevenue), backgroundColor: '#1f9d6b', borderRadius: 6 },
+                { label: 'مصروفات', data: @json($chartExpense), backgroundColor: '#d9534f', borderRadius: 6 },
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } },
+            scales: { y: { ticks: { callback: v => egp(v) } } } }
+    });
+
+    new Chart(document.getElementById('catChart'), {
+        type: 'doughnut',
+        data: { labels: @json($catLabels),
+            datasets: [{ data: @json($catValues),
+                backgroundColor: ['#8b7355','#1f9d6b','#3a7bd5','#d9534f','#f0ad4e','#6f5b43','#5bc0de'] }] },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: { labels: @json($statusLabels),
+            datasets: [{ data: @json($statusValues),
+                backgroundColor: ['#6c757d','#3a7bd5','#1f9d6b','#f0ad4e','#d9534f'] }] },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+</script>
+@endpush
