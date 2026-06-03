@@ -34,6 +34,7 @@ class Expense extends Model
         'project_id', 'category', 'description', 'amount', 'expense_date',
         'payment_method', 'bank_account_id', 'delivered_by_employee_id', 'notes', 'created_by',
         'paid_amount', 'payment_status', 'due_date', 'is_credit',
+        'recipient', 'reference_number', 'details',
     ];
 
     protected function casts(): array

@@ -29,6 +29,9 @@
                 @endif
                 @if ($expense->due_date)<div class="col-md-4"><div class="text-muted small">تاريخ الاستحقاق</div><div>{{ $expense->due_date->format('Y-m-d') }}</div></div>@endif
                 @if ($expense->creator)<div class="col-md-4"><div class="text-muted small">أضيف بواسطة</div><div>{{ $expense->creator->name }}</div></div>@endif
+                @if ($expense->recipient)<div class="col-md-4"><div class="text-muted small">المستلِم</div><div>{{ $expense->recipient }}</div></div>@endif
+                @if ($expense->reference_number)<div class="col-md-4"><div class="text-muted small">رقم المرجع</div><div>{{ $expense->reference_number }}</div></div>@endif
+                @if ($expense->details)<div class="col-12"><div class="text-muted small">تفاصيل</div><div>{{ $expense->details }}</div></div>@endif
                 @if ($expense->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $expense->notes }}</div></div>@endif
             </div>
         </div>

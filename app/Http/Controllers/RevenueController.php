@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\View\View;
 
 class RevenueController extends Controller implements HasMiddleware
@@ -28,16 +29,75 @@ class RevenueController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(): View
+    public function index(Request $request): View|StreamedResponse
     {
-        $revenues = Revenue::query()
+        $projectId = (string) $request->input('project_id', '');
+        $paymentStatus = (string) $request->input('payment_status', '');
+        $from = trim((string) $request->input('from', ''));
+        $to = trim((string) $request->input('to', ''));
+
+        $base = Revenue::query()
+            ->when($projectId !== '', fn ($q) => $q->where('project_id', $projectId))
+            ->when($paymentStatus !== '', fn ($q) => $q->where('payment_status', $paymentStatus))
+            ->when($from !== '', fn ($q) => $q->whereDate('revenue_date', '>=', $from))
+            ->when($to !== '', fn ($q) => $q->whereDate('revenue_date', '<=', $to));
+
+        if ($request->input('export') === 'csv') {
+            return $this->exportCsv((clone $base));
+        }
+
+        $revenues = (clone $base)
             ->with(['project', 'bankAccount'])
             ->latest('revenue_date')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
-        $total = Revenue::sum('amount');
+        $totalAmount = (string) (clone $base)->sum('amount');
+        $totalCollected = (string) (clone $base)->sum('paid_amount');
+        $stats = [
+            'total' => $totalAmount,
+            'collected' => $totalCollected,
+            'remaining' => bcsub($totalAmount, $totalCollected, 2),
+            'count' => (clone $base)->count(),
+        ];
 
-        return view('revenues.index', compact('revenues', 'total'));
+        return view('revenues.index', [
+            'revenues' => $revenues,
+            'projects' => Project::orderBy('name')->get(),
+            'projectId' => $projectId,
+            'paymentStatus' => $paymentStatus,
+            'from' => $from,
+            'to' => $to,
+            'stats' => $stats,
+        ]);
+    }
+
+    private function exportCsv($query): StreamedResponse
+    {
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="revenues.csv"',
+        ];
+
+        $revenues = $query->with('project')->latest('revenue_date')->get();
+
+        return response()->stream(function () use ($revenues) {
+            $out = fopen('php://output', 'w');
+            // BOM لدعم العربية في Excel
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['description', 'amount', 'paid_amount', 'payment_status', 'revenue_date', 'project']);
+            foreach ($revenues as $r) {
+                fputcsv($out, [
+                    $r->description,
+                    $r->amount,
+                    $r->paid_amount,
+                    Revenue::PAYMENT_STATUSES[$r->payment_status] ?? $r->payment_status,
+                    $r->revenue_date?->format('Y-m-d'),
+                    $r->project?->name,
+                ]);
+            }
+            fclose($out);
+        }, 200, $headers);
     }
 
     public function show(Revenue $revenue): View

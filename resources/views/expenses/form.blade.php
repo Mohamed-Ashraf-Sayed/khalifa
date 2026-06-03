@@ -21,7 +21,7 @@
                     <div class="col-md-4">
                         <label class="form-label">الفئة</label>
                         <select name="category" class="form-select">
-                            @foreach (\App\Models\Expense::CATEGORIES as $k => $label)
+                            @foreach ($categories as $k => $label)
                                 <option value="{{ $k }}" @selected(old('category', $expense->category) === $k)>{{ $label }}</option>
                             @endforeach
                         </select>
@@ -82,6 +82,18 @@
                             <i class="fa-solid fa-circle-info ms-1"></i>
                             المصروف الآجل يُسدّد لاحقاً على دفعات (أقساط) من صفحة المصروف — اترك حقل الحساب البنكي فارغاً.
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">المستلِم</label>
+                        <input type="text" name="recipient" value="{{ old('recipient', $expense->recipient) }}" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">رقم المرجع</label>
+                        <input type="text" name="reference_number" value="{{ old('reference_number', $expense->reference_number) }}" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">تفاصيل</label>
+                        <textarea name="details" rows="2" class="form-control">{{ old('details', $expense->details) }}</textarea>
                     </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>

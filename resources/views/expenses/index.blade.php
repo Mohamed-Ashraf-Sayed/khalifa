@@ -60,6 +60,9 @@
                                     <span class="badge {{ $pst === 'paid' ? 'text-bg-success' : ($pst === 'partial' ? 'text-bg-warning' : 'text-bg-danger') }}">
                                         {{ \App\Models\Expense::PAYMENT_STATUSES[$pst] ?? $pst }}
                                     </span>
+                                    @if ($expense->is_credit && $pst !== 'paid' && $expense->due_date && $expense->due_date->isPast())
+                                        <span class="badge text-bg-danger"><i class="fa-solid fa-triangle-exclamation ms-1"></i> متأخر</span>
+                                    @endif
                                 </td>
                                 <td class="text-end">
                                     <a href="{{ route('expenses.show', $expense) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>

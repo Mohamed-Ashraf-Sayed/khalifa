@@ -4,17 +4,71 @@
 
 @section('content')
     <div class="row g-3 mb-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card"><div class="card-body">
                 <div class="text-muted small">إجمالي الإيرادات</div>
-                <div class="fs-4 fw-bold text-success">{{ number_format($total, 2) }} ج</div>
+                <div class="fs-4 fw-bold text-success">{{ number_format((float) $stats['total'], 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي المحصّل</div>
+                <div class="fs-4 fw-bold text-success">{{ number_format((float) $stats['collected'], 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">المتبقّي</div>
+                <div class="fs-4 fw-bold text-warning">{{ number_format((float) $stats['remaining'], 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">عدد الإيرادات</div>
+                <div class="fs-4 fw-bold">{{ $stats['count'] }}</div>
             </div></div>
         </div>
     </div>
 
+    <div class="card mb-3"><div class="card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small">المشروع</label>
+                <select name="project_id" class="form-select">
+                    <option value="">كل المشاريع</option>
+                    @foreach ($projects as $p)
+                        <option value="{{ $p->id }}" @selected($projectId === (string) $p->id)>{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">حالة التحصيل</label>
+                <select name="payment_status" class="form-select">
+                    <option value="">كل الحالات</option>
+                    @foreach (\App\Models\Revenue::PAYMENT_STATUSES as $k => $label)
+                        <option value="{{ $k }}" @selected($paymentStatus === $k)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">من تاريخ</label>
+                <input type="date" name="from" value="{{ $from }}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">إلى تاريخ</label>
+                <input type="date" name="to" value="{{ $to }}" class="form-control">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn flex-fill" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> تصفية</button>
+                <a href="{{ route('revenues.index') }}" class="btn btn-light"><i class="fa-solid fa-rotate-right"></i></a>
+            </div>
+        </form>
+    </div></div>
+
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <a href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}" class="btn btn-outline-success"><i class="fa-solid fa-file-csv ms-1"></i> تصدير CSV</a>
                 @can('revenues.create')
                     <a href="{{ route('revenues.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إيراد جديد</a>
                 @endcan

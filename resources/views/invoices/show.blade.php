@@ -65,6 +65,7 @@
                 </table>
             </div>
             <a href="{{ route('invoices.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للفواتير</a>
+            <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</a>
         </div>
     </div>
 

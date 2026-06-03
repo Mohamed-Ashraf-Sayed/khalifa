@@ -7,6 +7,7 @@ use App\Models\BankTransaction;
 use App\Models\Employee;
 use App\Models\EmployeeTransaction;
 use App\Models\Expense;
+use App\Models\ExpenseCategory;
 use App\Models\Project;
 use App\Services\BankLedgerService;
 use Illuminate\Http\RedirectResponse;
@@ -145,14 +146,26 @@ class ExpenseController extends Controller implements HasMiddleware
             'projects' => Project::orderBy('name')->get(),
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
             'employees' => Employee::where('is_active', true)->orderBy('name')->get(),
+            'categories' => $this->categoryOptions(),
         ];
+    }
+
+    /**
+     * يدمج الفئات الثابتة (const) مع الفئات الديناميكية النشطة في قائمة واحدة [code => label].
+     */
+    private function categoryOptions(): array
+    {
+        return array_merge(
+            Expense::CATEGORIES,
+            ExpenseCategory::where('is_active', true)->pluck('name', 'code')->all(),
+        );
     }
 
     private function validateData(Request $request): array
     {
         $data = $request->validate([
             'project_id' => ['nullable', 'exists:projects,id'],
-            'category' => ['required', 'in:'.implode(',', array_keys(Expense::CATEGORIES))],
+            'category' => ['required', 'string', 'max:50'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'expense_date' => ['required', 'date'],
@@ -161,6 +174,9 @@ class ExpenseController extends Controller implements HasMiddleware
             'delivered_by_employee_id' => ['nullable', 'exists:employees,id'],
             'is_credit' => ['nullable', 'boolean'],
             'due_date' => ['nullable', 'date'],
+            'recipient' => ['nullable', 'string', 'max:150'],
+            'reference_number' => ['nullable', 'string', 'max:100'],
+            'details' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
         ]);
 

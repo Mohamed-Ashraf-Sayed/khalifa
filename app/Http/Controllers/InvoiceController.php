@@ -16,7 +16,7 @@ class InvoiceController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:invoices.view', only: ['index', 'show']),
+            new Middleware('can:invoices.view', only: ['index', 'show', 'print']),
             new Middleware('can:invoices.create', only: ['create', 'store']),
             new Middleware('can:invoices.edit', only: ['edit', 'update']),
             new Middleware('can:invoices.delete', only: ['destroy']),
@@ -62,6 +62,13 @@ class InvoiceController extends Controller implements HasMiddleware
         $accounts = \App\Models\BankAccount::where('is_active', true)->orderBy('name')->get();
 
         return view('invoices.show', compact('invoice', 'accounts'));
+    }
+
+    public function print(Invoice $invoice): View
+    {
+        $invoice->load('items', 'payments', 'client', 'project');
+
+        return view('invoices.print', compact('invoice'));
     }
 
     public function edit(Invoice $invoice): View

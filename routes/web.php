@@ -13,8 +13,10 @@ use App\Http\Controllers\ContractorExtractItemController;
 use App\Http\Controllers\ContractorPaymentController;
 use App\Http\Controllers\CustomPaymentMethodController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataPortController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeTransactionController;
+use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExpensePaymentController;
 use App\Http\Controllers\InventoryMovementController;
@@ -67,6 +69,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::get('login-logs', [LoginLogController::class, 'index'])->name('login_logs.index');
 
+    // استيراد/تصدير البيانات (CSV)
+    Route::get('data-port', [DataPortController::class, 'index'])->name('data_port.index');
+    Route::get('data-port/{entity}/template', [DataPortController::class, 'template'])->name('data_port.template');
+    Route::get('data-port/{entity}/export', [DataPortController::class, 'export'])->name('data_port.export');
+    Route::post('data-port/{entity}/import', [DataPortController::class, 'import'])->name('data_port.import');
+
     Route::resource('clients', ClientController::class);
     Route::resource('projects', ProjectController::class);
     Route::post('projects/{project}/employees', [ProjectEmployeeController::class, 'store'])->name('projectEmployees.store');
@@ -93,6 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::post('bank-transactions/{bank_transaction}/reconcile', [BankTransactionController::class, 'reconcile'])->name('bank_transactions.reconcile');
     Route::resource('payment-methods', CustomPaymentMethodController::class)->names('payment_methods')->except(['show']);
 
+    Route::resource('expense-categories', ExpenseCategoryController::class)->names('expense_categories')->except(['show']);
     Route::resource('expenses', ExpenseController::class);
     Route::post('expenses/{expense}/payments', [ExpensePaymentController::class, 'store'])->name('expense_payments.store');
     Route::delete('expense-payments/{expense_payment}', [ExpensePaymentController::class, 'destroy'])->name('expense_payments.destroy');
@@ -138,6 +147,7 @@ Route::middleware('auth')->group(function () {
 
     // موجة 6 — الفواتير (مع صفحة عرض البنود)
     Route::resource('invoices', InvoiceController::class);
+    Route::get('invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::post('invoices/{invoice}/items', [InvoiceItemController::class, 'store'])->name('invoice_items.store');
     Route::delete('invoice-items/{invoice_item}', [InvoiceItemController::class, 'destroy'])->name('invoice_items.destroy');
     Route::post('invoices/{invoice}/payments', [InvoicePaymentController::class, 'store'])->name('invoice_payments.store');
