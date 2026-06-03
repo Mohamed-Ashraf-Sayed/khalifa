@@ -18,7 +18,7 @@ class UserController extends Controller implements HasMiddleware
         return [
             new Middleware('can:users.view', only: ['index', 'show']),
             new Middleware('can:users.create', only: ['create', 'store']),
-            new Middleware('can:users.edit', only: ['edit', 'update']),
+            new Middleware('can:users.edit', only: ['edit', 'update', 'resetPassword']),
             new Middleware('can:users.delete', only: ['destroy']),
         ];
     }
@@ -119,6 +119,18 @@ class UserController extends Controller implements HasMiddleware
         }
 
         return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم.');
+    }
+
+    public function resetPassword(Request $request, User $user): RedirectResponse
+    {
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->password = $data['password']; // يتشفّر عبر cast
+        $user->save();
+
+        return redirect()->route('users.show', $user)->with('success', 'تم تعيين كلمة مرور جديدة.');
     }
 
     public function destroy(Request $request, User $user): RedirectResponse

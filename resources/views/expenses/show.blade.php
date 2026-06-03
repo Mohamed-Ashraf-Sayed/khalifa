@@ -145,4 +145,6 @@
             </div>
         </div>
     @endif
+
+    @include('partials.attachments', ['model' => $expense])
 @endsection

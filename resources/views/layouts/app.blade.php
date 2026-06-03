@@ -112,6 +112,8 @@
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('analytics.*') ? 'active' : '' }}" href="{{ route('analytics.project_profitability') }}"><i class="fa-solid fa-chart-pie"></i> التحليلات</a> @endcan
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('cost_centers.*') ? 'active' : '' }}" href="{{ route('cost_centers.index') }}"><i class="fa-solid fa-sitemap"></i> مراكز التكلفة</a> @endcan
                 @can('users.view')      <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}"><i class="fa-solid fa-user-gear"></i> المستخدمون</a> @endcan
+                @can('users.view')      <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}"><i class="fa-solid fa-user-shield"></i> الأدوار والصلاحيات</a> @endcan
+                @can('users.view')      <a class="nav-link {{ request()->routeIs('trash.*') ? 'active' : '' }}" href="{{ route('trash.index') }}"><i class="fa-solid fa-trash-can-arrow-up"></i> سلة المحذوفات</a> @endcan
                 @can('users.view')      <a class="nav-link {{ request()->routeIs('activity_logs.*') ? 'active' : '' }}" href="{{ route('activity_logs.index') }}"><i class="fa-solid fa-clock-rotate-left"></i> سجل النشاطات</a> @endcan
                 @can('users.view')      <a class="nav-link {{ request()->routeIs('login_logs.*') ? 'active' : '' }}" href="{{ route('login_logs.index') }}"><i class="fa-solid fa-right-to-bracket"></i> سجل الدخول</a> @endcan
                 @can('settings.view')   <a class="nav-link {{ request()->routeIs('data_port.*') ? 'active' : '' }}" href="{{ route('data_port.index') }}"><i class="fa-solid fa-file-import"></i> استيراد/تصدير</a> @endcan
@@ -128,6 +130,12 @@
                 <h5 class="m-0">@yield('title', 'لوحة التحكم')</h5>
             </div>
             <div class="d-flex align-items-center gap-2">
+            <form method="GET" action="{{ route('search') }}" class="d-none d-md-flex align-items-center" role="search">
+                <div class="input-group input-group-sm" style="width:240px">
+                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0" placeholder="بحث شامل...">
+                </div>
+            </form>
             @inject('alerts', 'App\Services\AlertService')
             @php($alertItems = $alerts->items())
             <div class="dropdown">

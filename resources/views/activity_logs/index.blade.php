@@ -48,7 +48,7 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle">
-                    <thead class="table-light"><tr><th>الوقت</th><th>المستخدم</th><th>الإجراء</th><th>العنصر</th><th>IP</th></tr></thead>
+                    <thead class="table-light"><tr><th>الوقت</th><th>المستخدم</th><th>الإجراء</th><th>العنصر</th><th>التغييرات</th><th>IP</th></tr></thead>
                     <tbody>
                         @forelse ($logs as $log)
                             @php($badge = match($log->action) { 'created'=>'success','updated'=>'primary','deleted'=>'danger',default=>'secondary' })
@@ -57,10 +57,40 @@
                                 <td>{{ $log->user?->name ?? '—' }}</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\ActivityLog::ACTIONS[$log->action] ?? $log->action }}</span></td>
                                 <td>{{ $log->description }}</td>
+                                <td>
+                                    @if (! empty($log->changes))
+                                        <details>
+                                            <summary class="small text-primary" style="cursor:pointer">
+                                                {{ count($log->changes) }} حقل
+                                            </summary>
+                                            <div class="small mt-1">
+                                                @if ($log->action === 'updated')
+                                                    @foreach ($log->changes as $field => $diff)
+                                                        <div class="mb-1">
+                                                            <span class="fw-semibold">{{ $field }}:</span>
+                                                            <span class="text-danger text-decoration-line-through">{{ \Illuminate\Support\Str::limit((string) ($diff['old'] ?? '—'), 40) ?: '—' }}</span>
+                                                            <i class="fa-solid fa-arrow-left-long text-muted mx-1"></i>
+                                                            <span class="text-success">{{ \Illuminate\Support\Str::limit((string) ($diff['new'] ?? '—'), 40) ?: '—' }}</span>
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    @foreach ($log->changes as $field => $value)
+                                                        <div class="mb-1">
+                                                            <span class="fw-semibold">{{ $field }}:</span>
+                                                            <span class="text-muted">{{ \Illuminate\Support\Str::limit(is_scalar($value) ? (string) $value : json_encode($value, JSON_UNESCAPED_UNICODE), 40) ?: '—' }}</span>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </details>
+                                    @else
+                                        <span class="text-muted small">—</span>
+                                    @endif
+                                </td>
                                 <td class="small text-muted" dir="ltr">{{ $log->ip_address ?: '—' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="text-center text-muted py-4">لا يوجد نشاط مُسجّل بعد.</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4">لا يوجد نشاط مُسجّل بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -142,4 +142,6 @@
             </table>
         </div>
     </div></div>
+
+    @include('partials.attachments', ['model' => $invoice])
 @endsection

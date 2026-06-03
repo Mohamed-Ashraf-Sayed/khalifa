@@ -81,6 +81,9 @@ class LoginController extends Controller
         ]);
         ActivityLog::record('login', Auth::user());
 
+        // تسجيل آخر دخول ناجح
+        Auth::user()->forceFill(['last_login_at' => now()])->save();
+
         return redirect()->intended(route('dashboard'));
     }
 

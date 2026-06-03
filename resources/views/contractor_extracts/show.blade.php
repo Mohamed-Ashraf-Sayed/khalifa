@@ -113,4 +113,6 @@
             </div>
         </div>
     </div>
+
+    @include('partials.attachments', ['model' => $extract])
 @endsection

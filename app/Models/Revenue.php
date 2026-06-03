@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Revenue extends Model
 {
+    use SoftDeletes;
+
     public const PAYMENT_METHODS = [
         'cash' => 'نقدي',
         'bank_transfer' => 'تحويل بنكي',

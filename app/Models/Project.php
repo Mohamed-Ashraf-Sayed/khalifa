@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'name', 'client_id', 'project_type', 'location', 'description',
         'contract_value', 'start_date', 'end_date', 'actual_end_date',

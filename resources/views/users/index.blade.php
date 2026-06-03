@@ -37,6 +37,7 @@
                             <th>البريد</th>
                             <th>الدور</th>
                             <th>الحالة</th>
+                            <th>آخر دخول</th>
                             <th class="text-end">إجراءات</th>
                         </tr>
                     </thead>
@@ -48,6 +49,7 @@
                                 <td dir="ltr" class="text-start">{{ $user->email }}</td>
                                 <td><span class="badge text-bg-secondary">{{ $roleLabels[$role] ?? $role ?? '—' }}</span></td>
                                 <td><span class="badge text-bg-{{ $user->is_active ? 'success' : 'secondary' }}">{{ $user->is_active ? 'نشط' : 'معطّل' }}</span></td>
+                                <td class="small text-muted">{{ $user->last_login_at?->format('Y-m-d H:i') ?: '—' }}</td>
                                 <td class="text-end">
                                     <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('users.edit')
@@ -64,7 +66,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="text-center text-muted py-4">لا يوجد مستخدمون.</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4">لا يوجد مستخدمون.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

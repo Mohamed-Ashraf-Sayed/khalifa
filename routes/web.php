@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankTransactionController;
@@ -43,11 +44,14 @@ use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RevenueCollectionController;
 use App\Http\Controllers\RevenueController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\SupplierTransactionController;
 use App\Http\Controllers\TaxController;
+use App\Http\Controllers\TrashController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -181,6 +185,17 @@ Route::middleware('auth')->group(function () {
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
+
+    // الأدوار والصلاحيات + المستخدمون + سلة المحذوفات + البحث + المرفقات
+    Route::resource('roles', RoleController::class)->except(['show']);
+    Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset_password');
+    Route::get('trash', [TrashController::class, 'index'])->name('trash.index');
+    Route::post('trash/{type}/{id}/restore', [TrashController::class, 'restore'])->name('trash.restore');
+    Route::delete('trash/{type}/{id}', [TrashController::class, 'forceDelete'])->name('trash.force_delete');
+    Route::get('search', SearchController::class)->name('search');
+    Route::post('attachments', [AttachmentController::class, 'store'])->name('attachments.store');
+    Route::get('attachments/{attachment}/download', [AttachmentController::class, 'download'])->name('attachments.download');
+    Route::delete('attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance_sheet');
