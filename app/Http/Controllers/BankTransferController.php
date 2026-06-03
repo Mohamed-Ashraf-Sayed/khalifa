@@ -55,16 +55,30 @@ class BankTransferController extends Controller implements HasMiddleware
             $from = BankAccount::findOrFail($data['from_account_id']);
             $to = BankAccount::findOrFail($data['to_account_id']);
 
-            // سحب (المبلغ + الرسوم) من الحساب المصدر، وإيداع المبلغ في الوجهة — ذرّياً
+            // سحب المبلغ فقط من الحساب المصدر، والرسوم تُسجَّل كحركة سحب منفصلة (مُبوّبة)
             $this->ledger->post($from, [
                 'type' => 'withdrawal',
-                'amount' => bcadd((string) $data['amount'], (string) $data['fees'], 2),
+                'amount' => $data['amount'],
                 'transaction_date' => $data['transfer_date'],
-                'description' => 'تحويل إلى '.$to->name.($data['fees'] > 0 ? ' (شامل رسوم)' : ''),
+                'description' => 'تحويل إلى '.$to->name,
+                'category' => 'transfer',
                 'related_type' => 'bank_transfer',
                 'related_id' => $transfer->id,
                 'created_by' => $data['created_by'],
             ]);
+            // الرسوم — حركة سحب منفصلة من نفس الحساب المصدر (الصافي = المبلغ + الرسوم لكن مفصّل)
+            if (bccomp((string) $data['fees'], '0', 2) > 0) {
+                $this->ledger->post($from, [
+                    'type' => 'withdrawal',
+                    'amount' => $data['fees'],
+                    'transaction_date' => $data['transfer_date'],
+                    'description' => 'رسوم تحويل',
+                    'category' => 'fee',
+                    'related_type' => 'bank_transfer',
+                    'related_id' => $transfer->id,
+                    'created_by' => $data['created_by'],
+                ]);
+            }
             $this->ledger->post($to, [
                 'type' => 'deposit',
                 'amount' => $data['amount'],

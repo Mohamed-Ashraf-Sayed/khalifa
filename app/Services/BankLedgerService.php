@@ -35,6 +35,13 @@ class BankLedgerService
                 'related_type' => $data['related_type'] ?? null,
                 'related_id' => $data['related_id'] ?? null,
                 'created_by' => $data['created_by'] ?? null,
+                // مفاتيح اختيارية — لا تؤثر على المستدعين القدامى ولا على اشتقاق الرصيد
+                'category' => $data['category'] ?? null,
+                'beneficiary' => $data['beneficiary'] ?? null,
+                'check_number' => $data['check_number'] ?? null,
+                'value_date' => $data['value_date'] ?? null,
+                'is_reconciled' => $data['is_reconciled'] ?? false,
+                'attachment' => $data['attachment'] ?? null,
             ]);
 
             $this->refreshBalance($account);

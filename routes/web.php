@@ -11,6 +11,7 @@ use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\ContractorExtractController;
 use App\Http\Controllers\ContractorExtractItemController;
 use App\Http\Controllers\ContractorPaymentController;
+use App\Http\Controllers\CustomPaymentMethodController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeTransactionController;
@@ -79,6 +80,8 @@ Route::middleware('auth')->group(function () {
         ->name('bank_transactions.store');
     Route::delete('bank-transactions/{bank_transaction}', [BankTransactionController::class, 'destroy'])
         ->name('bank_transactions.destroy');
+    Route::post('bank-transactions/{bank_transaction}/reconcile', [BankTransactionController::class, 'reconcile'])->name('bank_transactions.reconcile');
+    Route::resource('payment-methods', CustomPaymentMethodController::class)->names('payment_methods')->except(['show']);
 
     Route::resource('expenses', ExpenseController::class);
     Route::post('expenses/{expense}/payments', [ExpensePaymentController::class, 'store'])->name('expense_payments.store');

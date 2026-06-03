@@ -12,9 +12,19 @@ class BankTransaction extends Model
         'withdrawal' => 'سحب',
     ];
 
+    public const CATEGORIES = [
+        'general' => 'عام',
+        'fee' => 'رسوم',
+        'salary' => 'رواتب',
+        'tax' => 'ضرائب',
+        'transfer' => 'تحويل',
+        'other' => 'أخرى',
+    ];
+
     protected $fillable = [
         'bank_account_id', 'type', 'amount', 'transaction_date',
         'description', 'reference_number', 'related_type', 'related_id', 'created_by',
+        'category', 'beneficiary', 'check_number', 'value_date', 'is_reconciled', 'attachment',
     ];
 
     protected function casts(): array
@@ -22,6 +32,8 @@ class BankTransaction extends Model
         return [
             'amount' => 'decimal:2',
             'transaction_date' => 'date',
+            'value_date' => 'date',
+            'is_reconciled' => 'boolean',
         ];
     }
 

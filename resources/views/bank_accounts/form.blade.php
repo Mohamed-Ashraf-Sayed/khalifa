@@ -38,6 +38,19 @@
                         <label class="form-label">العملة</label>
                         <input type="text" name="currency" value="{{ old('currency', $account->currency ?? 'EGP') }}" class="form-control">
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">نوع الحساب</label>
+                        <select name="account_type" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach (\App\Models\BankAccount::ACCOUNT_TYPES as $key => $label)
+                                <option value="{{ $key }}" @selected(old('account_type', $account->account_type) === $key)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">SWIFT / BIC</label>
+                        <input type="text" name="swift_code" value="{{ old('swift_code', $account->swift_code) }}" class="form-control">
+                    </div>
                     <div class="col-md-4 d-flex align-items-end">
                         <div class="form-check">
                             <input type="hidden" name="is_active" value="0">

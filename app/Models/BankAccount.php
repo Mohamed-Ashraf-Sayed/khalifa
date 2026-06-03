@@ -8,9 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BankAccount extends Model
 {
+    public const ACCOUNT_TYPES = [
+        'current' => 'جاري',
+        'savings' => 'توفير',
+        'business' => 'تجاري',
+    ];
+
     protected $fillable = [
         'name', 'bank_name', 'account_number', 'iban', 'branch',
         'currency', 'opening_balance', 'current_balance', 'is_active', 'notes', 'created_by',
+        'account_type', 'swift_code',
     ];
 
     protected function casts(): array
