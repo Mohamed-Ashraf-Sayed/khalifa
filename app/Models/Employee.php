@@ -41,12 +41,13 @@ class Employee extends Model
         return bcsub($adv, $ret, 2);
     }
 
-    /** رصيد العهدة في يد الموظف = العهدة − ردّها. */
+    /** رصيد العهدة في يد الموظف = العهدة − ردّها − ما صُرف منها. */
     public function custodyBalance(): string
     {
         $cus = (string) $this->transactions()->where('type', 'custody')->sum('amount');
         $ret = (string) $this->transactions()->where('type', 'custody_return')->sum('amount');
+        $exp = (string) $this->transactions()->where('type', 'custody_expense')->sum('amount');
 
-        return bcsub($cus, $ret, 2);
+        return bcsub(bcsub($cus, $ret, 2), $exp, 2);
     }
 }

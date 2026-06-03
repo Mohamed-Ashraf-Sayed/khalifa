@@ -56,6 +56,7 @@ class SupplierPaymentController extends Controller implements HasMiddleware
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validateData($request);
+        $data = $this->applyDeductions($data);
         $data['created_by'] = $request->user()->id;
 
         DB::transaction(function () use ($data) {
@@ -74,6 +75,7 @@ class SupplierPaymentController extends Controller implements HasMiddleware
     public function update(Request $request, SupplierPayment $supplierPayment): RedirectResponse
     {
         $data = $this->validateData($request);
+        $data = $this->applyDeductions($data);
 
         DB::transaction(function () use ($supplierPayment, $data) {
             $supplierPayment->update($data);
@@ -101,11 +103,14 @@ class SupplierPaymentController extends Controller implements HasMiddleware
     {
         $this->removeLinkedBankTransaction($payment);
 
-        if ($payment->bank_account_id) {
+        // السحب البنكي = صافي المدفوع نقداً = الإجمالي − الاستقطاعات.
+        $net = bcsub((string) $payment->amount, (string) $payment->total_deductions, 2);
+
+        if ($payment->bank_account_id && bccomp($net, '0', 2) > 0) {
             $account = BankAccount::findOrFail($payment->bank_account_id);
             $this->ledger->post($account, [
                 'type' => 'withdrawal',
-                'amount' => $payment->amount,
+                'amount' => $net,
                 'transaction_date' => $payment->payment_date,
                 'description' => 'دفعة مورد: '.optional($payment->supplier)->name,
                 'reference_number' => $payment->reference_number,
@@ -135,7 +140,7 @@ class SupplierPaymentController extends Controller implements HasMiddleware
 
     private function validateData(Request $request): array
     {
-        return $request->validate([
+        $rules = [
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'amount' => ['required', 'numeric', 'gt:0'],
             'payment_date' => ['required', 'date'],
@@ -143,6 +148,30 @@ class SupplierPaymentController extends Controller implements HasMiddleware
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
             'reference_number' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
-        ]);
+        ];
+
+        foreach (SupplierPayment::DEDUCTION_FIELDS as $field) {
+            $rules[$field] = ['nullable', 'numeric', 'min:0'];
+        }
+
+        return $request->validate($rules);
+    }
+
+    /**
+     * يضبط مكوّنات الاستقطاع المفقودة على 0 ويحسب الإجمالي بـ bcmath.
+     * total_deductions لا يُقبل من الإدخال — يُحسب هنا.
+     */
+    private function applyDeductions(array $data): array
+    {
+        $total = '0';
+
+        foreach (SupplierPayment::DEDUCTION_FIELDS as $field) {
+            $data[$field] = $data[$field] ?? 0;
+            $total = bcadd($total, (string) $data[$field], 2);
+        }
+
+        $data['total_deductions'] = $total;
+
+        return $data;
     }
 }

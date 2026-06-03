@@ -9,6 +9,7 @@ use App\Models\Contractor;
 use App\Models\ContractorExtract;
 use App\Models\ContractorPayment;
 use App\Models\Employee;
+use App\Models\EmployeeTransaction;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Material;
@@ -204,6 +205,23 @@ class DemoSeeder extends Seeder
         $inst = $creditExp->payments()->create(['payment_date' => now()->subDays(2)->toDateString(), 'amount' => 10000, 'payment_method' => 'bank_transfer', 'bank_account_id' => $bankMain->id, 'reference_number' => 'EXPPAY-1', 'created_by' => $this->by]);
         $this->ledger->post($bankMain, ['type' => 'withdrawal', 'amount' => $inst->amount, 'transaction_date' => $inst->payment_date, 'description' => 'سداد مصروف: '.$creditExp->description, 'related_type' => 'expense_payment', 'related_id' => $inst->id, 'created_by' => $this->by]);
         $creditExp->refreshPaymentStatus();
+
+        // عهدة لموظف + مصروف مصروف من العهدة (يُخصم تلقائياً من رصيد العهدة)
+        $emp = Employee::first();
+        if ($emp) {
+            EmployeeTransaction::create(['employee_id' => $emp->id, 'type' => 'custody', 'amount' => 50000, 'transaction_date' => now()->subDays(30)->toDateString(), 'description' => 'عهدة نثرية', 'created_by' => $this->by]);
+            $custExp = Expense::create(['project_id' => $mainProject->id, 'category' => 'materials', 'description' => 'مشتريات نثرية من العهدة', 'amount' => 12000, 'expense_date' => now()->subDays(10)->toDateString(), 'payment_method' => 'cash', 'delivered_by_employee_id' => $emp->id, 'created_by' => $this->by]);
+            $custExp->syncCustodyTransaction();
+            $custExp->refreshPaymentStatus();
+        }
+
+        // دفعة مورد باستقطاعات تفصيلية (ضريبة قيمة مضافة + تأمينات)
+        $supPay = SupplierPayment::first();
+        if ($supPay) {
+            $vat = bcmul((string) $supPay->amount, '0.14', 2);
+            $si = bcmul((string) $supPay->amount, '0.01', 2);
+            $supPay->update(['vat' => $vat, 'social_insurance' => $si, 'total_deductions' => bcadd($vat, $si, 2)]);
+        }
 
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }

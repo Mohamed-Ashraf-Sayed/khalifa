@@ -32,7 +32,7 @@ class Expense extends Model
 
     protected $fillable = [
         'project_id', 'category', 'description', 'amount', 'expense_date',
-        'payment_method', 'bank_account_id', 'notes', 'created_by',
+        'payment_method', 'bank_account_id', 'delivered_by_employee_id', 'notes', 'created_by',
         'paid_amount', 'payment_status', 'due_date', 'is_credit',
     ];
 
@@ -55,6 +55,11 @@ class Expense extends Model
     public function bankAccount(): BelongsTo
     {
         return $this->belongsTo(BankAccount::class);
+    }
+
+    public function deliveredBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'delivered_by_employee_id');
     }
 
     public function creator(): BelongsTo
@@ -92,5 +97,30 @@ class Expense extends Model
         }
 
         $this->save();
+    }
+
+    /**
+     * يضمن تطابق حركة العهدة المرتبطة مع حالة المصروف الحالية:
+     * يحذف أي حركة سابقة، ثم يسجّل صرفاً من عهدة الموظف لو كان المصروف مدفوعاً من عهدته.
+     */
+    public function syncCustodyTransaction(): void
+    {
+        EmployeeTransaction::where('reference_type', 'expense')
+            ->where('reference_id', $this->id)
+            ->delete();
+
+        if ($this->delivered_by_employee_id) {
+            EmployeeTransaction::create([
+                'employee_id' => $this->delivered_by_employee_id,
+                'type' => 'custody_expense',
+                'amount' => $this->amount,
+                'transaction_date' => $this->expense_date,
+                'project_id' => $this->project_id,
+                'description' => 'مصروف من العهدة: '.$this->description,
+                'reference_type' => 'expense',
+                'reference_id' => $this->id,
+                'created_by' => $this->created_by,
+            ]);
+        }
     }
 }

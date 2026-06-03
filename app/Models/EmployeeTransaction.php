@@ -10,6 +10,7 @@ class EmployeeTransaction extends Model
     protected $fillable = [
         'employee_id', 'type', 'amount', 'transaction_date',
         'project_id', 'description', 'notes', 'created_by',
+        'reference_type', 'reference_id',
     ];
 
     protected function casts(): array
@@ -26,6 +27,7 @@ class EmployeeTransaction extends Model
         'advance_return' => 'سداد سلفة',
         'custody' => 'عهدة',
         'custody_return' => 'رد عهدة',
+        'custody_expense' => 'صرف من العهدة',
         'bonus' => 'مكافأة',
         'deduction' => 'خصم',
     ];

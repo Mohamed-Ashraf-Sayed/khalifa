@@ -57,6 +57,16 @@
                         </select>
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label">مدفوع من عهدة الموظف <span class="text-muted small">(اختياري)</span></label>
+                        <select name="delivered_by_employee_id" class="form-select">
+                            <option value="">— لا —</option>
+                            @foreach ($employees as $emp)
+                                <option value="{{ $emp->id }}" @selected((int) old('delivered_by_employee_id', $expense->delivered_by_employee_id) === $emp->id)>{{ $emp->name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="form-text">لو اخترت موظف، يُخصم من عهدته ولا يُسحب من البنك.</div>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">تاريخ الاستحقاق <span class="text-muted small">(للمصروفات الآجلة)</span></label>
                         <input type="date" name="due_date" value="{{ old('due_date', $expense->due_date?->format('Y-m-d')) }}" class="form-control">
                     </div>

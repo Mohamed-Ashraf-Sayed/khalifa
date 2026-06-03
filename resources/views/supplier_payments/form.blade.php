@@ -20,7 +20,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">المبلغ <span class="text-danger">*</span></label>
+                        <label class="form-label">الإجمالي المستحق (قبل الاستقطاع) <span class="text-danger">*</span></label>
                         <input type="number" step="0.01" min="0.01" name="amount" value="{{ old('amount', $supplierPayment->amount) }}" class="form-control" required>
                     </div>
                     <div class="col-md-4">
@@ -47,6 +47,40 @@
                                 <option value="{{ $a->id }}" @selected((int) old('bank_account_id', $supplierPayment->bank_account_id) === $a->id)>{{ $a->name }} ({{ number_format($a->current_balance, 2) }})</option>
                             @endforeach
                         </select>
+                    </div>
+                    @php
+                        $deductionLabels = [
+                            'vat' => 'ضريبة القيمة المضافة',
+                            'insurance_5_percent' => 'تأمين 5%',
+                            'social_insurance' => 'تأمينات اجتماعية',
+                            'commercial_profit_supply' => 'أرباح تجارية (توريدات)',
+                            'commercial_profit_works' => 'أرباح تجارية (أعمال)',
+                            'engineering_professions' => 'مهن هندسية',
+                            'arts_specialists' => 'أخصائيو فنون',
+                            'applied_professions' => 'مهن تطبيقية',
+                            'bank_transfer_fee' => 'رسوم تحويل بنكي',
+                            'other_deductions' => 'استقطاعات أخرى',
+                        ];
+                    @endphp
+                    <div class="col-12">
+                        <div class="card border">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#deductionsSection" aria-expanded="false" aria-controls="deductionsSection">
+                                <span><i class="fa-solid fa-scissors ms-1"></i> الاستقطاعات (اختياري)</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="collapse" id="deductionsSection">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        @foreach ($deductionLabels as $field => $label)
+                                            <div class="col-md-4">
+                                                <label class="form-label">{{ $label }}</label>
+                                                <input type="number" step="0.01" min="0" name="{{ $field }}" value="{{ old($field, $supplierPayment->$field ?? 0) }}" class="form-control">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>

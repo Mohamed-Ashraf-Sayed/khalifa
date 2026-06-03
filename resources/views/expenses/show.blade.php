@@ -23,6 +23,7 @@
                 <div class="col-md-4"><div class="text-muted small">المشروع</div><div>{{ $expense->project?->name ?? '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">طريقة الدفع</div><div>{{ \App\Models\Expense::PAYMENT_METHODS[$expense->payment_method] ?? $expense->payment_method }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">الحساب البنكي</div><div>{{ $expense->bankAccount?->name ?? '—' }}</div></div>
+                @if ($expense->deliveredBy)<div class="col-md-4"><div class="text-muted small">مدفوع من عهدة</div><div>{{ $expense->deliveredBy->name }}</div></div>@endif
                 @if ($expense->is_credit)
                     <div class="col-md-4"><div class="text-muted small">النوع</div><div><span class="badge text-bg-warning"><i class="fa-solid fa-clock ms-1"></i> مصروف آجل</span></div></div>
                 @endif

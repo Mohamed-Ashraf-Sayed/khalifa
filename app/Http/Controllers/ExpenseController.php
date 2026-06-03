@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\Employee;
+use App\Models\EmployeeTransaction;
 use App\Models\Expense;
 use App\Models\Project;
 use App\Services\BankLedgerService;
@@ -67,6 +69,7 @@ class ExpenseController extends Controller implements HasMiddleware
             $expense = Expense::create($data);
             $this->syncBankTransaction($expense);
             $expense->refreshPaymentStatus();
+            $expense->syncCustodyTransaction();
         });
 
         return redirect()->route('expenses.index')->with('success', 'تمت إضافة المصروف.');
@@ -85,6 +88,7 @@ class ExpenseController extends Controller implements HasMiddleware
             $expense->update($data);
             $this->syncBankTransaction($expense);
             $expense->refreshPaymentStatus();
+            $expense->syncCustodyTransaction();
         });
 
         return redirect()->route('expenses.index')->with('success', 'تم تحديث المصروف.');
@@ -94,6 +98,9 @@ class ExpenseController extends Controller implements HasMiddleware
     {
         DB::transaction(function () use ($expense) {
             $this->removeLinkedBankTransaction($expense);
+            EmployeeTransaction::where('reference_type', 'expense')
+                ->where('reference_id', $expense->id)
+                ->delete();
             $expense->delete();
         });
 
@@ -137,12 +144,13 @@ class ExpenseController extends Controller implements HasMiddleware
             'expense' => $expense,
             'projects' => Project::orderBy('name')->get(),
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
+            'employees' => Employee::where('is_active', true)->orderBy('name')->get(),
         ];
     }
 
     private function validateData(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'project_id' => ['nullable', 'exists:projects,id'],
             'category' => ['required', 'in:'.implode(',', array_keys(Expense::CATEGORIES))],
             'description' => ['required', 'string', 'max:255'],
@@ -150,9 +158,17 @@ class ExpenseController extends Controller implements HasMiddleware
             'expense_date' => ['required', 'date'],
             'payment_method' => ['required', 'in:'.implode(',', array_keys(Expense::PAYMENT_METHODS))],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
+            'delivered_by_employee_id' => ['nullable', 'exists:employees,id'],
             'is_credit' => ['nullable', 'boolean'],
             'due_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        // المصروف المدفوع من عهدة موظف لا يُسحب من البنك (تجنّب الحساب المزدوج).
+        if (! empty($data['delivered_by_employee_id'])) {
+            $data['bank_account_id'] = null;
+        }
+
+        return $data;
     }
 }
