@@ -38,8 +38,8 @@
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="fa-solid fa-gauge-high"></i> لوحة التحكم
             </a>
-            @can('projects.view')   <a class="nav-link" href="#"><i class="fa-solid fa-diagram-project"></i> المشاريع</a> @endcan
-            @can('clients.view')    <a class="nav-link" href="#"><i class="fa-solid fa-users"></i> العملاء</a> @endcan
+            @can('projects.view')   <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}"><i class="fa-solid fa-diagram-project"></i> المشاريع</a> @endcan
+            @can('clients.view')    <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" href="{{ route('clients.index') }}"><i class="fa-solid fa-users"></i> العملاء</a> @endcan
             @can('contractors.view')<a class="nav-link" href="#"><i class="fa-solid fa-hard-hat"></i> المقاولون</a> @endcan
             @can('suppliers.view')  <a class="nav-link" href="#"><i class="fa-solid fa-truck"></i> الموردون</a> @endcan
             @can('employees.view')  <a class="nav-link" href="#"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
@@ -74,6 +74,19 @@
         </header>
 
         <main class="px-4 pb-5">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show"><i class="fa-solid fa-circle-check ms-1"></i> {{ session('success') }}<button class="btn-close" data-bs-dismiss="alert"></button></div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show"><i class="fa-solid fa-circle-exclamation ms-1"></i> {{ session('error') }}<button class="btn-close" data-bs-dismiss="alert"></button></div>
+            @endif
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <strong>فيه أخطاء في البيانات:</strong>
+                    <ul class="mb-0 mt-1">@foreach ($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+                    <button class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
             @yield('content')
         </main>
     </div>
