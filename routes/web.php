@@ -5,6 +5,8 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\BankTransferController;
@@ -29,6 +31,7 @@ use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\LoginLogController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerDepositController;
 use App\Http\Controllers\PartnerTransactionController;
@@ -63,6 +66,11 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [LoginController::class, 'store']);
 });
 
+// تحدّي المصادقة الثنائية — خارج الـ auth (المستخدم لسه مش مُسجّل بالكامل، يعتمد على الجلسة)
+Route::get('two-factor-challenge', [TwoFactorController::class, 'show'])->name('two_factor.challenge');
+Route::post('two-factor-challenge', [TwoFactorController::class, 'verify'])->name('two_factor.verify');
+Route::post('two-factor-challenge/cancel', [TwoFactorController::class, 'cancel'])->name('two_factor.cancel');
+
 // مستخدمون مسجّلون فقط
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
@@ -76,12 +84,26 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::get('login-logs', [LoginLogController::class, 'index'])->name('login_logs.index');
 
+    // المصادقة الثنائية (إدارة من الملف الشخصي)
+    Route::post('profile/2fa/enable', [ProfileController::class, 'twoFactorEnable'])->name('profile.2fa.enable');
+    Route::post('profile/2fa/confirm', [ProfileController::class, 'twoFactorConfirm'])->name('profile.2fa.confirm');
+    Route::post('profile/2fa/disable', [ProfileController::class, 'twoFactorDisable'])->name('profile.2fa.disable');
+
+    // النسخ الاحتياطي + الإشعارات
+    Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+    Route::post('backups/run', [BackupController::class, 'run'])->name('backups.run');
+    Route::get('backups/download/{file}', [BackupController::class, 'download'])->where('file', '[A-Za-z0-9._-]+')->name('backups.download');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read_all');
+
     // استيراد/تصدير البيانات (CSV)
     Route::get('data-port', [DataPortController::class, 'index'])->name('data_port.index');
     Route::get('data-port/{entity}/template', [DataPortController::class, 'template'])->name('data_port.template');
     Route::get('data-port/{entity}/export', [DataPortController::class, 'export'])->name('data_port.export');
     Route::post('data-port/{entity}/import', [DataPortController::class, 'import'])->name('data_port.import');
 
+    Route::post('clients/bulk-destroy', [ClientController::class, 'bulkDestroy'])->name('clients.bulk_destroy');
     Route::resource('clients', ClientController::class);
     Route::resource('projects', ProjectController::class);
     Route::post('projects/{project}/employees', [ProjectEmployeeController::class, 'store'])->name('projectEmployees.store');
@@ -93,6 +115,7 @@ Route::middleware('auth')->group(function () {
     Route::get('project-costs/report', [ProjectCostController::class, 'report'])->name('project_costs.report');
     Route::resource('project-costs', ProjectCostController::class)->names('project_costs');
     Route::resource('contractors', ContractorController::class);
+    Route::post('suppliers/bulk-destroy', [SupplierController::class, 'bulkDestroy'])->name('suppliers.bulk_destroy');
     Route::resource('suppliers', SupplierController::class);
     Route::resource('employees', EmployeeController::class);
     Route::resource('partners', PartnerController::class);
@@ -117,10 +140,12 @@ Route::middleware('auth')->group(function () {
     Route::post('cheques/{cheque}/deposited', [ChequeController::class, 'markDeposited'])->name('cheques.deposited');
     Route::post('cheques/{cheque}/cleared', [ChequeController::class, 'markCleared'])->name('cheques.cleared');
     Route::post('cheques/{cheque}/bounced', [ChequeController::class, 'markBounced'])->name('cheques.bounced');
+    Route::post('expenses/bulk-destroy', [ExpenseController::class, 'bulkDestroy'])->name('expenses.bulk_destroy');
     Route::resource('expenses', ExpenseController::class);
     Route::post('expenses/{expense}/payments', [ExpensePaymentController::class, 'store'])->name('expense_payments.store');
     Route::delete('expense-payments/{expense_payment}', [ExpensePaymentController::class, 'destroy'])->name('expense_payments.destroy');
 
+    Route::post('revenues/bulk-destroy', [RevenueController::class, 'bulkDestroy'])->name('revenues.bulk_destroy');
     Route::resource('revenues', RevenueController::class);
     Route::post('revenues/{revenue}/confirm', [RevenueController::class, 'confirm'])->name('revenues.confirm');
     Route::post('revenues/{revenue}/collections', [RevenueCollectionController::class, 'store'])->name('revenue_collections.store');

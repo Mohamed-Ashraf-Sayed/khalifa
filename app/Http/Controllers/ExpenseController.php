@@ -28,7 +28,7 @@ class ExpenseController extends Controller implements HasMiddleware
             new Middleware('can:expenses.view', only: ['index', 'show']),
             new Middleware('can:expenses.create', only: ['create', 'store']),
             new Middleware('can:expenses.edit', only: ['edit', 'update']),
-            new Middleware('can:expenses.delete', only: ['destroy']),
+            new Middleware('can:expenses.delete', only: ['destroy', 'bulkDestroy']),
         ];
     }
 
@@ -107,6 +107,26 @@ class ExpenseController extends Controller implements HasMiddleware
         });
 
         return back()->with('success', 'تم حذف المصروف.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:expenses,id'],
+        ]);
+
+        DB::transaction(function () use ($data) {
+            Expense::whereIn('id', $data['ids'])->get()->each(function (Expense $expense) {
+                $this->removeLinkedBankTransaction($expense);
+                EmployeeTransaction::where('reference_type', 'expense')
+                    ->where('reference_id', $expense->id)
+                    ->delete();
+                $expense->delete();
+            });
+        });
+
+        return back()->with('success', 'تم حذف المصروفات المحددة.');
     }
 
     /**

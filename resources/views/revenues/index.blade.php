@@ -74,10 +74,19 @@
                 @endcan
             </div>
 
+            @can('revenues.delete')
+                <form id="bulk-form" method="POST" action="{{ route('revenues.bulk_destroy') }}" onsubmit="return confirm('حذف الإيرادات المحددة؟')">
+                    @csrf
+                    <div id="bulk-toolbar" class="d-none mb-3">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash ms-1"></i> حذف المحدد (<span id="bulk-count">0</span>)</button>
+                    </div>
+            @endcan
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
+                            @can('revenues.delete')<th style="width:1%"><input type="checkbox" id="bulk-select-all" class="form-check-input"></th>@endcan
                             <th>التاريخ</th>
                             <th>البيان</th>
                             <th>المشروع</th>
@@ -91,6 +100,7 @@
                     <tbody>
                         @forelse ($revenues as $revenue)
                             <tr>
+                                @can('revenues.delete')<td><input type="checkbox" form="bulk-form" name="ids[]" value="{{ $revenue->id }}" class="form-check-input bulk-item"></td>@endcan
                                 <td>{{ $revenue->revenue_date->format('Y-m-d') }}</td>
                                 <td class="fw-semibold">{{ $revenue->description }}</td>
                                 <td>{{ $revenue->project?->name ?? '—' }}</td>
@@ -123,13 +133,40 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-center text-muted py-4">لا توجد إيرادات بعد.</td></tr>
+                            <tr><td colspan="9" class="text-center text-muted py-4">لا توجد إيرادات بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+            @can('revenues.delete')</form>@endcan
 
             {{ $revenues->links() }}
         </div>
     </div>
+
+    @can('revenues.delete')
+        <script>
+            (function () {
+                const selectAll = document.getElementById('bulk-select-all');
+                const items = Array.from(document.querySelectorAll('.bulk-item'));
+                const toolbar = document.getElementById('bulk-toolbar');
+                const counter = document.getElementById('bulk-count');
+
+                function refresh() {
+                    const checked = items.filter(i => i.checked).length;
+                    counter.textContent = checked;
+                    toolbar.classList.toggle('d-none', checked === 0);
+                    if (selectAll) selectAll.checked = checked > 0 && checked === items.length;
+                }
+
+                if (selectAll) {
+                    selectAll.addEventListener('change', () => {
+                        items.forEach(i => { i.checked = selectAll.checked; });
+                        refresh();
+                    });
+                }
+                items.forEach(i => i.addEventListener('change', refresh));
+            })();
+        </script>
+    @endcan
 @endsection

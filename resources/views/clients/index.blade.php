@@ -17,10 +17,19 @@
                 @endcan
             </div>
 
+            @can('clients.delete')
+                <form id="bulk-form" method="POST" action="{{ route('clients.bulk_destroy') }}" onsubmit="return confirm('حذف العملاء المحددين؟')">
+                    @csrf
+                    <div id="bulk-toolbar" class="d-none mb-3">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash ms-1"></i> حذف المحدد (<span id="bulk-count">0</span>)</button>
+                    </div>
+            @endcan
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
+                            @can('clients.delete')<th style="width:1%"><input type="checkbox" id="bulk-select-all" class="form-check-input"></th>@endcan
                             <th>الاسم</th>
                             <th>الشركة</th>
                             <th>الهاتف</th>
@@ -32,6 +41,7 @@
                     <tbody>
                         @forelse ($clients as $client)
                             <tr>
+                                @can('clients.delete')<td><input type="checkbox" form="bulk-form" name="ids[]" value="{{ $client->id }}" class="form-check-input bulk-item"></td>@endcan
                                 <td class="fw-semibold">{{ $client->name }}</td>
                                 <td>{{ $client->company_name ?: '—' }}</td>
                                 <td>{{ $client->phone }}</td>
@@ -56,13 +66,40 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-4">لا يوجد عملاء بعد.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted py-4">لا يوجد عملاء بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+            @can('clients.delete')</form>@endcan
 
             {{ $clients->links() }}
         </div>
     </div>
+
+    @can('clients.delete')
+        <script>
+            (function () {
+                const selectAll = document.getElementById('bulk-select-all');
+                const items = Array.from(document.querySelectorAll('.bulk-item'));
+                const toolbar = document.getElementById('bulk-toolbar');
+                const counter = document.getElementById('bulk-count');
+
+                function refresh() {
+                    const checked = items.filter(i => i.checked).length;
+                    counter.textContent = checked;
+                    toolbar.classList.toggle('d-none', checked === 0);
+                    if (selectAll) selectAll.checked = checked > 0 && checked === items.length;
+                }
+
+                if (selectAll) {
+                    selectAll.addEventListener('change', () => {
+                        items.forEach(i => { i.checked = selectAll.checked; });
+                        refresh();
+                    });
+                }
+                items.forEach(i => i.addEventListener('change', refresh));
+            })();
+        </script>
+    @endcan
 @endsection

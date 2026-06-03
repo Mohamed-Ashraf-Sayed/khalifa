@@ -71,6 +71,16 @@ class LoginController extends Controller
         RateLimiter::clear($key);
         $request->session()->regenerate(); // يمنع session fixation
 
+        // المصادقة الثنائية: ما نكملش الدخول — نوقف المستخدم ونحوّله لشاشة التحدي.
+        // التسجيل (last_login / LoginAttempt success / ActivityLog) يتم بعد نجاح 2FA فقط.
+        if (Auth::user()->two_factor_enabled) {
+            $request->session()->put('2fa_user_id', Auth::id());
+            $request->session()->put('2fa_remember', $request->boolean('remember'));
+            Auth::logout(); // لسه مش مسجّل دخول بالكامل
+
+            return redirect()->route('two_factor.challenge');
+        }
+
         // تسجيل دخول ناجح (audit)
         LoginAttempt::create([
             'email' => $credentials['email'],

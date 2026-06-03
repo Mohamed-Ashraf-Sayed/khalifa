@@ -20,7 +20,7 @@ class SupplierController extends Controller implements HasMiddleware
             new Middleware('can:suppliers.view', only: ['index', 'show', 'statement']),
             new Middleware('can:suppliers.create', only: ['create', 'store']),
             new Middleware('can:suppliers.edit', only: ['edit', 'update']),
-            new Middleware('can:suppliers.delete', only: ['destroy']),
+            new Middleware('can:suppliers.delete', only: ['destroy', 'bulkDestroy']),
         ];
     }
 
@@ -83,6 +83,18 @@ class SupplierController extends Controller implements HasMiddleware
         $supplier->delete();
 
         return back()->with('success', 'تم حذف المورد.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:suppliers,id'],
+        ]);
+
+        Supplier::whereIn('id', $data['ids'])->get()->each(fn (Supplier $supplier) => $supplier->delete());
+
+        return back()->with('success', 'تم حذف الموردين المحددين.');
     }
 
     /**

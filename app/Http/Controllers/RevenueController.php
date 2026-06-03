@@ -26,7 +26,7 @@ class RevenueController extends Controller implements HasMiddleware
             new Middleware('can:revenues.view', only: ['index', 'show']),
             new Middleware('can:revenues.create', only: ['create', 'store']),
             new Middleware('can:revenues.edit', only: ['edit', 'update', 'confirm']),
-            new Middleware('can:revenues.delete', only: ['destroy']),
+            new Middleware('can:revenues.delete', only: ['destroy', 'bulkDestroy']),
         ];
     }
 
@@ -154,6 +154,23 @@ class RevenueController extends Controller implements HasMiddleware
         });
 
         return back()->with('success', 'تم حذف الإيراد.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:revenues,id'],
+        ]);
+
+        DB::transaction(function () use ($data) {
+            Revenue::whereIn('id', $data['ids'])->get()->each(function (Revenue $revenue) {
+                $this->removeLinkedBankTransaction($revenue);
+                $revenue->delete();
+            });
+        });
+
+        return back()->with('success', 'تم حذف الإيرادات المحددة.');
     }
 
     /** يبدّل حالة تأكيد الإيراد (مؤكد / قيد التأكيد). */

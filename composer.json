@@ -12,6 +12,8 @@
         "laravel/tinker": "^3.0",
         "mpdf/mpdf": "^8.3",
         "phpoffice/phpspreadsheet": "^5.7",
+        "pragmarx/google2fa-qrcode": "^4.0",
+        "spatie/laravel-backup": "^10.2",
         "spatie/laravel-permission": "^8.0"
     },
     "require-dev": {

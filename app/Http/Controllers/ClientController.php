@@ -17,7 +17,7 @@ class ClientController extends Controller implements HasMiddleware
             new Middleware('can:clients.view', only: ['index', 'show']),
             new Middleware('can:clients.create', only: ['create', 'store']),
             new Middleware('can:clients.edit', only: ['edit', 'update']),
-            new Middleware('can:clients.delete', only: ['destroy']),
+            new Middleware('can:clients.delete', only: ['destroy', 'bulkDestroy']),
         ];
     }
 
@@ -81,6 +81,29 @@ class ClientController extends Controller implements HasMiddleware
         $client->delete();
 
         return back()->with('success', 'تم حذف العميل.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:clients,id'],
+        ]);
+
+        // تجاهل العملاء المرتبطين بمشاريع (لا يمكن حذفهم).
+        $deletable = Client::whereIn('id', $data['ids'])
+            ->whereDoesntHave('projects')
+            ->get();
+
+        $deletable->each(fn (Client $client) => $client->delete());
+
+        $skipped = count($data['ids']) - $deletable->count();
+        $message = 'تم حذف العملاء المحددين.';
+        if ($skipped > 0) {
+            $message .= " (تم تجاهل {$skipped} مرتبطين بمشاريع)";
+        }
+
+        return back()->with('success', $message);
     }
 
     private function validateData(Request $request): array
