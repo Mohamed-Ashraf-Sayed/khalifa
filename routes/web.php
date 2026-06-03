@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankAccountController;
@@ -21,9 +22,11 @@ use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerTransactionController;
 use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RevenueController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\TaxController;
@@ -90,6 +93,17 @@ Route::middleware('auth')->group(function () {
     // موجة 7 — تحويلات بنكية + حركات مخزون
     Route::resource('bank-transfers', BankTransferController::class)->names('bank_transfers')->only(['index', 'create', 'store', 'destroy']);
     Route::resource('inventory-movements', InventoryMovementController::class)->names('inventory_movements')->only(['index', 'create', 'store', 'destroy']);
+
+    // موجة 8 — ملفات المشاريع (رفع آمن) + الإعدادات + سجل النشاطات
+    Route::get('project-files', [ProjectFileController::class, 'index'])->name('project_files.index');
+    Route::post('project-files', [ProjectFileController::class, 'store'])->name('project_files.store');
+    Route::get('project-files/{project_file}/download', [ProjectFileController::class, 'download'])->name('project_files.download');
+    Route::delete('project-files/{project_file}', [ProjectFileController::class, 'destroy'])->name('project_files.destroy');
+
+    Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+    Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+
+    Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 });
