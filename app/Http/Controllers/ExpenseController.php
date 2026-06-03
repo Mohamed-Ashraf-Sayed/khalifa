@@ -46,9 +46,11 @@ class ExpenseController extends Controller implements HasMiddleware
 
     public function show(Expense $expense): View
     {
-        $expense->load(['project', 'bankAccount', 'creator']);
+        $expense->load(['project', 'bankAccount', 'creator', 'payments.bankAccount', 'payments.creator']);
 
-        return view('expenses.show', compact('expense'));
+        $accounts = BankAccount::where('is_active', true)->orderBy('name')->get();
+
+        return view('expenses.show', compact('expense', 'accounts'));
     }
 
     public function create(): View
@@ -64,6 +66,7 @@ class ExpenseController extends Controller implements HasMiddleware
         DB::transaction(function () use ($data) {
             $expense = Expense::create($data);
             $this->syncBankTransaction($expense);
+            $expense->refreshPaymentStatus();
         });
 
         return redirect()->route('expenses.index')->with('success', 'تمت إضافة المصروف.');
@@ -81,6 +84,7 @@ class ExpenseController extends Controller implements HasMiddleware
         DB::transaction(function () use ($expense, $data) {
             $expense->update($data);
             $this->syncBankTransaction($expense);
+            $expense->refreshPaymentStatus();
         });
 
         return redirect()->route('expenses.index')->with('success', 'تم تحديث المصروف.');
@@ -146,6 +150,8 @@ class ExpenseController extends Controller implements HasMiddleware
             'expense_date' => ['required', 'date'],
             'payment_method' => ['required', 'in:'.implode(',', array_keys(Expense::PAYMENT_METHODS))],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
+            'is_credit' => ['nullable', 'boolean'],
+            'due_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
     }

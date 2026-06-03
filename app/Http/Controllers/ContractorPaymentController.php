@@ -62,6 +62,7 @@ class ContractorPaymentController extends Controller implements HasMiddleware
         DB::transaction(function () use ($data) {
             $payment = ContractorPayment::create($data);
             $this->syncBankTransaction($payment);
+            $payment->extract?->refreshPaymentStatus();
         });
 
         return redirect()->route('contractor_payments.index')->with('success', 'تمت إضافة الدفعة.');
@@ -75,10 +76,16 @@ class ContractorPaymentController extends Controller implements HasMiddleware
     public function update(Request $request, ContractorPayment $contractorPayment): RedirectResponse
     {
         $data = $this->validateData($request);
+        $originalExtractId = $contractorPayment->extract_id;
 
-        DB::transaction(function () use ($contractorPayment, $data) {
+        DB::transaction(function () use ($contractorPayment, $data, $originalExtractId) {
             $contractorPayment->update($data);
             $this->syncBankTransaction($contractorPayment);
+            $contractorPayment->extract?->refreshPaymentStatus();
+            // لو اتغيّر المستخلص، حدّث القديم كمان
+            if ($originalExtractId && $originalExtractId !== $contractorPayment->extract_id) {
+                ContractorExtract::find($originalExtractId)?->refreshPaymentStatus();
+            }
         });
 
         return redirect()->route('contractor_payments.index')->with('success', 'تم تحديث الدفعة.');
@@ -87,8 +94,10 @@ class ContractorPaymentController extends Controller implements HasMiddleware
     public function destroy(ContractorPayment $contractorPayment): RedirectResponse
     {
         DB::transaction(function () use ($contractorPayment) {
+            $extract = $contractorPayment->extract;
             $this->removeLinkedBankTransaction($contractorPayment);
             $contractorPayment->delete();
+            $extract?->refreshPaymentStatus();
         });
 
         return back()->with('success', 'تم حذف الدفعة.');

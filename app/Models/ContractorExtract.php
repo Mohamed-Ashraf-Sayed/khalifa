@@ -79,4 +79,27 @@ class ContractorExtract extends Model
     {
         return bcsub((string) $this->net_amount, (string) $this->paid_amount, 2);
     }
+
+    /**
+     * يُحدّث المدفوع وحالة المستخلص تلقائياً من دفعات المقاول المرتبطة.
+     * paid = مجموع الدفعات على هذا المستخلص؛ الحالة: مدفوع/جزئي/معتمد.
+     * لا يُنزّل مستخلصاً "ملغياً" أو "قيد الاعتماد" — يحافظ على المسار المنطقي.
+     */
+    public function refreshPaymentStatus(): void
+    {
+        $paid = (string) ContractorPayment::where('extract_id', $this->id)->sum('amount');
+        $this->paid_amount = $paid;
+
+        if (! in_array($this->status, ['cancelled', 'pending'], true)) {
+            if (bccomp((string) $this->net_amount, '0', 2) > 0 && bccomp($paid, (string) $this->net_amount, 2) >= 0) {
+                $this->status = 'paid';
+            } elseif (bccomp($paid, '0', 2) > 0) {
+                $this->status = 'partial';
+            } else {
+                $this->status = 'approved';
+            }
+        }
+
+        $this->save();
+    }
 }

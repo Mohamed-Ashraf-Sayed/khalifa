@@ -58,9 +58,10 @@ class InvoiceController extends Controller implements HasMiddleware
 
     public function show(Invoice $invoice): View
     {
-        $invoice->load('items', 'client', 'project');
+        $invoice->load('items', 'client', 'project', 'payments.bankAccount');
+        $accounts = \App\Models\BankAccount::where('is_active', true)->orderBy('name')->get();
 
-        return view('invoices.show', compact('invoice'));
+        return view('invoices.show', compact('invoice', 'accounts'));
     }
 
     public function edit(Invoice $invoice): View

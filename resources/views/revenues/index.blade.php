@@ -28,6 +28,8 @@
                             <th>البيان</th>
                             <th>المشروع</th>
                             <th>المبلغ</th>
+                            <th>المحصّل</th>
+                            <th>حالة التحصيل</th>
                             <th>الاستلام</th>
                             <th class="text-end">إجراءات</th>
                         </tr>
@@ -39,6 +41,11 @@
                                 <td class="fw-semibold">{{ $revenue->description }}</td>
                                 <td>{{ $revenue->project?->name ?? '—' }}</td>
                                 <td class="fw-bold text-success">{{ number_format($revenue->amount, 2) }}</td>
+                                <td>{{ number_format($revenue->paid_amount, 2) }}</td>
+                                <td>
+                                    @php $sc = ['pending' => 'secondary', 'partial' => 'warning', 'collected' => 'success']; @endphp
+                                    <span class="badge bg-{{ $sc[$revenue->payment_status] ?? 'secondary' }}">{{ \App\Models\Revenue::PAYMENT_STATUSES[$revenue->payment_status] ?? $revenue->payment_status }}</span>
+                                </td>
                                 <td>
                                     {{ \App\Models\Revenue::PAYMENT_METHODS[$revenue->payment_method] ?? $revenue->payment_method }}
                                     @if ($revenue->bankAccount)<i class="fa-solid fa-building-columns text-muted small" title="{{ $revenue->bankAccount->name }}"></i>@endif
@@ -57,7 +64,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-4">لا توجد إيرادات بعد.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">لا توجد إيرادات بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -23,6 +23,12 @@ class Invoice extends Model
         'cancelled' => 'ملغاة',
     ];
 
+    public const PAYMENT_METHODS = [
+        'cash' => 'نقدي',
+        'bank_transfer' => 'تحويل بنكي',
+        'check' => 'شيك',
+    ];
+
     protected $fillable = [
         'invoice_number', 'client_id', 'project_id', 'invoice_type', 'issue_date', 'due_date',
         'subtotal', 'tax_rate', 'tax_amount', 'total_amount', 'paid_amount', 'status', 'notes', 'created_by',
@@ -59,6 +65,42 @@ class Invoice extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(InvoicePayment::class);
+    }
+
+    /** المتبقّي على الفاتورة. */
+    public function remaining(): string
+    {
+        return bcsub((string) $this->total_amount, (string) $this->paid_amount, 2);
+    }
+
+    /**
+     * يُحدّث المدفوع وحالة الفاتورة تلقائياً من الدفعات المرتبطة.
+     * paid = مجموع الدفعات؛ الحالة: مدفوعة/جزئية/مُرسلة (مع الحفاظ على المسودّة).
+     * لا يُغيّر فاتورة "ملغاة".
+     */
+    public function refreshPaymentStatus(): void
+    {
+        if ($this->status === 'cancelled') {
+            return;
+        }
+
+        $paid = (string) $this->payments()->sum('amount');
+        $this->paid_amount = $paid;
+
+        if (bccomp((string) $this->total_amount, '0', 2) > 0 && bccomp($paid, (string) $this->total_amount, 2) >= 0) {
+            $this->status = 'paid';
+        } elseif (bccomp($paid, '0', 2) > 0) {
+            $this->status = 'partial';
+        } else {
+            $this->status = ($this->status === 'draft' ? 'draft' : 'sent');
+        }
+
+        $this->save();
     }
 
     /**

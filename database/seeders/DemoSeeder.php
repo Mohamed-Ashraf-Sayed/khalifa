@@ -184,6 +184,27 @@ class DemoSeeder extends Seeder
             $inv->recomputeTotals();
         }
 
+        // إيراد آجل (شيك مؤجّل) + تحصيل جزئي بإيداع بنكي
+        $creditRev = Revenue::create(['project_id' => $mainProject->id, 'description' => 'دفعة عميل آجلة', 'amount' => 80000, 'revenue_date' => now()->subDays(20)->toDateString(), 'due_date' => now()->addDays(15)->toDateString(), 'payment_method' => 'check', 'check_number' => 'CHK-2026-001', 'deferred_check' => true, 'created_by' => $this->by]);
+        $col = $creditRev->collections()->create(['collection_date' => now()->subDays(5)->toDateString(), 'amount' => 30000, 'payment_method' => 'bank_transfer', 'bank_account_id' => $bankMain->id, 'created_by' => $this->by]);
+        $this->ledger->post($bankMain, ['type' => 'deposit', 'amount' => $col->amount, 'transaction_date' => $col->collection_date, 'description' => 'تحصيل إيراد: '.$creditRev->description, 'related_type' => 'revenue_collection', 'related_id' => $col->id, 'created_by' => $this->by]);
+        $creditRev->refreshCollectionStatus();
+
+        // دفعة جزئية على أول فاتورة (تحصيل بنكي)
+        $firstInvoice = Invoice::first();
+        if ($firstInvoice) {
+            $pay = $firstInvoice->payments()->create(['payment_date' => now()->subDays(3)->toDateString(), 'amount' => (int) round((float) $firstInvoice->total_amount * 0.4), 'payment_method' => 'bank_transfer', 'bank_account_id' => $bankMain->id, 'reference_number' => 'INVPAY-1', 'created_by' => $this->by]);
+            $this->ledger->post($bankMain, ['type' => 'deposit', 'amount' => $pay->amount, 'transaction_date' => $pay->payment_date, 'description' => 'تحصيل فاتورة '.$firstInvoice->invoice_number, 'related_type' => 'invoice_payment', 'related_id' => $pay->id, 'created_by' => $this->by]);
+            $firstInvoice->refreshPaymentStatus();
+        }
+
+        // مصروف آجل + قسط سداد (سحب بنكي)
+        $creditExp = Expense::create(['project_id' => $mainProject->id, 'category' => 'administrative', 'description' => 'إيجار معدات آجل', 'amount' => 24000, 'expense_date' => now()->subDays(15)->toDateString(), 'payment_method' => 'cash', 'is_credit' => true, 'due_date' => now()->addDays(20)->toDateString(), 'created_by' => $this->by]);
+        $creditExp->refreshPaymentStatus();
+        $inst = $creditExp->payments()->create(['payment_date' => now()->subDays(2)->toDateString(), 'amount' => 10000, 'payment_method' => 'bank_transfer', 'bank_account_id' => $bankMain->id, 'reference_number' => 'EXPPAY-1', 'created_by' => $this->by]);
+        $this->ledger->post($bankMain, ['type' => 'withdrawal', 'amount' => $inst->amount, 'transaction_date' => $inst->payment_date, 'description' => 'سداد مصروف: '.$creditExp->description, 'related_type' => 'expense_payment', 'related_id' => $inst->id, 'created_by' => $this->by]);
+        $creditExp->refreshPaymentStatus();
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

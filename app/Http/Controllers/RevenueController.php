@@ -42,9 +42,10 @@ class RevenueController extends Controller implements HasMiddleware
 
     public function show(Revenue $revenue): View
     {
-        $revenue->load(['project', 'bankAccount', 'creator']);
+        $revenue->load(['project', 'bankAccount', 'creator', 'collections.bankAccount']);
+        $accounts = BankAccount::where('is_active', true)->orderBy('name')->get();
 
-        return view('revenues.show', compact('revenue'));
+        return view('revenues.show', compact('revenue', 'accounts'));
     }
 
     public function create(): View
@@ -60,6 +61,7 @@ class RevenueController extends Controller implements HasMiddleware
         DB::transaction(function () use ($data) {
             $revenue = Revenue::create($data);
             $this->syncBankTransaction($revenue);
+            $revenue->refreshCollectionStatus();
         });
 
         return redirect()->route('revenues.index')->with('success', 'تمت إضافة الإيراد.');
@@ -77,6 +79,7 @@ class RevenueController extends Controller implements HasMiddleware
         DB::transaction(function () use ($revenue, $data) {
             $revenue->update($data);
             $this->syncBankTransaction($revenue);
+            $revenue->refreshCollectionStatus();
         });
 
         return redirect()->route('revenues.index')->with('success', 'تم تحديث الإيراد.');
@@ -140,6 +143,9 @@ class RevenueController extends Controller implements HasMiddleware
             'revenue_date' => ['required', 'date'],
             'payment_method' => ['required', 'in:'.implode(',', array_keys(Revenue::PAYMENT_METHODS))],
             'bank_account_id' => ['nullable', 'exists:bank_accounts,id'],
+            'due_date' => ['nullable', 'date'],
+            'check_number' => ['nullable', 'string', 'max:50'],
+            'deferred_check' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],
         ]);
     }

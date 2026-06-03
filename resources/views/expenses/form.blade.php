@@ -47,7 +47,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-4">
                         <label class="form-label">خصم من حساب بنكي <span class="text-muted small">(اختياري — يسجّل سحباً من الحساب)</span></label>
                         <select name="bank_account_id" class="form-select">
                             <option value="">— بدون —</option>
@@ -55,6 +55,23 @@
                                 <option value="{{ $a->id }}" @selected((int) old('bank_account_id', $expense->bank_account_id) === $a->id)>{{ $a->name }} ({{ number_format($a->current_balance, 2) }})</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">تاريخ الاستحقاق <span class="text-muted small">(للمصروفات الآجلة)</span></label>
+                        <input type="date" name="due_date" value="{{ old('due_date', $expense->due_date?->format('Y-m-d')) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check">
+                            <input type="hidden" name="is_credit" value="0">
+                            <input type="checkbox" name="is_credit" value="1" id="is_credit" class="form-check-input" @checked(old('is_credit', $expense->is_credit))>
+                            <label class="form-check-label" for="is_credit">مصروف آجل (بالتقسيط)</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="alert alert-light border small mb-0">
+                            <i class="fa-solid fa-circle-info ms-1"></i>
+                            المصروف الآجل يُسدّد لاحقاً على دفعات (أقساط) من صفحة المصروف — اترك حقل الحساب البنكي فارغاً.
+                        </div>
                     </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>

@@ -15,9 +15,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeTransactionController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ExpensePaymentController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
+use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerTransactionController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RevenueCollectionController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
@@ -66,7 +69,12 @@ Route::middleware('auth')->group(function () {
         ->name('bank_transactions.destroy');
 
     Route::resource('expenses', ExpenseController::class);
+    Route::post('expenses/{expense}/payments', [ExpensePaymentController::class, 'store'])->name('expense_payments.store');
+    Route::delete('expense-payments/{expense_payment}', [ExpensePaymentController::class, 'destroy'])->name('expense_payments.destroy');
+
     Route::resource('revenues', RevenueController::class);
+    Route::post('revenues/{revenue}/collections', [RevenueCollectionController::class, 'store'])->name('revenue_collections.store');
+    Route::delete('revenue-collections/{revenue_collection}', [RevenueCollectionController::class, 'destroy'])->name('revenue_collections.destroy');
 
     Route::resource('users', UserController::class);
 
@@ -99,6 +107,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('invoices', InvoiceController::class);
     Route::post('invoices/{invoice}/items', [InvoiceItemController::class, 'store'])->name('invoice_items.store');
     Route::delete('invoice-items/{invoice_item}', [InvoiceItemController::class, 'destroy'])->name('invoice_items.destroy');
+    Route::post('invoices/{invoice}/payments', [InvoicePaymentController::class, 'store'])->name('invoice_payments.store');
+    Route::delete('invoice-payments/{invoice_payment}', [InvoicePaymentController::class, 'destroy'])->name('invoice_payments.destroy');
 
     // موجة 7 — تحويلات بنكية + حركات مخزون
     Route::resource('bank-transfers', BankTransferController::class)->names('bank_transfers')->only(['index', 'create', 'store', 'destroy']);

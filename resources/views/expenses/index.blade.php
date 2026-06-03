@@ -38,6 +38,7 @@
                             <th>المشروع</th>
                             <th>المبلغ</th>
                             <th>الدفع</th>
+                            <th>حالة الدفع</th>
                             <th class="text-end">إجراءات</th>
                         </tr>
                     </thead>
@@ -52,6 +53,13 @@
                                 <td>
                                     {{ \App\Models\Expense::PAYMENT_METHODS[$expense->payment_method] ?? $expense->payment_method }}
                                     @if ($expense->bankAccount)<i class="fa-solid fa-building-columns text-muted small" title="{{ $expense->bankAccount->name }}"></i>@endif
+                                    @if ($expense->is_credit)<i class="fa-solid fa-clock text-warning small" title="مصروف آجل"></i>@endif
+                                </td>
+                                <td>
+                                    @php($pst = $expense->payment_status)
+                                    <span class="badge {{ $pst === 'paid' ? 'text-bg-success' : ($pst === 'partial' ? 'text-bg-warning' : 'text-bg-danger') }}">
+                                        {{ \App\Models\Expense::PAYMENT_STATUSES[$pst] ?? $pst }}
+                                    </span>
                                 </td>
                                 <td class="text-end">
                                     <a href="{{ route('expenses.show', $expense) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
@@ -67,7 +75,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center text-muted py-4">لا توجد مصروفات بعد.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">لا توجد مصروفات بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

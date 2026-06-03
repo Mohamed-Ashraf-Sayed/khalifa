@@ -48,6 +48,21 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">تاريخ الاستحقاق <span class="text-muted small">(للإيراد الآجل)</span></label>
+                        <input type="date" name="due_date" value="{{ old('due_date', $revenue->due_date?->format('Y-m-d')) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">رقم الشيك</label>
+                        <input type="text" name="check_number" value="{{ old('check_number', $revenue->check_number) }}" class="form-control" maxlength="50">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check">
+                            <input type="hidden" name="deferred_check" value="0">
+                            <input type="checkbox" name="deferred_check" value="1" id="deferred_check" class="form-check-input" @checked(old('deferred_check', $revenue->deferred_check))>
+                            <label class="form-check-label" for="deferred_check">شيك آجل</label>
+                        </div>
+                    </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>
                         <textarea name="notes" rows="2" class="form-control">{{ old('notes', $revenue->notes) }}</textarea>
