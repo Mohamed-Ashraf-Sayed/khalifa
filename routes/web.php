@@ -26,7 +26,10 @@ use App\Http\Controllers\PartnerDepositController;
 use App\Http\Controllers\PartnerTransactionController;
 use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectCostController;
+use App\Http\Controllers\ProjectEmployeeController;
 use App\Http\Controllers\ProjectFileController;
+use App\Http\Controllers\ProjectMaterialConsumptionController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\ReportController;
@@ -55,6 +58,14 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('clients', ClientController::class);
     Route::resource('projects', ProjectController::class);
+    Route::post('projects/{project}/employees', [ProjectEmployeeController::class, 'store'])->name('projectEmployees.store');
+    Route::delete('project-employees/{project_employee}', [ProjectEmployeeController::class, 'destroy'])->name('projectEmployees.destroy');
+    Route::post('projects/{project}/material-consumptions', [ProjectMaterialConsumptionController::class, 'store'])->name('projectMaterialConsumptions.store');
+    Route::delete('project-material-consumptions/{project_material_consumption}', [ProjectMaterialConsumptionController::class, 'destroy'])->name('projectMaterialConsumptions.destroy');
+
+    // تكاليف المشاريع / بنود الأعمال (report قبل resource عشان ميتلقفش بالـ wildcard)
+    Route::get('project-costs/report', [ProjectCostController::class, 'report'])->name('project_costs.report');
+    Route::resource('project-costs', ProjectCostController::class)->names('project_costs');
     Route::resource('contractors', ContractorController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('employees', EmployeeController::class);

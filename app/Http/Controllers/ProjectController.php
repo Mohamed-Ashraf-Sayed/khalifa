@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Employee;
+use App\Models\Material;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -41,9 +43,17 @@ class ProjectController extends Controller implements HasMiddleware
 
     public function show(Project $project): View
     {
-        $project->load(['client', 'manager', 'creator']);
+        $project->load([
+            'client', 'manager', 'creator',
+            'assignedEmployees',
+            'materialConsumptions.material',
+        ]);
 
-        return view('projects.show', compact('project'));
+        return view('projects.show', [
+            'project' => $project,
+            'employees' => Employee::where('is_active', true)->orderBy('name')->get(),
+            'materials' => Material::orderBy('name')->get(),
+        ]);
     }
 
     public function create(): View

@@ -31,6 +31,11 @@
                 <div class="col-md-4"><div class="text-muted small">تاريخ التوقيع</div><div>{{ $contract->signing_date?->format('Y-m-d') ?? '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">تاريخ البدء</div><div>{{ $contract->start_date?->format('Y-m-d') ?? '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">تاريخ الانتهاء</div><div>{{ $contract->end_date?->format('Y-m-d') ?? '—' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">تاريخ التوقيع الفعلي</div><div>{{ $contract->signed_date?->format('Y-m-d') ?? '—' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">دفعة مقدمة</div><div>{{ number_format($contract->advance_payment, 2) }} ج</div></div>
+                <div class="col-md-4"><div class="text-muted small">نسبة محتجز الضمان</div><div>{{ number_format($contract->retention_percent, 2) }}%</div></div>
+                <div class="col-md-4"><div class="text-muted small">مدة الضمان</div><div>{{ $contract->warranty_months !== null ? $contract->warranty_months.' شهر' : '—' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">الاستشاري</div><div>{{ $contract->consultant ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">أُنشئ بواسطة</div><div>{{ $contract->creator?->name ?? '—' }}</div></div>
                 @if ($contract->description)<div class="col-12"><div class="text-muted small">الوصف</div><div>{{ $contract->description }}</div></div>@endif
                 @if ($contract->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $contract->notes }}</div></div>@endif

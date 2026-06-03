@@ -67,6 +67,26 @@
                         <label class="form-label">تاريخ النهاية</label>
                         <input type="date" name="end_date" value="{{ old('end_date', $contract->end_date?->format('Y-m-d')) }}" class="form-control">
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">تاريخ التوقيع الفعلي</label>
+                        <input type="date" name="signed_date" value="{{ old('signed_date', $contract->signed_date?->format('Y-m-d')) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">دفعة مقدمة</label>
+                        <input type="number" step="0.01" min="0" name="advance_payment" value="{{ old('advance_payment', $contract->advance_payment) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">نسبة محتجز الضمان (%)</label>
+                        <input type="number" step="0.01" min="0" max="100" name="retention_percent" value="{{ old('retention_percent', $contract->retention_percent) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">مدة الضمان (شهور)</label>
+                        <input type="number" min="0" name="warranty_months" value="{{ old('warranty_months', $contract->warranty_months) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">الاستشاري</label>
+                        <input type="text" name="consultant" value="{{ old('consultant', $contract->consultant) }}" class="form-control">
+                    </div>
                     <div class="col-12">
                         <label class="form-label">الوصف</label>
                         <textarea name="description" rows="2" class="form-control">{{ old('description', $contract->description) }}</textarea>

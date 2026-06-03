@@ -240,6 +240,16 @@ class DemoSeeder extends Seeder
             }
         }
 
+        // تكاليف المشاريع حسب بنود الأعمال (BOQ) + إسناد موظفين للمشروع الرئيسي
+        $costItems = [['أعمال حفر وردم', 'مقاول الحفر'], ['خرسانة مسلحة', 'مصنع الخرسانة'], ['أعمال مباني', 'مقاول المباني'], ['تشطيبات', 'مقاول التشطيب'], ['أعمال كهرباء', 'مقاول الكهرباء']];
+        foreach ($costItems as [$wi, $cs]) {
+            $qty = rand(100, 1500); $price = rand(200, 1800);
+            \App\Models\ProjectCost::create(['project_id' => $mainProject->id, 'work_item' => $wi, 'contractor_supplier' => $cs, 'category' => 'أعمال', 'unit' => 'م3', 'quantity' => $qty, 'unit_price' => $price, 'amount' => bcmul((string) $qty, (string) $price, 2), 'cost_date' => now()->subMonths(rand(1, 5))->toDateString(), 'created_by' => $this->by]);
+        }
+        foreach ($employees->take(4) as $idx => $emp2) {
+            \App\Models\ProjectEmployee::create(['project_id' => $mainProject->id, 'employee_id' => $emp2->id, 'role' => ['مهندس موقع', 'مشرف', 'فني', 'عامل'][$idx] ?? 'عضو فريق', 'start_date' => now()->subMonths(5)->toDateString()]);
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

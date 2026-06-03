@@ -104,6 +104,11 @@ class ProjectContractController extends Controller implements HasMiddleware
             'status' => ['required', 'in:'.implode(',', array_keys(ProjectContract::STATUSES))],
             'description' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+            'signed_date' => ['nullable', 'date'],
+            'advance_payment' => ['nullable', 'numeric', 'min:0'],
+            'retention_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'warranty_months' => ['nullable', 'integer', 'min:0'],
+            'consultant' => ['nullable', 'string', 'max:255'],
         ]);
     }
 }

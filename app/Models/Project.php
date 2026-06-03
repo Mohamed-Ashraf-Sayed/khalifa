@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
@@ -64,5 +65,22 @@ class Project extends Model
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function projectEmployees(): HasMany
+    {
+        return $this->hasMany(ProjectEmployee::class);
+    }
+
+    public function assignedEmployees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'project_employees')
+            ->withPivot(['id', 'role', 'start_date', 'end_date', 'notes'])
+            ->withTimestamps();
+    }
+
+    public function materialConsumptions(): HasMany
+    {
+        return $this->hasMany(ProjectMaterialConsumption::class);
     }
 }

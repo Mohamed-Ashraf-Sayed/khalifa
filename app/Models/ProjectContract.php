@@ -11,6 +11,7 @@ class ProjectContract extends Model
         'project_id', 'contract_number', 'contract_type', 'title',
         'first_party', 'second_party', 'signing_date', 'start_date',
         'end_date', 'contract_value', 'status', 'description', 'notes', 'created_by',
+        'signed_date', 'advance_payment', 'retention_percent', 'warranty_months', 'consultant',
     ];
 
     protected function casts(): array
@@ -20,6 +21,10 @@ class ProjectContract extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'contract_value' => 'decimal:2',
+            'signed_date' => 'date',
+            'advance_payment' => 'decimal:2',
+            'retention_percent' => 'decimal:2',
+            'warranty_months' => 'int',
         ];
     }
 
