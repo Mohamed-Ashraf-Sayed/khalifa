@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Partner;
+use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -15,7 +16,7 @@ class PartnerController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:partners.view', only: ['index', 'show']),
+            new Middleware('can:partners.view', only: ['index', 'show', 'statement']),
             new Middleware('can:partners.create', only: ['create', 'store']),
             new Middleware('can:partners.edit', only: ['edit', 'update']),
             new Middleware('can:partners.delete', only: ['destroy']),
@@ -47,7 +48,10 @@ class PartnerController extends Controller implements HasMiddleware
 
     public function create(): View
     {
-        return view('partners.form', ['partner' => new Partner()]);
+        return view('partners.form', [
+            'partner' => new Partner(),
+            'projects' => Project::orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -61,7 +65,10 @@ class PartnerController extends Controller implements HasMiddleware
 
     public function edit(Partner $partner): View
     {
-        return view('partners.form', compact('partner'));
+        return view('partners.form', [
+            'partner' => $partner,
+            'projects' => Project::orderBy('name')->get(),
+        ]);
     }
 
     public function update(Request $request, Partner $partner): RedirectResponse
@@ -78,6 +85,28 @@ class PartnerController extends Controller implements HasMiddleware
         return back()->with('success', 'تم حذف الشريك.');
     }
 
+    /** كشف حساب الشريك: حركات مرتّبة زمنياً مع رصيد جارٍ محسوب بـ bcmath. */
+    public function statement(Partner $partner): View
+    {
+        $transactions = $partner->transactions()
+            ->orderBy('transaction_date')
+            ->orderBy('id')
+            ->get();
+
+        $running = '0';
+        $rows = $transactions->map(function ($txn) use (&$running) {
+            $running = $txn->type === 'deposit'
+                ? bcadd($running, (string) $txn->amount, 2)
+                : bcsub($running, (string) $txn->amount, 2);
+
+            return ['txn' => $txn, 'running' => $running];
+        });
+
+        $deposits = $partner->deposits()->latest('deposit_date')->get();
+
+        return view('partners.statement', compact('partner', 'rows', 'deposits'));
+    }
+
     private function validateData(Request $request): array
     {
         return $request->validate([
@@ -88,6 +117,7 @@ class PartnerController extends Controller implements HasMiddleware
             'address' => ['nullable', 'string'],
             'join_date' => ['required', 'date'],
             'status' => ['required', Rule::in(array_keys(Partner::STATUSES))],
+            'project_id' => ['nullable', 'exists:projects,id'],
             'notes' => ['nullable', 'string'],
         ]);
     }

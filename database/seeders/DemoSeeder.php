@@ -14,6 +14,7 @@ use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Material;
 use App\Models\Partner;
+use App\Models\PartnerDeposit;
 use App\Models\PartnerTransaction;
 use App\Models\Project;
 use App\Models\PurchaseOrder;
@@ -221,6 +222,22 @@ class DemoSeeder extends Seeder
             $vat = bcmul((string) $supPay->amount, '0.14', 2);
             $si = bcmul((string) $supPay->amount, '0.01', 2);
             $supPay->update(['vat' => $vat, 'social_insurance' => $si, 'total_deductions' => bcadd($vat, $si, 2)]);
+        }
+
+        // إيداع رأس مال لشريك بنظام أرباح + جدول أرباح + صرف أول قسط
+        $partner = Partner::first();
+        if ($partner) {
+            $dep = PartnerDeposit::create(['partner_id' => $partner->id, 'amount' => 1000000, 'deposit_date' => now()->subMonths(6)->toDateString(), 'profit_rate' => 12, 'duration_months' => 12, 'payout_frequency' => 'quarterly', 'bank_account_id' => $bankMain->id, 'status' => 'active', 'created_by' => $this->by]);
+            PartnerTransaction::create(['partner_id' => $partner->id, 'type' => 'deposit', 'amount' => $dep->amount, 'transaction_date' => $dep->deposit_date, 'partner_deposit_id' => $dep->id, 'bank_account_id' => $bankMain->id, 'description' => 'إيداع رأس مال', 'created_by' => $this->by]);
+            $this->ledger->post($bankMain, ['type' => 'deposit', 'amount' => $dep->amount, 'transaction_date' => $dep->deposit_date, 'description' => 'إيداع رأس مال شريك: '.$partner->name, 'related_type' => 'partner_deposit', 'related_id' => $dep->id, 'created_by' => $this->by]);
+            $dep->generateSchedule();
+            $sched = $dep->schedules()->orderBy('due_date')->first();
+            if ($sched) {
+                $due = $sched->due_date->format('Y-m-d');
+                $pt = PartnerTransaction::create(['partner_id' => $partner->id, 'type' => 'profit', 'amount' => $sched->amount, 'transaction_date' => $due, 'partner_deposit_id' => $dep->id, 'profit_period' => $due, 'bank_account_id' => $bankMain->id, 'description' => 'صرف أرباح شريك', 'created_by' => $this->by]);
+                $this->ledger->post($bankMain, ['type' => 'withdrawal', 'amount' => $sched->amount, 'transaction_date' => $due, 'description' => 'صرف أرباح شريك: '.$partner->name, 'related_type' => 'partner_profit', 'related_id' => $pt->id, 'created_by' => $this->by]);
+                $sched->update(['is_paid' => true, 'paid_date' => $due, 'partner_transaction_id' => $pt->id]);
+            }
         }
 
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');

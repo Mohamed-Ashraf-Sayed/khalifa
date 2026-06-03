@@ -35,6 +35,28 @@
                         <label class="form-label">التاريخ <span class="text-danger">*</span></label>
                         <input type="date" name="transaction_date" value="{{ old('transaction_date', $transaction->transaction_date?->format('Y-m-d')) }}" class="form-control" required>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">طريقة الدفع</label>
+                        <select name="payment_method" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach (['cash' => 'نقدي', 'bank' => 'تحويل بنكي', 'check' => 'شيك'] as $k => $label)
+                                <option value="{{ $k }}" @selected(old('payment_method', $transaction->payment_method) === $k)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">حساب بنكي <span class="text-muted small">(اختياري)</span></label>
+                        <select name="bank_account_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($accounts as $a)
+                                <option value="{{ $a->id }}" @selected((int) old('bank_account_id', $transaction->bank_account_id) === $a->id)>{{ $a->name }} ({{ number_format($a->current_balance, 2) }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">رقم الشيك</label>
+                        <input type="text" name="check_number" value="{{ old('check_number', $transaction->check_number) }}" class="form-control" maxlength="50">
+                    </div>
                     <div class="col-12">
                         <label class="form-label">البيان</label>
                         <input type="text" name="description" value="{{ old('description', $transaction->description) }}" class="form-control">

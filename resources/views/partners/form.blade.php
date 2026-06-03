@@ -38,6 +38,15 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label">المشروع <span class="text-muted small">(اختياري)</span></label>
+                        <select name="project_id" class="form-select">
+                            <option value="">— بدون —</option>
+                            @foreach ($projects as $project)
+                                <option value="{{ $project->id }}" @selected((int) old('project_id', $partner->project_id) === $project->id)>{{ $project->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="col-12">
                         <label class="form-label">العنوان</label>
                         <textarea name="address" rows="2" class="form-control">{{ old('address', $partner->address) }}</textarea>

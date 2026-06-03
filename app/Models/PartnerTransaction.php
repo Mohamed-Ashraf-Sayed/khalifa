@@ -10,6 +10,7 @@ class PartnerTransaction extends Model
     protected $fillable = [
         'partner_id', 'type', 'amount', 'transaction_date',
         'description', 'notes', 'created_by',
+        'payment_method', 'bank_account_id', 'check_number', 'partner_deposit_id', 'profit_period',
     ];
 
     protected function casts(): array
@@ -30,6 +31,11 @@ class PartnerTransaction extends Model
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
+    }
+
+    public function bankAccount(): BelongsTo
+    {
+        return $this->belongsTo(BankAccount::class);
     }
 
     public function creator(): BelongsTo

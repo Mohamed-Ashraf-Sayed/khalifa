@@ -22,6 +22,7 @@ use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\PartnerDepositController;
 use App\Http\Controllers\PartnerTransactionController;
 use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
@@ -102,6 +103,12 @@ Route::middleware('auth')->group(function () {
     // موجة 4+5 — معاملات الموظفين والشركاء
     Route::resource('employee-transactions', EmployeeTransactionController::class)->names('employee_transactions');
     Route::resource('partner-transactions', PartnerTransactionController::class)->names('partner_transactions');
+
+    // إيداعات الشركاء + جدول الأرباح + التسوية + كشف الحساب
+    Route::resource('partner-deposits', PartnerDepositController::class)->names('partner_deposits')->except(['edit', 'update']);
+    Route::post('partner-deposits/{deposit}/schedules/{schedule}/pay', [PartnerDepositController::class, 'payProfit'])->name('partner_deposits.pay_profit');
+    Route::post('partner-deposits/{deposit}/settle', [PartnerDepositController::class, 'settle'])->name('partner_deposits.settle');
+    Route::get('partners/{partner}/statement', [PartnerController::class, 'statement'])->name('partners.statement');
 
     // موجة 6 — الفواتير (مع صفحة عرض البنود)
     Route::resource('invoices', InvoiceController::class);

@@ -10,7 +10,7 @@ class Partner extends Model
 {
     protected $fillable = [
         'name', 'phone', 'email', 'national_id', 'address',
-        'join_date', 'status', 'notes', 'created_by',
+        'join_date', 'status', 'project_id', 'notes', 'created_by',
     ];
 
     protected function casts(): array
@@ -31,15 +31,37 @@ class Partner extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(PartnerTransaction::class);
     }
 
-    /** إجمالي رأس المال المودَع. */
+    public function deposits(): HasMany
+    {
+        return $this->hasMany(PartnerDeposit::class);
+    }
+
+    /** إجمالي رأس المال المودَع (مجموع الإيداعات). */
     public function totalCapital(): string
     {
-        return (string) $this->transactions()->where('type', 'deposit')->sum('amount');
+        return (string) $this->deposits()->sum('amount');
+    }
+
+    /** رأس المال النشط (إيداعات لم تُسوَّ بعد). */
+    public function activeCapital(): string
+    {
+        return (string) $this->deposits()->where('status', 'active')->sum('amount');
+    }
+
+    /** إجمالي الأرباح المصروفة للشريك. */
+    public function totalProfitPaid(): string
+    {
+        return (string) $this->transactions()->where('type', 'profit')->sum('amount');
     }
 
     /** الرصيد الحالي للشريك = الإيداعات − (السحوبات + الأرباح المصروفة + التسويات). */

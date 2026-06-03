@@ -39,6 +39,9 @@
                                     <a href="{{ route('partners.show', $partner) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
+                                    <a href="{{ route('partners.statement', $partner) }}" class="btn btn-sm btn-outline-info" title="كشف حساب">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                    </a>
                                     @can('partners.edit')
                                         <a href="{{ route('partners.edit', $partner) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fa-solid fa-pen"></i>
