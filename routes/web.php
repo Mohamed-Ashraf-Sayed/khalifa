@@ -9,6 +9,7 @@ use App\Http\Controllers\BankTransferController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\ContractorExtractController;
+use App\Http\Controllers\ContractorExtractItemController;
 use App\Http\Controllers\ContractorPaymentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
@@ -24,11 +25,13 @@ use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierPaymentController;
+use App\Http\Controllers\SupplierTransactionController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -75,10 +78,17 @@ Route::middleware('auth')->group(function () {
 
     // موجة 2 — موردون
     Route::resource('purchase-orders', PurchaseOrderController::class)->names('purchase_orders');
+    Route::post('purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase_orders.approve');
+    Route::post('purchase-orders/{purchase_order}/items', [PurchaseOrderItemController::class, 'store'])->name('purchase_order_items.store');
+    Route::delete('purchase-order-items/{purchase_order_item}', [PurchaseOrderItemController::class, 'destroy'])->name('purchase_order_items.destroy');
     Route::resource('supplier-payments', SupplierPaymentController::class)->names('supplier_payments');
+    Route::resource('supplier-transactions', SupplierTransactionController::class)->names('supplier_transactions');
 
     // موجة 3 — مقاولون
     Route::resource('contractor-extracts', ContractorExtractController::class)->names('contractor_extracts');
+    Route::post('contractor-extracts/{contractorExtract}/approve', [ContractorExtractController::class, 'approve'])->name('contractor_extracts.approve');
+    Route::post('contractor-extracts/{contractor_extract}/items', [ContractorExtractItemController::class, 'store'])->name('contractor_extract_items.store');
+    Route::delete('contractor-extract-items/{contractor_extract_item}', [ContractorExtractItemController::class, 'destroy'])->name('contractor_extract_items.destroy');
     Route::resource('contractor-payments', ContractorPaymentController::class)->names('contractor_payments');
 
     // موجة 4+5 — معاملات الموظفين والشركاء

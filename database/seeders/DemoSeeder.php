@@ -19,6 +19,7 @@ use App\Models\PurchaseOrder;
 use App\Models\Revenue;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
+use App\Models\SupplierTransaction;
 use App\Models\User;
 use App\Services\BankLedgerService;
 use Illuminate\Database\Seeder;
@@ -130,18 +131,46 @@ class DemoSeeder extends Seeder
             }
         }
 
-        // أوامر شراء + مدفوعات موردين
+        // أوامر شراء بأصناف تفصيلية + مشتريات موردين + مدفوعات
+        $poMaterials = ['أسمنت بورتلاندي', 'حديد تسليح', 'رمل وزلط', 'طوب أحمر', 'بلاط سيراميك'];
         foreach ($suppliers->take(3) as $i => $sup) {
-            PurchaseOrder::create(['order_number' => 'PO-2026-'.str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT), 'supplier_id' => $sup->id, 'project_id' => $mainProject->id, 'order_date' => now()->subMonths(rand(1, 4))->toDateString(), 'status' => 'received', 'total_amount' => rand(500, 6000) * 1000, 'created_by' => $this->by]);
+            $po = PurchaseOrder::create(['order_number' => 'PO-2026-'.str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT), 'supplier_id' => $sup->id, 'project_id' => $mainProject->id, 'order_date' => now()->subMonths(rand(1, 4))->toDateString(), 'expected_delivery' => now()->subMonths(rand(0, 1))->toDateString(), 'status' => 'received', 'add_to_inventory' => true, 'created_by' => $this->by]);
+            foreach (range(1, rand(2, 4)) as $n) {
+                $qty = rand(10, 500); $price = rand(80, 2500);
+                $po->items()->create(['description' => $poMaterials[array_rand($poMaterials)], 'unit' => 'طن', 'quantity' => $qty, 'unit_price' => $price, 'total_price' => bcmul((string) $qty, (string) $price, 2)]);
+            }
+            $po->recomputeTotals();
+            $po->update(['paid_amount' => (int) round($po->net_amount * 0.7)]);
+
+            // مشتريات تفصيلية مباشرة من المورّد (supplier_transactions)
+            foreach (range(1, rand(1, 3)) as $n) {
+                $qty = rand(5, 100); $price = rand(100, 3000);
+                $total = bcmul((string) $qty, (string) $price, 2);
+                SupplierTransaction::create([
+                    'supplier_id' => $sup->id, 'project_id' => $mainProject->id,
+                    'transaction_date' => now()->subMonths(rand(0, 3))->toDateString(),
+                    'item_description' => $poMaterials[array_rand($poMaterials)], 'category' => 'materials',
+                    'unit' => 'م3', 'quantity' => $qty, 'unit_price' => $price,
+                    'total_amount' => $total, 'discount_percentage' => 0, 'net_amount' => $total,
+                    'paid_amount' => (int) round((float) $total * 0.5), 'payment_method' => 'cash', 'created_by' => $this->by,
+                ]);
+            }
             SupplierPayment::create(['supplier_id' => $sup->id, 'amount' => rand(200, 3000) * 1000, 'payment_date' => now()->subMonths(rand(0, 3))->toDateString(), 'payment_method' => 'bank_transfer', 'bank_account_id' => $bankMain->id, 'created_by' => $this->by]);
         }
 
-        // مستخلصات + دفعات مقاولين
+        // مستخلصات ببنود أعمال + دفعات مقاولين
+        $workItems = ['أعمال حفر وردم', 'خرسانة عادية', 'خرسانة مسلحة', 'مباني طوب', 'بياض ومحارة', 'أعمال عزل'];
         foreach ($contractors as $i => $con) {
-            $total = rand(300, 2500) * 1000;
-            $ded = (int) round($total * 0.05);
-            $ext = ContractorExtract::create(['extract_number' => (string) ($i + 1), 'contractor_id' => $con->id, 'project_id' => $mainProject->id, 'extract_date' => now()->subMonths(rand(1, 5))->toDateString(), 'total_amount' => $total, 'deductions' => $ded, 'net_amount' => $total - $ded, 'status' => 'approved', 'created_by' => $this->by]);
-            ContractorPayment::create(['contractor_id' => $con->id, 'extract_id' => $ext->id, 'amount' => (int) round(($total - $ded) * 0.6), 'payment_date' => now()->subMonths(rand(0, 2))->toDateString(), 'payment_method' => 'cash', 'created_by' => $this->by]);
+            $ded = rand(15, 120) * 1000;
+            $ext = ContractorExtract::create(['extract_number' => 'EXT-2026-'.str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT), 'contractor_id' => $con->id, 'project_id' => $mainProject->id, 'extract_date' => now()->subMonths(rand(1, 5))->toDateString(), 'deductions' => $ded, 'execution_percent' => rand(40, 95), 'status' => 'approved', 'approved_by' => $this->by, 'approved_at' => now(), 'created_by' => $this->by]);
+            foreach (range(1, rand(2, 4)) as $n) {
+                $qty = rand(50, 800); $price = rand(150, 1200);
+                $ext->items()->create(['description' => $workItems[array_rand($workItems)], 'unit' => 'م3', 'quantity' => $qty, 'unit_price' => $price, 'total_price' => bcmul((string) $qty, (string) $price, 2)]);
+            }
+            $ext->recomputeTotals();
+            $pay = (int) round((float) $ext->net_amount * 0.6);
+            $ext->update(['paid_amount' => $pay, 'status' => 'partial']);
+            ContractorPayment::create(['contractor_id' => $con->id, 'extract_id' => $ext->id, 'amount' => $pay, 'payment_date' => now()->subMonths(rand(0, 2))->toDateString(), 'payment_method' => 'cash', 'created_by' => $this->by]);
         }
 
         // فواتير

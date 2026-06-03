@@ -37,16 +37,16 @@
                         <input type="date" name="extract_date" value="{{ old('extract_date', $contractorExtract->extract_date?->format('Y-m-d')) }}" class="form-control" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">إجمالي المستخلص <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" min="0" name="total_amount" value="{{ old('total_amount', $contractorExtract->total_amount) }}" class="form-control" required>
+                        <label class="form-label">الإضافات</label>
+                        <input type="number" step="0.01" min="0" name="additions" value="{{ old('additions', $contractorExtract->additions ?? 0) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">الخصومات <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" min="0" name="deductions" value="{{ old('deductions', $contractorExtract->deductions) }}" class="form-control" required>
+                        <label class="form-label">الخصومات</label>
+                        <input type="number" step="0.01" min="0" name="deductions" value="{{ old('deductions', $contractorExtract->deductions ?? 0) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">الصافي <span class="text-muted small">(يُحسب تلقائياً)</span></label>
-                        <input type="text" value="{{ number_format($contractorExtract->net_amount, 2) }}" class="form-control bg-light" readonly>
+                        <label class="form-label">نسبة التنفيذ %</label>
+                        <input type="number" step="0.01" min="0" max="100" name="execution_percent" value="{{ old('execution_percent', $contractorExtract->execution_percent ?? 0) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">الحالة</label>
@@ -65,6 +65,8 @@
                         <textarea name="notes" rows="2" class="form-control">{{ old('notes', $contractorExtract->notes) }}</textarea>
                     </div>
                 </div>
+
+                <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-circle-info ms-1"></i> إجمالي المستخلص يُحسب تلقائياً من بنود الأعمال اللي هتضيفها بعد الحفظ. الصافي = (الإجمالي + الإضافات) − الخصومات.</div>
 
                 <div class="mt-4 d-flex gap-2">
                     <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>

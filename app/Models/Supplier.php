@@ -40,15 +40,29 @@ class Supplier extends Model
         return $this->hasMany(SupplierPayment::class);
     }
 
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(SupplierTransaction::class);
+    }
+
     /**
-     * رصيد المورّد المستحقّ = إجمالي أوامر الشراء المستلَمة − إجمالي المدفوعات.
-     * مشتقّ من المصدر مباشرةً (مفيش عمود مخزّن يتعرّض للـdrift).
+     * رصيد المورّد المستحقّ (مشتقّ من المصدر، مفيش عمود مخزّن يتعرّض للـdrift):
+     *   المستحقّ  = أوامر الشراء المستلَمة + صافي توريدات المورّد
+     *   المسدّد   = مدفوعات المورّد + المدفوع وقت الشراء على التوريدات
+     *   الرصيد    = المستحقّ − المسدّد
      */
     public function balanceDue(): string
     {
-        $received = (string) $this->purchaseOrders()->where('status', 'received')->sum('total_amount');
-        $paid = (string) $this->payments()->sum('amount');
+        $poReceived = (string) $this->purchaseOrders()
+            ->whereIn('status', ['partial', 'received'])
+            ->sum('net_amount');
+        $txnNet = (string) $this->transactions()->sum('net_amount');
+        $owed = bcadd($poReceived, $txnNet, 2);
 
-        return bcsub($received, $paid, 2);
+        $paymentsPaid = (string) $this->payments()->sum('amount');
+        $txnPaid = (string) $this->transactions()->sum('paid_amount');
+        $paid = bcadd($paymentsPaid, $txnPaid, 2);
+
+        return bcsub($owed, $paid, 2);
     }
 }

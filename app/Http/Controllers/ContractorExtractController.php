@@ -18,7 +18,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
         return [
             new Middleware('can:contractors.view', only: ['index', 'show']),
             new Middleware('can:contractors.create', only: ['create', 'store']),
-            new Middleware('can:contractors.edit', only: ['edit', 'update']),
+            new Middleware('can:contractors.edit', only: ['edit', 'update', 'approve']),
             new Middleware('can:contractors.delete', only: ['destroy']),
         ];
     }
@@ -41,7 +41,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
 
     public function show(ContractorExtract $contractor_extract): View
     {
-        $contractor_extract->load(['contractor', 'project', 'creator']);
+        $contractor_extract->load(['contractor', 'project', 'creator', 'approver', 'items']);
 
         return view('contractor_extracts.show', ['extract' => $contractor_extract]);
     }
@@ -49,6 +49,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
     public function create(): View
     {
         return view('contractor_extracts.form', $this->formData(new ContractorExtract([
+            'extract_number' => $this->nextNumber(),
             'extract_date' => now()->toDateString(),
             'status' => 'pending',
         ])));
@@ -59,9 +60,10 @@ class ContractorExtractController extends Controller implements HasMiddleware
         $data = $this->validateData($request);
         $data['created_by'] = $request->user()->id;
 
-        ContractorExtract::create($data);
+        $extract = ContractorExtract::create($data);
+        $extract->recomputeTotals();
 
-        return redirect()->route('contractor_extracts.index')->with('success', 'تمت إضافة المستخلص.');
+        return redirect()->route('contractor_extracts.show', $extract)->with('success', 'تم إنشاء المستخلص. أضِف بنود الأعمال الآن.');
     }
 
     public function edit(ContractorExtract $contractorExtract): View
@@ -72,15 +74,40 @@ class ContractorExtractController extends Controller implements HasMiddleware
     public function update(Request $request, ContractorExtract $contractorExtract): RedirectResponse
     {
         $contractorExtract->update($this->validateData($request));
+        $contractorExtract->recomputeTotals();
 
-        return redirect()->route('contractor_extracts.index')->with('success', 'تم تحديث المستخلص.');
+        return redirect()->route('contractor_extracts.show', $contractorExtract)->with('success', 'تم تحديث المستخلص.');
+    }
+
+    public function approve(Request $request, ContractorExtract $contractorExtract): RedirectResponse
+    {
+        $contractorExtract->update([
+            'status' => 'approved',
+            'approved_by' => $request->user()->id,
+            'approved_at' => now(),
+        ]);
+
+        return back()->with('success', 'تم اعتماد المستخلص.');
     }
 
     public function destroy(ContractorExtract $contractorExtract): RedirectResponse
     {
+        // منع حذف مستخلص عليه دفعات
+        if ($contractorExtract->paid_amount > 0) {
+            return back()->with('error', 'لا يمكن حذف مستخلص سُجّلت عليه دفعات. احذف الدفعات أولاً.');
+        }
+
         $contractorExtract->delete();
 
         return back()->with('success', 'تم حذف المستخلص.');
+    }
+
+    private function nextNumber(): string
+    {
+        $year = now()->format('Y');
+        $count = ContractorExtract::whereYear('created_at', $year)->count() + 1;
+
+        return sprintf('EXT-%s-%04d', $year, $count);
     }
 
     private function formData(ContractorExtract $contractorExtract): array
@@ -94,21 +121,17 @@ class ContractorExtractController extends Controller implements HasMiddleware
 
     private function validateData(Request $request): array
     {
-        $data = $request->validate([
+        return $request->validate([
             'extract_number' => ['required', 'string', 'max:50'],
             'contractor_id' => ['required', 'exists:contractors,id'],
             'project_id' => ['nullable', 'exists:projects,id'],
             'extract_date' => ['required', 'date'],
             'description' => ['nullable', 'string'],
-            'total_amount' => ['required', 'numeric', 'min:0'],
-            'deductions' => ['required', 'numeric', 'min:0'],
+            'additions' => ['nullable', 'numeric', 'min:0'],
+            'deductions' => ['nullable', 'numeric', 'min:0'],
+            'execution_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'status' => ['required', 'in:'.implode(',', array_keys(ContractorExtract::STATUSES))],
             'notes' => ['nullable', 'string'],
         ]);
-
-        // صافي المستخلص = الإجمالي - الخصومات (يُحسب على السيرفر)
-        $data['net_amount'] = (float) $data['total_amount'] - (float) $data['deductions'];
-
-        return $data;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Material;
 use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
@@ -19,7 +20,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
         return [
             new Middleware('can:purchase_orders.view', only: ['index', 'show']),
             new Middleware('can:purchase_orders.create', only: ['create', 'store']),
-            new Middleware('can:purchase_orders.edit', only: ['edit', 'update']),
+            new Middleware('can:purchase_orders.edit', only: ['edit', 'update', 'approve']),
             new Middleware('can:purchase_orders.delete', only: ['destroy']),
         ];
     }
@@ -37,12 +38,19 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             ->paginate(15)
             ->withQueryString();
 
-        return view('purchase_orders.index', compact('purchaseOrders', 'search', 'status'));
+        $stats = [
+            'count' => PurchaseOrder::count(),
+            'net' => (float) PurchaseOrder::sum('net_amount'),
+            'paid' => (float) PurchaseOrder::sum('paid_amount'),
+            'pending' => PurchaseOrder::whereIn('status', ['draft', 'pending'])->count(),
+        ];
+
+        return view('purchase_orders.index', compact('purchaseOrders', 'search', 'status', 'stats'));
     }
 
     public function show(PurchaseOrder $purchase_order): View
     {
-        $purchase_order->load(['supplier', 'project', 'creator']);
+        $purchase_order->load(['supplier', 'project', 'creator', 'approver', 'items']);
 
         return view('purchase_orders.show', ['purchaseOrder' => $purchase_order]);
     }
@@ -50,7 +58,11 @@ class PurchaseOrderController extends Controller implements HasMiddleware
     public function create(): View
     {
         return view('purchase_orders.form', $this->formData(
-            new PurchaseOrder(['order_date' => now()->toDateString(), 'status' => 'draft', 'total_amount' => 0])
+            new PurchaseOrder([
+                'order_number' => $this->nextNumber(),
+                'order_date' => now()->toDateString(),
+                'status' => 'draft',
+            ])
         ));
     }
 
@@ -58,9 +70,10 @@ class PurchaseOrderController extends Controller implements HasMiddleware
     {
         $data = $this->validateData($request);
         $data['created_by'] = $request->user()->id;
-        PurchaseOrder::create($data);
+        $order = PurchaseOrder::create($data);
+        $order->recomputeTotals();
 
-        return redirect()->route('purchase_orders.index')->with('success', 'تمت إضافة أمر الشراء.');
+        return redirect()->route('purchase_orders.show', $order)->with('success', 'تم إنشاء أمر الشراء. أضِف الأصناف الآن.');
     }
 
     public function edit(PurchaseOrder $purchaseOrder): View
@@ -71,8 +84,20 @@ class PurchaseOrderController extends Controller implements HasMiddleware
     public function update(Request $request, PurchaseOrder $purchaseOrder): RedirectResponse
     {
         $purchaseOrder->update($this->validateData($request, $purchaseOrder));
+        $purchaseOrder->recomputeTotals();
 
-        return redirect()->route('purchase_orders.index')->with('success', 'تم تحديث أمر الشراء.');
+        return redirect()->route('purchase_orders.show', $purchaseOrder)->with('success', 'تم تحديث أمر الشراء.');
+    }
+
+    public function approve(Request $request, PurchaseOrder $purchaseOrder): RedirectResponse
+    {
+        $purchaseOrder->update([
+            'status' => 'approved',
+            'approved_by' => $request->user()->id,
+            'approved_at' => now(),
+        ]);
+
+        return back()->with('success', 'تم اعتماد أمر الشراء.');
     }
 
     public function destroy(PurchaseOrder $purchaseOrder): RedirectResponse
@@ -82,12 +107,21 @@ class PurchaseOrderController extends Controller implements HasMiddleware
         return back()->with('success', 'تم حذف أمر الشراء.');
     }
 
+    private function nextNumber(): string
+    {
+        $year = now()->format('Y');
+        $count = PurchaseOrder::whereYear('created_at', $year)->count() + 1;
+
+        return sprintf('PO-%s-%04d', $year, $count);
+    }
+
     private function formData(PurchaseOrder $purchaseOrder): array
     {
         return [
             'purchaseOrder' => $purchaseOrder,
             'suppliers' => Supplier::orderBy('name')->get(),
             'projects' => Project::orderBy('name')->get(),
+            'materials' => Material::orderBy('name')->get(),
         ];
     }
 
@@ -102,8 +136,11 @@ class PurchaseOrderController extends Controller implements HasMiddleware
             'project_id' => ['nullable', 'exists:projects,id'],
             'order_date' => ['required', 'date'],
             'expected_delivery' => ['nullable', 'date'],
+            'actual_delivery' => ['nullable', 'date'],
             'status' => ['required', 'in:'.implode(',', array_keys(PurchaseOrder::STATUSES))],
-            'total_amount' => ['required', 'numeric', 'min:0'],
+            'discount' => ['nullable', 'numeric', 'min:0'],
+            'tax' => ['nullable', 'numeric', 'min:0'],
+            'add_to_inventory' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],
         ]);
     }

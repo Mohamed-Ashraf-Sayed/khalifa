@@ -49,14 +49,31 @@
                         <input type="date" name="expected_delivery" value="{{ old('expected_delivery', $purchaseOrder->expected_delivery?->format('Y-m-d')) }}" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">المبلغ الإجمالي <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" min="0" name="total_amount" value="{{ old('total_amount', $purchaseOrder->total_amount) }}" class="form-control" required>
+                        <label class="form-label">تاريخ التسليم الفعلي</label>
+                        <input type="date" name="actual_delivery" value="{{ old('actual_delivery', $purchaseOrder->actual_delivery?->format('Y-m-d')) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">الخصم</label>
+                        <input type="number" step="0.01" min="0" name="discount" value="{{ old('discount', $purchaseOrder->discount ?? 0) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">الضريبة</label>
+                        <input type="number" step="0.01" min="0" name="tax" value="{{ old('tax', $purchaseOrder->tax ?? 0) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check">
+                            <input type="hidden" name="add_to_inventory" value="0">
+                            <input type="checkbox" name="add_to_inventory" value="1" class="form-check-input" id="ati" @checked(old('add_to_inventory', $purchaseOrder->add_to_inventory))>
+                            <label class="form-check-label" for="ati">إضافة للمخزون عند الاستلام</label>
+                        </div>
                     </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>
                         <textarea name="notes" rows="2" class="form-control">{{ old('notes', $purchaseOrder->notes) }}</textarea>
                     </div>
                 </div>
+
+                <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-circle-info ms-1"></i> الإجمالي يُحسب تلقائياً من الأصناف اللي هتضيفها في صفحة الأمر بعد الحفظ.</div>
 
                 <div class="mt-4 d-flex gap-2">
                     <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
