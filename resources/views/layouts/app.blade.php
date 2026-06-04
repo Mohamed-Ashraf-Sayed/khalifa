@@ -109,6 +109,7 @@
             @canany(['reports.view','users.view','settings.view'])
                 <div class="nav-section">التقارير والنظام</div>
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan
+                @can('reports.view')    <a class="nav-link {{ request()->routeIs('general_ledger.*') ? 'active' : '' }}" href="{{ route('general_ledger.index') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a> @endcan
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('analytics.*') ? 'active' : '' }}" href="{{ route('analytics.project_profitability') }}"><i class="fa-solid fa-chart-pie"></i> التحليلات</a> @endcan
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('cost_centers.*') ? 'active' : '' }}" href="{{ route('cost_centers.index') }}"><i class="fa-solid fa-sitemap"></i> مراكز التكلفة</a> @endcan
                 @can('users.view')      <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}"><i class="fa-solid fa-user-gear"></i> المستخدمون</a> @endcan

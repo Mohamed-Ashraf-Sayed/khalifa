@@ -12,6 +12,7 @@ use App\Models\Invoice;
 use App\Models\Material;
 use App\Models\Partner;
 use App\Models\Project;
+use App\Models\ProjectCost;
 use App\Models\Revenue;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
@@ -334,6 +335,107 @@ class ReportController extends Controller implements HasMiddleware
             'netProfit' => $netProfit,
             'grossMargin' => $grossMargin,
             'netMargin' => $netMargin,
+        ]);
+    }
+
+    /**
+     * قائمة دخل المشروع — P&L مفصّلة لمشروع واحد، متّسقة مع أساس التكلفة في AnalyticsController::projectProfitability.
+     * التكلفة المباشرة = مستخلصات المقاولين (معتمد/جزئي/مدفوع) + توريدات المورّدين + تكاليف المشروع + مصروفات المشروع.
+     * كله بالـbcmath حفاظاً على الدقّة.
+     */
+    public function projectIncome(Request $request)
+    {
+        $projects = Project::orderBy('name')->get();
+
+        $projectId = (int) $request->query('project_id', 0);
+        $project = $projectId > 0
+            ? $projects->firstWhere('id', $projectId)
+            : $projects->first();
+
+        // لا توجد مشاريع: نعرض الصفحة فارغة بدون انهيار.
+        if (! $project) {
+            if (in_array($request->query('format'), ['pdf', 'xlsx'], true)) {
+                return back();
+            }
+
+            return view('reports.project_income', [
+                'projects' => $projects,
+                'project' => null,
+            ]);
+        }
+
+        // الإيرادات.
+        $revenue = (string) Revenue::where('project_id', $project->id)->sum('amount');
+        $collected = (string) Revenue::where('project_id', $project->id)->sum('paid_amount');
+        $remainingRevenue = bcsub($revenue, $collected, 2);
+
+        // بنود التكلفة المباشرة (مفصّلة) — نفس أساس actualCost في AnalyticsController.
+        $contractorExtracts = (string) ContractorExtract::where('project_id', $project->id)
+            ->whereIn('status', ['approved', 'partial', 'paid'])
+            ->sum('net_amount');
+        $supplierSupplies = (string) SupplierTransaction::where('project_id', $project->id)->sum('net_amount');
+        $projectCosts = (string) ProjectCost::where('project_id', $project->id)->sum('amount');
+        $projectExpenses = (string) Expense::where('project_id', $project->id)->sum('amount');
+
+        $totalCost = array_reduce(
+            [$contractorExtracts, $supplierSupplies, $projectCosts, $projectExpenses],
+            fn (string $carry, string $v) => bcadd($carry, $v, 2),
+            '0'
+        );
+
+        $grossProfit = bcsub($revenue, $totalCost, 2);
+        $margin = bccomp($revenue, '0', 2) > 0
+            ? bcmul(bcdiv($grossProfit, $revenue, 6), '100', 2)
+            : '0';
+
+        $contractValue = (string) $project->contract_value;
+        $varianceVsContract = bcsub($contractValue, $totalCost, 2);
+
+        $format = $request->query('format');
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $rows = [
+                ['الإيرادات', ''],
+                ['إجمالي الإيرادات', number_format((float) $revenue, 2)],
+                ['المحصّل', number_format((float) $collected, 2)],
+                ['المتبقّي', number_format((float) $remainingRevenue, 2)],
+                ['التكاليف المباشرة', ''],
+                ['مستخلصات المقاولين', number_format((float) $contractorExtracts, 2)],
+                ['توريدات المورّدين', number_format((float) $supplierSupplies, 2)],
+                ['تكاليف المشروع', number_format((float) $projectCosts, 2)],
+                ['مصروفات المشروع', number_format((float) $projectExpenses, 2)],
+                ['إجمالي التكاليف المباشرة', number_format((float) $totalCost, 2)],
+                ['مجمل / صافي ربح المشروع', number_format((float) $grossProfit, 2)],
+                ['هامش الربح %', number_format((float) $margin, 2)],
+                ['قيمة العقد', number_format((float) $contractValue, 2)],
+                ['الفرق (قيمة العقد − التكلفة)', number_format((float) $varianceVsContract, 2)],
+            ];
+            $headers = ['البند', 'القيمة'];
+            $title = 'قائمة دخل المشروع — '.$project->name;
+
+            if ($format === 'xlsx') {
+                return app(ExportService::class)->excel($headers, $rows, 'project_income_'.$project->id, $title);
+            }
+
+            $html = $this->buildSimpleHtml($title, $headers, $rows);
+
+            return app(ExportService::class)->pdf($html, 'project_income_'.$project->id.'.pdf');
+        }
+
+        return view('reports.project_income', [
+            'projects' => $projects,
+            'project' => $project,
+            'revenue' => $revenue,
+            'collected' => $collected,
+            'remainingRevenue' => $remainingRevenue,
+            'contractorExtracts' => $contractorExtracts,
+            'supplierSupplies' => $supplierSupplies,
+            'projectCosts' => $projectCosts,
+            'projectExpenses' => $projectExpenses,
+            'totalCost' => $totalCost,
+            'grossProfit' => $grossProfit,
+            'margin' => $margin,
+            'contractValue' => $contractValue,
+            'varianceVsContract' => $varianceVsContract,
         ]);
     }
 

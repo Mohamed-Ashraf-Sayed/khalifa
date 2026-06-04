@@ -25,6 +25,7 @@ use App\Http\Controllers\EmployeeTransactionController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExpensePaymentController;
+use App\Http\Controllers\GeneralLedgerController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
@@ -224,6 +225,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance_sheet');
+    Route::get('reports/project-income', [ReportController::class, 'projectIncome'])->name('reports.project_income');
+    // دفتر الأستاذ + كشوف الحساب الموحّدة
+    Route::get('ledger', [GeneralLedgerController::class, 'index'])->name('general_ledger.index');
+    Route::get('ledger/project/{project}', [GeneralLedgerController::class, 'project'])->name('general_ledger.project');
+    Route::get('clients/{client}/statement', [ClientController::class, 'statement'])->name('clients.statement');
     Route::get('reports/income-statement', [ReportController::class, 'incomeStatement'])->name('reports.income_statement');
     Route::get('reports/taxes', [ReportController::class, 'taxReport'])->name('reports.taxes');
     Route::get('reports/cash-flow', [ReportController::class, 'cashFlow'])->name('reports.cash_flow');

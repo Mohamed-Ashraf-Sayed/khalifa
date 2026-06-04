@@ -8,15 +8,16 @@
         <div class="card-body d-flex flex-wrap gap-2 align-items-center">
             <span class="text-muted small ms-2">القوائم المالية:</span>
             <span class="d-inline-flex align-items-center gap-1">
-                <a href="{{ route('reports.balance_sheet') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-scale-balanced ms-1"></i> الميزانية العمومية</a>
+                <a href="{{ route('reports.balance_sheet') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-scale-balanced ms-1"></i> قائمة المركز المالي (الميزانية)</a>
                 <a href="{{ route('reports.balance_sheet', ['format' => 'pdf']) }}" class="btn btn-sm btn-outline-danger" title="PDF">PDF</a>
                 <a href="{{ route('reports.balance_sheet', ['format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success" title="Excel">Excel</a>
             </span>
             <span class="d-inline-flex align-items-center gap-1">
-                <a href="{{ route('reports.income_statement') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-chart-line ms-1"></i> قائمة الدخل</a>
+                <a href="{{ route('reports.income_statement') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-chart-line ms-1"></i> قائمة الدخل العامة</a>
                 <a href="{{ route('reports.income_statement', ['format' => 'pdf']) }}" class="btn btn-sm btn-outline-danger" title="PDF">PDF</a>
                 <a href="{{ route('reports.income_statement', ['format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success" title="Excel">Excel</a>
             </span>
+            <a href="{{ route('reports.project_income') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-diagram-project ms-1"></i> قائمة دخل المشروع</a>
             <a href="{{ route('reports.cash_flow') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-money-bill-transfer ms-1"></i> التدفّق النقدي</a>
             <a href="{{ route('reports.ar_aging') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-hand-holding-dollar ms-1"></i> أعمار الذمم المدينة</a>
             <a href="{{ route('reports.ap_aging') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice-dollar ms-1"></i> أعمار الذمم الدائنة</a>
