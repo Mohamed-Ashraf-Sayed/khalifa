@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
@@ -9,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class InvoiceController extends Controller implements HasMiddleware
@@ -16,7 +18,7 @@ class InvoiceController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:invoices.view', only: ['index', 'show', 'print']),
+            new Middleware('can:invoices.view', only: ['index', 'show', 'print', 'email']),
             new Middleware('can:invoices.create', only: ['create', 'store']),
             new Middleware('can:invoices.edit', only: ['edit', 'update']),
             new Middleware('can:invoices.delete', only: ['destroy']),
@@ -69,6 +71,42 @@ class InvoiceController extends Controller implements HasMiddleware
         $invoice->load('items', 'payments', 'client', 'project');
 
         return view('invoices.print', compact('invoice'));
+    }
+
+    public function email(Invoice $invoice): RedirectResponse
+    {
+        if (! $invoice->client?->email) {
+            return back()->with('error', 'لا يوجد بريد للعميل');
+        }
+
+        $invoice->load('items', 'payments', 'client', 'project');
+
+        try {
+            $tmp = storage_path('app/mpdf');
+            if (! is_dir($tmp)) {
+                @mkdir($tmp, 0775, true);
+            }
+
+            $html = view('invoices.print', compact('invoice'))->render();
+
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'directionality' => 'rtl',
+                'tempDir' => $tmp,
+                'default_font' => 'dejavusans',
+            ]);
+            $mpdf->autoScriptToLang = true;
+            $mpdf->autoLangToFont = true;
+            $mpdf->WriteHTML($html);
+            $pdf = $mpdf->Output('', 'S');
+
+            Mail::to($invoice->client->email)->send(new InvoiceMail($invoice, $pdf));
+        } catch (\Throwable $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'تم إرسال الفاتورة إلى '.$invoice->client->email);
     }
 
     public function edit(Invoice $invoice): View

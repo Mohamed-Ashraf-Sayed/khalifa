@@ -16,6 +16,17 @@
             <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             <a href="{{ route('contractors.statement', ['contractor' => $contractor, 'format' => 'pdf']) }}" class="btn btn-sm btn-danger"><i class="fa-solid fa-file-pdf ms-1"></i> PDF</a>
             <a href="{{ route('contractors.statement', ['contractor' => $contractor, 'format' => 'xlsx']) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
+            @if($contractor->phone)
+                @php
+                    $waPhone = preg_replace('/\D+/', '', $contractor->phone);
+                    if (str_starts_with($waPhone, '0')) {
+                        $waPhone = '20' . substr($waPhone, 1);
+                    }
+                    $waCompany = \App\Models\Setting::get('company_name', 'القروانة');
+                    $waText = 'كشف حساب من شركة ' . $waCompany . '. الرصيد المستحقّ: ' . number_format((float) $balance, 2) . ' ج.م';
+                @endphp
+                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode($waText) }}" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff"><i class="fa-brands fa-whatsapp ms-1"></i> واتساب</a>
+            @endif
             <a href="{{ route('contractors.show', $contractor) }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
         </div>
     </div>

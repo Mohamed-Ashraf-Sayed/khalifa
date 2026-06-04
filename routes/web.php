@@ -192,6 +192,7 @@ Route::middleware('auth')->group(function () {
     // موجة 6 — الفواتير (مع صفحة عرض البنود)
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
+    Route::post('invoices/{invoice}/email', [InvoiceController::class, 'email'])->name('invoices.email');
     Route::post('invoices/{invoice}/items', [InvoiceItemController::class, 'store'])->name('invoice_items.store');
     Route::delete('invoice-items/{invoice_item}', [InvoiceItemController::class, 'destroy'])->name('invoice_items.destroy');
     Route::post('invoices/{invoice}/payments', [InvoicePaymentController::class, 'store'])->name('invoice_payments.store');

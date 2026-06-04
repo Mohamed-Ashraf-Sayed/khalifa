@@ -66,6 +66,27 @@
             </div>
             <a href="{{ route('invoices.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للفواتير</a>
             <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</a>
+
+            @can('invoices.view')
+                @if($invoice->client?->email)
+                    <form method="POST" action="{{ route('invoices.email', $invoice) }}" class="d-inline" onsubmit="return confirm('إرسال الفاتورة إلى بريد العميل؟')">
+                        @csrf
+                        <button class="btn btn-sm btn-primary"><i class="fa-solid fa-envelope ms-1"></i> إرسال بالبريد</button>
+                    </form>
+                @endif
+            @endcan
+
+            @if($invoice->client?->phone)
+                @php
+                    $waPhone = preg_replace('/\D+/', '', $invoice->client->phone);
+                    if (str_starts_with($waPhone, '0')) {
+                        $waPhone = '20' . substr($waPhone, 1);
+                    }
+                    $waCompany = \App\Models\Setting::get('company_name', 'القروانة');
+                    $waText = 'فاتورة رقم ' . $invoice->invoice_number . ' بقيمة ' . number_format($invoice->total_amount, 2) . ' ج.م من شركة ' . $waCompany . '. المتبقّي: ' . number_format($invoice->remaining(), 2) . ' ج.م';
+                @endphp
+                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode($waText) }}" target="_blank" class="btn btn-sm btn-success"><i class="fa-brands fa-whatsapp ms-1"></i> واتساب</a>
+            @endif
         </div>
     </div>
 
