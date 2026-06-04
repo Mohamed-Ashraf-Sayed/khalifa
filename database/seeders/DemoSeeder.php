@@ -250,6 +250,24 @@ class DemoSeeder extends Seeder
             \App\Models\ProjectEmployee::create(['project_id' => $mainProject->id, 'employee_id' => $emp2->id, 'role' => ['مهندس موقع', 'مشرف', 'فني', 'عامل'][$idx] ?? 'عضو فريق', 'start_date' => now()->subMonths(5)->toDateString()]);
         }
 
+        // مراكز التكلفة + ربطها ببعض المصروفات والإيرادات
+        $centers = [];
+        foreach ([['الإدارة العامة', 'ADMIN'], ['المشاريع', 'PROJ'], ['النقل والمعدات', 'TRANS'], ['الصيانة', 'MAINT']] as [$cn, $cc]) {
+            $centers[] = \App\Models\CostCenter::create(['name' => $cn, 'code' => $cc, 'is_active' => true]);
+        }
+        Expense::query()->inRandomOrder()->take(20)->get()->each(fn ($e) => $e->update(['cost_center_id' => $centers[array_rand($centers)]->id]));
+        Revenue::query()->inRandomOrder()->take(4)->get()->each(fn ($r) => $r->update(['cost_center_id' => $centers[1]->id]));
+
+        // عقد للمشروع الرئيسي
+        \App\Models\ProjectContract::create(['project_id' => $mainProject->id, 'contract_number' => 'CT-2026-001', 'contract_type' => 'main', 'title' => 'عقد إنشاء '.$mainProject->name, 'first_party' => 'شركة القروانة', 'second_party' => $mainProject->client?->name ?? 'العميل', 'signing_date' => now()->subMonths(6)->toDateString(), 'start_date' => now()->subMonths(6)->toDateString(), 'end_date' => now()->addMonths(6)->toDateString(), 'contract_value' => $mainProject->contract_value ?: 50000000, 'status' => 'active', 'signed_date' => now()->subMonths(6)->toDateString(), 'advance_payment' => 5000000, 'retention_percent' => 10, 'warranty_months' => 12, 'consultant' => 'مكتب الاستشارات الهندسية', 'created_by' => $this->by]);
+
+        // شيكات بحالات مختلفة (وارد/صادر)
+        \App\Models\Cheque::create(['cheque_number' => 'CHK-IN-1001', 'bank_account_id' => $bankMain->id, 'direction' => 'incoming', 'party_name' => $clients[0]->name, 'amount' => 500000, 'issue_date' => now()->subDays(20)->toDateString(), 'due_date' => now()->addDays(10)->toDateString(), 'status' => 'pending', 'created_by' => $this->by]);
+        \App\Models\Cheque::create(['cheque_number' => 'CHK-IN-1002', 'bank_account_id' => $bankMain->id, 'direction' => 'incoming', 'party_name' => $clients[1]->name, 'amount' => 300000, 'issue_date' => now()->subDays(40)->toDateString(), 'due_date' => now()->subDays(5)->toDateString(), 'status' => 'deposited', 'created_by' => $this->by]);
+        $chq = \App\Models\Cheque::create(['cheque_number' => 'CHK-OUT-2001', 'bank_account_id' => $bankMain->id, 'direction' => 'outgoing', 'party_name' => $suppliers[0]->name, 'amount' => 150000, 'issue_date' => now()->subDays(30)->toDateString(), 'due_date' => now()->subDays(10)->toDateString(), 'status' => 'cleared', 'created_by' => $this->by]);
+        $this->ledger->post($bankMain, ['type' => 'withdrawal', 'amount' => $chq->amount, 'transaction_date' => $chq->due_date->toDateString(), 'description' => 'شيك '.$chq->cheque_number, 'related_type' => 'cheque', 'related_id' => $chq->id, 'created_by' => $this->by]);
+        \App\Models\Cheque::create(['cheque_number' => 'CHK-OUT-2002', 'bank_account_id' => $bankMain->id, 'direction' => 'outgoing', 'party_name' => $suppliers[1]->name, 'amount' => 80000, 'issue_date' => now()->subDays(15)->toDateString(), 'due_date' => now()->addDays(15)->toDateString(), 'status' => 'pending', 'created_by' => $this->by]);
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

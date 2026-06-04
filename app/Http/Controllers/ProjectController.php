@@ -47,10 +47,66 @@ class ProjectController extends Controller implements HasMiddleware
             'client', 'manager', 'creator',
             'assignedEmployees',
             'materialConsumptions.material',
+            'invoices',
+            'contractorExtracts.contractor',
+            'purchaseOrders.supplier',
+            'supplierTransactions.supplier',
+            'projectCosts',
+            'revenues',
+            'expenses',
+            'contracts',
+            'files',
+            'partners',
         ]);
+
+        // الملخّص المالي للمشروع (bcmath للحفاظ على الدقّة)
+        $contractValue = (string) $project->contract_value;
+        $revenue = (string) $project->revenues->sum('amount');
+        $collected = (string) $project->revenues->sum('paid_amount');
+        $revenueRemaining = bcsub($revenue, $collected, 2);
+
+        // التكلفة الفعلية — مطابقة تماماً لـ AnalyticsController::actualCost
+        $costs = (string) $project->projectCosts->sum('amount');
+        $expenses = (string) $project->expenses->sum('amount');
+        $extracts = (string) $project->contractorExtracts
+            ->whereIn('status', ['approved', 'partial', 'paid'])
+            ->sum('net_amount');
+        $supplier = (string) $project->supplierTransactions->sum('net_amount');
+        $actualCost = array_reduce(
+            [$costs, $expenses, $extracts, $supplier],
+            fn (string $carry, string $v) => bcadd($carry, $v, 2),
+            '0'
+        );
+
+        $profit = bcsub($revenue, $actualCost, 2);
+        $margin = bccomp($revenue, '0', 2) > 0
+            ? (float) bcmul(bcdiv($profit, $revenue, 6), '100', 2)
+            : 0.0;
+        $costVsContract = bccomp($contractValue, '0', 2) > 0
+            ? (float) bcmul(bcdiv($actualCost, $contractValue, 6), '100', 2)
+            : 0.0;
+
+        $invoicedTotal = (string) $project->invoices
+            ->where('status', '!=', 'cancelled')
+            ->sum('total_amount');
+        $invoicePaid = (string) $project->invoices->sum('paid_amount');
+
+        $summary = [
+            'contractValue' => $contractValue,
+            'revenue' => $revenue,
+            'collected' => $collected,
+            'revenueRemaining' => $revenueRemaining,
+            'actualCost' => $actualCost,
+            'profit' => $profit,
+            'margin' => $margin,
+            'costVsContract' => $costVsContract,
+            'invoicedTotal' => $invoicedTotal,
+            'invoicePaid' => $invoicePaid,
+        ];
 
         return view('projects.show', [
             'project' => $project,
+            'summary' => $summary,
             'employees' => Employee::where('is_active', true)->orderBy('name')->get(),
             'materials' => Material::orderBy('name')->get(),
         ]);

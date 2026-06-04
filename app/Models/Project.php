@@ -86,4 +86,44 @@ class Project extends Model
     {
         return $this->hasMany(ProjectMaterialConsumption::class);
     }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function contractorExtracts(): HasMany
+    {
+        return $this->hasMany(ContractorExtract::class);
+    }
+
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function supplierTransactions(): HasMany
+    {
+        return $this->hasMany(SupplierTransaction::class);
+    }
+
+    public function projectCosts(): HasMany
+    {
+        return $this->hasMany(ProjectCost::class);
+    }
+
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(ProjectContract::class);
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(ProjectFile::class);
+    }
+
+    public function partners(): HasMany
+    {
+        return $this->hasMany(Partner::class);
+    }
 }
