@@ -18,8 +18,10 @@ use App\Http\Controllers\ContractorExtractController;
 use App\Http\Controllers\ContractorExtractItemController;
 use App\Http\Controllers\ContractorPaymentController;
 use App\Http\Controllers\CustomPaymentMethodController;
+use App\Http\Controllers\DailySiteReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataPortController;
+use App\Http\Controllers\EquipmentLogController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeTransactionController;
 use App\Http\Controllers\ExpenseCategoryController;
@@ -30,7 +32,12 @@ use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\InvoicePaymentController;
+use App\Http\Controllers\InsurancePolicyController;
+use App\Http\Controllers\LaborAttendanceController;
+use App\Http\Controllers\LetterOfGuaranteeController;
 use App\Http\Controllers\LoginLogController;
+use App\Http\Controllers\MaterialRequisitionController;
+use App\Http\Controllers\MaterialRequisitionItemController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PartnerController;
@@ -41,8 +48,12 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCostController;
 use App\Http\Controllers\ProjectEmployeeController;
 use App\Http\Controllers\ProjectFileController;
+use App\Http\Controllers\ProjectMilestoneController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectMaterialConsumptionController;
+use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\QuotationItemController;
+use App\Http\Controllers\TenderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\ReportController;
@@ -253,4 +264,40 @@ Route::middleware('auth')->group(function () {
     Route::get('contractors/{contractor}/statement', [ContractorController::class, 'statement'])->name('contractors.statement');
     Route::get('employees/{employee}/statement', [EmployeeController::class, 'statement'])->name('employees.statement');
     Route::get('contractor-report', [ContractorController::class, 'report'])->name('contractors.report');
+
+    // ===== موجات المقاولات الجديدة =====
+    // الضمانات والتأمينات
+    Route::post('letters-of-guarantee/{letterOfGuarantee}/release', [LetterOfGuaranteeController::class, 'release'])->name('guarantees.release');
+    Route::resource('letters-of-guarantee', LetterOfGuaranteeController::class)->names('guarantees')->parameters(['letters-of-guarantee' => 'letterOfGuarantee']);
+    Route::resource('insurance-policies', InsurancePolicyController::class)->names('insurance')->parameters(['insurance-policies' => 'insurancePolicy']);
+
+    // المناقصات وعروض الأسعار
+    Route::post('tenders/{tender}/convert', [TenderController::class, 'convertToProject'])->name('tenders.convert');
+    Route::resource('tenders', TenderController::class);
+    Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convertToInvoice'])->name('quotations.convert');
+    Route::resource('quotations', QuotationController::class);
+    Route::post('quotations/{quotation}/items', [QuotationItemController::class, 'store'])->name('quotation_items.store');
+    Route::delete('quotation-items/{quotation_item}', [QuotationItemController::class, 'destroy'])->name('quotation_items.destroy');
+
+    // تنفيذ الموقع: مراحل + يومية + حضور
+    Route::post('projects/{project}/milestones', [ProjectMilestoneController::class, 'store'])->name('project_milestones.store');
+    Route::put('project-milestones/{project_milestone}', [ProjectMilestoneController::class, 'update'])->name('project_milestones.update');
+    Route::delete('project-milestones/{project_milestone}', [ProjectMilestoneController::class, 'destroy'])->name('project_milestones.destroy');
+    Route::resource('daily-site-reports', DailySiteReportController::class)->names('daily_site_reports')->parameters(['daily-site-reports' => 'dailySiteReport']);
+    Route::get('labor-attendances', [LaborAttendanceController::class, 'index'])->name('labor_attendances.index');
+    Route::get('labor-attendances/create', [LaborAttendanceController::class, 'create'])->name('labor_attendances.create');
+    Route::post('labor-attendances', [LaborAttendanceController::class, 'store'])->name('labor_attendances.store');
+    Route::get('labor-attendances/{labor_attendance}', [LaborAttendanceController::class, 'show'])->name('labor_attendances.show');
+    Route::delete('labor-attendances/{labor_attendance}', [LaborAttendanceController::class, 'destroy'])->name('labor_attendances.destroy');
+
+    // المعدات وأذون الصرف
+    Route::get('equipment-logs', [EquipmentLogController::class, 'index'])->name('equipment_logs.index');
+    Route::post('equipment-logs', [EquipmentLogController::class, 'store'])->name('equipment_logs.store');
+    Route::delete('equipment-logs/{equipment_log}', [EquipmentLogController::class, 'destroy'])->name('equipment_logs.destroy');
+    Route::post('material-requisitions/{materialRequisition}/approve', [MaterialRequisitionController::class, 'approve'])->name('material_requisitions.approve');
+    Route::post('material-requisitions/{materialRequisition}/issue', [MaterialRequisitionController::class, 'issue'])->name('material_requisitions.issue');
+    Route::post('material-requisitions/{materialRequisition}/reject', [MaterialRequisitionController::class, 'reject'])->name('material_requisitions.reject');
+    Route::resource('material-requisitions', MaterialRequisitionController::class)->names('material_requisitions')->parameters(['material-requisitions' => 'materialRequisition']);
+    Route::post('material-requisitions/{materialRequisition}/items', [MaterialRequisitionItemController::class, 'store'])->name('material_requisition_items.store');
+    Route::delete('material-requisition-items/{materialRequisitionItem}', [MaterialRequisitionItemController::class, 'destroy'])->name('material_requisition_items.destroy');
 });

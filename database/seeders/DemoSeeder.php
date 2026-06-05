@@ -268,6 +268,96 @@ class DemoSeeder extends Seeder
         $this->ledger->post($bankMain, ['type' => 'withdrawal', 'amount' => $chq->amount, 'transaction_date' => $chq->due_date->toDateString(), 'description' => 'شيك '.$chq->cheque_number, 'related_type' => 'cheque', 'related_id' => $chq->id, 'created_by' => $this->by]);
         \App\Models\Cheque::create(['cheque_number' => 'CHK-OUT-2002', 'bank_account_id' => $bankMain->id, 'direction' => 'outgoing', 'party_name' => $suppliers[1]->name, 'amount' => 80000, 'issue_date' => now()->subDays(15)->toDateString(), 'due_date' => now()->addDays(15)->toDateString(), 'status' => 'pending', 'created_by' => $this->by]);
 
+        // ===== موديولات المقاولات الجديدة =====
+        // خطابات الضمان
+        $project = \App\Models\Project::first();
+        $bank = \App\Models\BankAccount::first();
+        \App\Models\LetterOfGuarantee::create(['lg_number' => 'LG-2026-0001', 'type' => 'bid', 'beneficiary' => 'الهيئة العامة للأبنية التعليمية', 'bank_name' => $bank?->bank_name ?? 'البنك الأهلي المصري', 'bank_account_id' => $bank?->id, 'amount' => 150000, 'issue_date' => now()->subDays(60)->toDateString(), 'expiry_date' => now()->addDays(20)->toDateString(), 'status' => 'active', 'project_id' => $project?->id, 'notes' => 'خطاب ضمان ابتدائي لدخول مناقصة', 'created_by' => $this->by]);
+        \App\Models\LetterOfGuarantee::create(['lg_number' => 'LG-2026-0002', 'type' => 'performance', 'beneficiary' => 'وزارة الإسكان', 'bank_name' => $bank?->bank_name ?? 'بنك مصر', 'bank_account_id' => $bank?->id, 'amount' => 500000, 'issue_date' => now()->subDays(30)->toDateString(), 'expiry_date' => now()->addMonths(8)->toDateString(), 'status' => 'active', 'project_id' => $project?->id, 'notes' => 'خطاب ضمان نهائي حسن تنفيذ', 'created_by' => $this->by]);
+        \App\Models\LetterOfGuarantee::create(['lg_number' => 'LG-2026-0003', 'type' => 'advance', 'beneficiary' => 'شركة المقاولون العرب', 'bank_name' => $bank?->bank_name ?? 'البنك التجاري الدولي', 'bank_account_id' => $bank?->id, 'amount' => 250000, 'issue_date' => now()->subMonths(6)->toDateString(), 'expiry_date' => now()->subDays(5)->toDateString(), 'status' => 'released', 'project_id' => $project?->id, 'notes' => 'تم الإفراج بعد سداد الدفعة المقدمة', 'created_by' => $this->by]);
+
+        // وثائق التأمين
+        \App\Models\InsurancePolicy::create(['policy_number' => 'INS-2026-0001', 'type' => 'contractor_all_risk', 'provider' => 'شركة مصر للتأمين', 'coverage_amount' => 5000000, 'premium' => 75000, 'start_date' => now()->subMonths(11)->toDateString(), 'expiry_date' => now()->addDays(25)->toDateString(), 'status' => 'active', 'project_id' => $project?->id, 'notes' => 'وثيقة تأمين كل أخطار المقاولين على المشروع.', 'created_by' => $this->by]);
+        \App\Models\InsurancePolicy::create(['policy_number' => 'INS-2026-0002', 'type' => 'liability', 'provider' => 'GIG للتأمين', 'coverage_amount' => 2000000, 'premium' => 30000, 'start_date' => now()->subMonths(2)->toDateString(), 'expiry_date' => now()->addMonths(10)->toDateString(), 'status' => 'active', 'project_id' => $project?->id, 'notes' => 'تأمين المسؤولية المدنية تجاه الغير.', 'created_by' => $this->by]);
+
+        // المناقصات
+        $client = \App\Models\Client::first();
+        \App\Models\Tender::create(['tender_number' => 'TND-2026-0001', 'title' => 'إنشاء مبنى إداري - هيئة الأبنية التعليمية', 'client_id' => $client?->id, 'estimated_value' => 5000000, 'bid_value' => 4750000, 'submission_date' => now()->subDays(30)->toDateString(), 'status' => 'won', 'project_id' => $project?->id, 'notes' => 'مناقصة فائزة ومحوّلة لمشروع.', 'created_by' => $this->by]);
+        \App\Models\Tender::create(['tender_number' => 'TND-2026-0002', 'title' => 'توريد وتركيب أعمال كهروميكانيكية', 'client_id' => $client?->id, 'estimated_value' => 1800000, 'bid_value' => 1750000, 'submission_date' => now()->subDays(5)->toDateString(), 'status' => 'submitted', 'notes' => 'بانتظار نتيجة الترسية.', 'created_by' => $this->by]);
+        \App\Models\Tender::create(['tender_number' => 'TND-2026-0003', 'title' => 'رصف طريق رئيسي - مرحلة أولى', 'client_id' => $client?->id, 'estimated_value' => 3200000, 'bid_value' => null, 'submission_date' => now()->addDays(10)->toDateString(), 'status' => 'draft', 'notes' => 'قيد إعداد العرض الفني والمالي.', 'created_by' => $this->by]);
+
+        // عروض الأسعار
+        if ($client) {
+            $q1 = \App\Models\Quotation::create(['quotation_number' => 'QUO-2026-0001', 'client_id' => $client->id, 'project_id' => $project?->id, 'issue_date' => now()->subDays(10)->toDateString(), 'valid_until' => now()->addDays(20)->toDateString(), 'tax_rate' => 14, 'status' => 'accepted', 'notes' => 'عرض سعر تجريبي مقبول', 'created_by' => $this->by]);
+            foreach ([['توريد وتركيب أعمال كهرباء', 1, 25000], ['أعمال سباكة', 2, 8000], ['دهانات', 3, 4500]] as [$d, $qty, $up]) {
+                $q1->items()->create(['description' => $d, 'quantity' => $qty, 'unit_price' => $up, 'total_price' => bcmul((string) $qty, (string) $up, 2)]);
+            }
+            $q1->recomputeTotals();
+            $q2 = \App\Models\Quotation::create(['quotation_number' => 'QUO-2026-0002', 'client_id' => $client->id, 'project_id' => $project?->id, 'issue_date' => now()->subDays(3)->toDateString(), 'valid_until' => now()->addDays(27)->toDateString(), 'tax_rate' => 14, 'status' => 'sent', 'notes' => 'عرض سعر تجريبي مُرسل', 'created_by' => $this->by]);
+            foreach ([['أعمال خرسانة مسلحة', 1, 60000], ['أعمال محارة', 1, 15000]] as [$d, $qty, $up]) {
+                $q2->items()->create(['description' => $d, 'quantity' => $qty, 'unit_price' => $up, 'total_price' => bcmul((string) $qty, (string) $up, 2)]);
+            }
+            $q2->recomputeTotals();
+        }
+
+        // مراحل المشروع
+        if ($project) {
+            \App\Models\ProjectMilestone::insert([
+                ['project_id' => $project->id, 'name' => 'التأسيس', 'planned_start' => now()->subMonths(6)->toDateString(), 'planned_end' => now()->subMonths(5)->toDateString(), 'actual_start' => now()->subMonths(6)->toDateString(), 'actual_end' => now()->subMonths(5)->toDateString(), 'progress_percent' => 100, 'status' => 'done', 'sort' => 1, 'notes' => null, 'created_at' => now(), 'updated_at' => now()],
+                ['project_id' => $project->id, 'name' => 'الهيكل الخرساني', 'planned_start' => now()->subMonths(5)->toDateString(), 'planned_end' => now()->subMonths(1)->toDateString(), 'actual_start' => now()->subMonths(5)->toDateString(), 'actual_end' => null, 'progress_percent' => 60, 'status' => 'in_progress', 'sort' => 2, 'notes' => null, 'created_at' => now(), 'updated_at' => now()],
+                ['project_id' => $project->id, 'name' => 'التشطيبات', 'planned_start' => now()->subMonths(2)->toDateString(), 'planned_end' => now()->subDays(10)->toDateString(), 'actual_start' => null, 'actual_end' => null, 'progress_percent' => 0, 'status' => 'pending', 'sort' => 3, 'notes' => null, 'created_at' => now(), 'updated_at' => now()],
+                ['project_id' => $project->id, 'name' => 'التسليم', 'planned_start' => now()->addMonths(2)->toDateString(), 'planned_end' => now()->addMonths(3)->toDateString(), 'actual_start' => null, 'actual_end' => null, 'progress_percent' => 0, 'status' => 'pending', 'sort' => 4, 'notes' => null, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+
+            // يومية الموقع
+            foreach ([['days' => 2, 'weather' => 'مشمس حار', 'labor' => 24, 'work' => 'صب خرسانة الأعمدة بالدور الأرضي وتجهيز الشدّة الخشبية للسقف.'], ['days' => 1, 'weather' => 'معتدل', 'labor' => 18, 'work' => 'أعمال المباني الطوب للحوائط الخارجية وتركيب حديد التسليح للأسقف.'], ['days' => 0, 'weather' => 'غائم جزئياً', 'labor' => 27, 'work' => 'أعمال التشطيبات الداخلية وبدء أعمال السباكة والكهرباء بالدور الأول.']] as $s) {
+                \App\Models\DailySiteReport::create(['project_id' => $project->id, 'report_date' => now()->subDays($s['days'])->toDateString(), 'weather' => $s['weather'], 'work_done' => $s['work'], 'labor_count' => $s['labor'], 'equipment_notes' => 'الونش الرئيسي يعمل بكفاءة، تم صيانة خلاطة الخرسانة.', 'progress_notes' => 'سير العمل مطابق للجدول الزمني المعتمد.', 'incidents' => null, 'created_by' => $this->by]);
+            }
+
+            // حضور العمالة
+            $attDate = now()->toDateString();
+            foreach (\App\Models\Employee::take(4)->get() as $emp) {
+                \App\Models\LaborAttendance::create(['project_id' => $project->id, 'attendance_date' => $attDate, 'employee_id' => $emp->id, 'hours' => 8, 'present' => true, 'wage' => 300, 'created_by' => $this->by]);
+            }
+            foreach (['عامل يومية - أحمد', 'عامل يومية - محمود'] as $name) {
+                \App\Models\LaborAttendance::create(['project_id' => $project->id, 'attendance_date' => $attDate, 'laborer_name' => $name, 'hours' => 8, 'present' => true, 'wage' => 250, 'created_by' => $this->by]);
+            }
+        }
+
+        // سجل المعدات
+        if ($asset = \App\Models\Asset::first()) {
+            \App\Models\EquipmentLog::create(['asset_id' => $asset->id, 'log_type' => 'maintenance', 'log_date' => now()->subDays(5)->toDateString(), 'cost' => 1500, 'description' => 'صيانة دورية وتغيير زيوت', 'next_service_date' => now()->addDays(10)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\EquipmentLog::create(['asset_id' => $asset->id, 'log_type' => 'usage', 'log_date' => now()->subDays(2)->toDateString(), 'operating_hours' => 8.5, 'description' => 'تشغيل في موقع المشروع', 'created_by' => $this->by]);
+        }
+
+        // أذون صرف المواد
+        $materials = \App\Models\Material::take(2)->get();
+        if ($project && $materials->count() >= 1) {
+            $r1 = \App\Models\MaterialRequisition::create(['requisition_number' => 'MR-2026-0001', 'project_id' => $project->id, 'request_date' => now()->subDays(3)->toDateString(), 'status' => 'pending', 'notes' => 'طلب مواد للموقع - بانتظار الاعتماد', 'created_by' => $this->by]);
+            foreach ($materials as $m) {
+                $r1->items()->create(['material_id' => $m->id, 'quantity' => 5]);
+            }
+            $r2 = \App\Models\MaterialRequisition::create(['requisition_number' => 'MR-2026-0002', 'project_id' => $project->id, 'request_date' => now()->subDays(7)->toDateString(), 'status' => 'approved', 'approved_by' => $this->by, 'approved_at' => now()->subDays(6), 'notes' => 'طلب مواد مصروف بالكامل', 'created_by' => $this->by]);
+            foreach ($materials as $m) {
+                $r2->items()->create(['material_id' => $m->id, 'quantity' => 3]);
+            }
+            \Illuminate\Support\Facades\DB::transaction(function () use ($r2) {
+                foreach ($r2->items as $item) {
+                    $material = \App\Models\Material::lockForUpdate()->find($item->material_id);
+                    if (! $material) { continue; }
+                    $before = (string) $material->current_stock;
+                    $after = bcsub($before, (string) $item->quantity, 2);
+                    if (bccomp($after, '0', 2) < 0) { $after = '0.00'; }
+                    $unitPrice = (string) ($material->unit_price ?? 0);
+                    \App\Models\InventoryMovement::create(['material_id' => $material->id, 'type' => 'out', 'quantity' => $item->quantity, 'unit_price' => $unitPrice, 'total_value' => bcmul((string) $item->quantity, $unitPrice, 2), 'stock_before' => $before, 'stock_after' => $after, 'movement_date' => now()->subDays(6)->toDateString(), 'project_id' => $r2->project_id, 'reason' => 'صرف إذن مواد '.$r2->requisition_number, 'reference_type' => 'material_requisition', 'reference_id' => $r2->id, 'created_by' => 1]);
+                    $material->current_stock = $after;
+                    $material->save();
+                    $item->update(['issued_quantity' => $item->quantity]);
+                }
+                $r2->update(['status' => 'issued']);
+            });
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

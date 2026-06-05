@@ -16,6 +16,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'projects', 'clients', 'contractors', 'suppliers', 'employees',
         'partners', 'materials', 'expenses', 'revenues', 'invoices',
         'bank_accounts', 'purchase_orders', 'assets', 'contracts', 'taxes',
+        'tenders', 'quotations', 'guarantees',
     ];
 
     /**
@@ -65,7 +66,7 @@ class RolesAndPermissionsSeeder extends Seeder
     private function managerPermissions(): array
     {
         $perms = [];
-        foreach (['projects', 'clients', 'contractors', 'suppliers', 'employees', 'partners', 'materials', 'purchase_orders', 'assets', 'contracts'] as $m) {
+        foreach (['projects', 'clients', 'contractors', 'suppliers', 'employees', 'partners', 'materials', 'purchase_orders', 'assets', 'contracts', 'tenders', 'quotations', 'guarantees'] as $m) {
             foreach (['view', 'create', 'edit', 'delete'] as $a) {
                 $perms[] = "{$m}.{$a}";
             }
@@ -86,7 +87,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 $perms[] = "{$m}.{$a}";
             }
         }
-        foreach (['projects', 'clients', 'contractors', 'suppliers', 'partners'] as $m) {
+        foreach (['projects', 'clients', 'contractors', 'suppliers', 'partners', 'tenders', 'quotations', 'guarantees'] as $m) {
             $perms[] = "{$m}.view";
         }
         return array_merge($perms, ['reports.view', 'reports.export']);

@@ -37,7 +37,21 @@ class AlertService
 
         $unpaidExtracts = ContractorExtract::whereIn('status', ['approved', 'partial'])->count();
 
+        $soon = Carbon::today()->addDays(30)->toDateString();
+        $expiringGuarantees = \App\Models\LetterOfGuarantee::where('status', 'active')
+            ->whereBetween('expiry_date', [$today, $soon])->count();
+        $expiringInsurance = \App\Models\InsurancePolicy::where('status', 'active')
+            ->whereBetween('expiry_date', [$today, $soon])->count();
+        $dueEquipment = \App\Models\EquipmentLog::whereNotNull('next_service_date')
+            ->whereBetween('next_service_date', [$today, Carbon::today()->addDays(14)->toDateString()])
+            ->distinct('asset_id')->count('asset_id');
+        $pendingRequisitions = \App\Models\MaterialRequisition::where('status', 'pending')->count();
+
         $all = [
+            ['icon' => 'fa-shield-halved', 'color' => 'warning', 'label' => 'خطابات ضمان قاربت على الانتهاء', 'count' => $expiringGuarantees, 'url' => route('guarantees.index')],
+            ['icon' => 'fa-file-shield', 'color' => 'warning', 'label' => 'وثائق تأمين قاربت على الانتهاء', 'count' => $expiringInsurance, 'url' => route('insurance.index')],
+            ['icon' => 'fa-screwdriver-wrench', 'color' => 'info', 'label' => 'معدات مستحقة الصيانة', 'count' => $dueEquipment, 'url' => route('equipment_logs.index')],
+            ['icon' => 'fa-clipboard-check', 'color' => 'secondary', 'label' => 'أذون صرف بانتظار الاعتماد', 'count' => $pendingRequisitions, 'url' => route('material_requisitions.index', ['status' => 'pending'])],
             ['icon' => 'fa-file-invoice', 'color' => 'danger', 'label' => 'فواتير متأخرة', 'count' => $overdueInvoices, 'url' => route('invoices.index', ['status' => 'overdue'])],
             ['icon' => 'fa-hand-holding-dollar', 'color' => 'warning', 'label' => 'إيرادات مستحقة التحصيل', 'count' => $dueRevenues, 'url' => route('revenues.index', ['payment_status' => 'pending'])],
             ['icon' => 'fa-money-bill-wave', 'color' => 'warning', 'label' => 'مصروفات آجلة متأخرة', 'count' => $overdueExpenses, 'url' => route('expenses.index')],

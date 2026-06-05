@@ -99,6 +99,96 @@
 
     {{-- 4. الأقسام المرتبطة --}}
 
+    {{-- مراحل/جدول المشروع --}}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h6 class="mb-3"><i class="fa-solid fa-list-ol ms-1"></i> مراحل المشروع <span class="badge text-bg-secondary">{{ $project->milestones->count() }}</span></h6>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>المرحلة</th><th>المخطط (بداية / نهاية)</th><th>الفعلي (بداية / نهاية)</th><th style="min-width:140px">التقدّم</th><th>الحالة</th><th class="text-end">إجراءات</th></tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($project->milestones as $milestone)
+                            @php($mBadge = match($milestone->status) { 'done' => 'success', 'in_progress' => 'primary', 'delayed' => 'danger', default => 'secondary' })
+                            <tr>
+                                <td class="fw-semibold">{{ $milestone->name }}</td>
+                                <td class="small">{{ $milestone->planned_start?->format('Y-m-d') ?? '—' }} / {{ $milestone->planned_end?->format('Y-m-d') ?? '—' }}</td>
+                                <td class="small">{{ $milestone->actual_start?->format('Y-m-d') ?? '—' }} / {{ $milestone->actual_end?->format('Y-m-d') ?? '—' }}</td>
+                                <td>
+                                    @php($p = (int) $milestone->progress_percent)
+                                    @php($pBar = $p >= 100 ? 'bg-success' : ($p > 0 ? 'bg-primary' : 'bg-secondary'))
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 8px;"><div class="progress-bar {{ $pBar }}" style="width: {{ min(max($p, 0), 100) }}%"></div></div>
+                                        <span class="small text-muted">{{ $p }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge text-bg-{{ $mBadge }}">{{ \App\Models\ProjectMilestone::STATUSES[$milestone->status] ?? $milestone->status }}</span>
+                                    @if ($milestone->isDelayed())<span class="small text-danger d-block">متأخرة</span>@endif
+                                </td>
+                                <td class="text-end">
+                                    @can('projects.edit')
+                                        <form method="POST" action="{{ route('project_milestones.destroy', $milestone) }}" class="d-inline" onsubmit="return confirm('حذف المرحلة؟')">
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="text-center text-muted py-3">لا توجد مراحل بعد.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @can('projects.edit')
+                <form method="POST" action="{{ route('project_milestones.store', $project) }}" class="row g-2 mt-2 align-items-end">
+                    @csrf
+                    <div class="col-md-3"><label class="form-label small">المرحلة <span class="text-danger">*</span></label><input type="text" name="name" value="{{ old('name') }}" class="form-control" required></div>
+                    <div class="col-md-2"><label class="form-label small">بداية مخططة</label><input type="date" name="planned_start" value="{{ old('planned_start') }}" class="form-control"></div>
+                    <div class="col-md-2"><label class="form-label small">نهاية مخططة</label><input type="date" name="planned_end" value="{{ old('planned_end') }}" class="form-control"></div>
+                    <div class="col-md-2"><label class="form-label small">نسبة التقدّم %</label><input type="number" min="0" max="100" name="progress_percent" value="{{ old('progress_percent', 0) }}" class="form-control"></div>
+                    <div class="col-md-2"><label class="form-label small">الحالة <span class="text-danger">*</span></label>
+                        <select name="status" class="form-select" required>
+                            @foreach (\App\Models\ProjectMilestone::STATUSES as $key => $label)
+                                <option value="{{ $key }}" @selected(old('status', 'pending') === $key)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-1"><button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus"></i></button></div>
+                </form>
+            @endcan
+        </div>
+    </div>
+
+    {{-- آخر يوميات الموقع --}}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0"><i class="fa-solid fa-clipboard-list ms-1"></i> آخر يوميات الموقع</h6>
+                <a href="{{ route('daily_site_reports.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>التاريخ</th><th>الطقس</th><th>العمالة</th><th>الأعمال المنفّذة</th></tr></thead>
+                    <tbody>
+                        @forelse ($project->dailySiteReports()->take(5)->get() as $dsr)
+                            <tr>
+                                <td><a href="{{ route('daily_site_reports.show', $dsr) }}">{{ $dsr->report_date?->format('Y-m-d') }}</a></td>
+                                <td>{{ $dsr->weather ?: '—' }}</td>
+                                <td><span class="badge text-bg-info">{{ $dsr->labor_count }}</span></td>
+                                <td>{{ \Illuminate\Support\Str::limit($dsr->work_done, 50) ?: '—' }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" class="text-center text-muted py-3">لا توجد يوميات لهذا المشروع.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     {{-- الفواتير --}}
     <div class="card mb-3">
         <div class="card-body">

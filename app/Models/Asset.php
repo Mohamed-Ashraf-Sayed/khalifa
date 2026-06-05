@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 class Asset extends Model
@@ -41,6 +42,11 @@ class Asset extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(EquipmentLog::class)->latest('log_date');
     }
 
     /** أساس الإهلاك = التكلفة − قيمة الخردة. */

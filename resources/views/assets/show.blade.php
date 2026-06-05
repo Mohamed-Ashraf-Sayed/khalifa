@@ -95,4 +95,56 @@
             </div></div>
         @endif
     @endcan
+
+    {{-- سجل تشغيل / صيانة المعدة --}}
+    <div class="card mt-3"><div class="card-body">
+        <h6 class="mb-3"><i class="fa-solid fa-screwdriver-wrench ms-1" style="color:#8b7355"></i> سجل التشغيل والصيانة</h6>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+                <thead class="table-light"><tr><th>النوع</th><th>التاريخ</th><th>ساعات التشغيل</th><th>التكلفة</th><th>الصيانة القادمة</th><th>الوصف</th><th></th></tr></thead>
+                <tbody>
+                    @forelse ($asset->logs as $log)
+                        @php($lbadge = $log->log_type === 'maintenance' ? 'warning' : 'info')
+                        <tr>
+                            <td><span class="badge text-bg-{{ $lbadge }}">{{ \App\Models\EquipmentLog::LOG_TYPES[$log->log_type] ?? $log->log_type }}</span></td>
+                            <td>{{ $log->log_date?->format('Y-m-d') ?? '—' }}</td>
+                            <td>{{ $log->operating_hours !== null ? number_format((float) $log->operating_hours, 2) : '—' }}</td>
+                            <td>{{ $log->cost !== null ? number_format((float) $log->cost, 2) : '—' }}</td>
+                            <td>{{ $log->next_service_date?->format('Y-m-d') ?? '—' }}</td>
+                            <td class="text-muted small">{{ $log->description ?: '—' }}</td>
+                            <td class="text-end">
+                                @can('assets.edit')
+                                    <form method="POST" action="{{ route('equipment_logs.destroy', $log) }}" class="d-inline" onsubmit="return confirm('متأكد من حذف السجل؟')">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endcan
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="7" class="text-center text-muted py-3">لا توجد سجلات بعد.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @can('assets.edit')
+            <form method="POST" action="{{ route('equipment_logs.store') }}" class="row g-2 align-items-end mt-3">
+                @csrf
+                <input type="hidden" name="asset_id" value="{{ $asset->id }}">
+                <div class="col-md-2"><label class="form-label small">النوع</label>
+                    <select name="log_type" class="form-select">
+                        @foreach (\App\Models\EquipmentLog::LOG_TYPES as $key => $label)
+                            <option value="{{ $key }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2"><label class="form-label small">التاريخ</label><input type="date" name="log_date" value="{{ now()->toDateString() }}" class="form-control" required></div>
+                <div class="col-md-2"><label class="form-label small">ساعات التشغيل</label><input type="number" step="0.01" min="0" name="operating_hours" class="form-control"></div>
+                <div class="col-md-2"><label class="form-label small">التكلفة</label><input type="number" step="0.01" min="0" name="cost" class="form-control"></div>
+                <div class="col-md-2"><label class="form-label small">الصيانة القادمة</label><input type="date" name="next_service_date" class="form-control"></div>
+                <div class="col-md-2"><label class="form-label small">الوصف</label><input type="text" name="description" class="form-control"></div>
+                <div class="col-12"><button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة سجل</button></div>
+            </form>
+        @endcan
+    </div></div>
 @endsection

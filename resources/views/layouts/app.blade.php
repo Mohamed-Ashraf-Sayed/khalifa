@@ -215,7 +215,21 @@
                 @can('contracts.view')  <a class="nav-link {{ request()->routeIs('contracts.*') ? 'active' : '' }}" href="{{ route('contracts.index') }}"><i class="fa-solid fa-file-contract"></i> عقود المشاريع</a> @endcan
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('project_costs.*') ? 'active' : '' }}" href="{{ route('project_costs.index') }}"><i class="fa-solid fa-coins"></i> تكاليف المشاريع</a> @endcan
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('project_files.*') ? 'active' : '' }}" href="{{ route('project_files.index') }}"><i class="fa-solid fa-folder-open"></i> ملفات المشاريع</a> @endcan
+                @can('projects.view')   <a class="nav-link {{ request()->routeIs('daily_site_reports.*') ? 'active' : '' }}" href="{{ route('daily_site_reports.index') }}"><i class="fa-solid fa-clipboard-list"></i> يومية الموقع</a> @endcan
+                @can('projects.view')   <a class="nav-link {{ request()->routeIs('labor_attendances.*') ? 'active' : '' }}" href="{{ route('labor_attendances.index') }}"><i class="fa-solid fa-user-clock"></i> حضور العمالة</a> @endcan
             @endcanany
+
+            @canany(['tenders.view','quotations.view'])
+                <div class="nav-section">المناقصات والعروض</div>
+                @can('tenders.view')    <a class="nav-link {{ request()->routeIs('tenders.*') ? 'active' : '' }}" href="{{ route('tenders.index') }}"><i class="fa-solid fa-gavel"></i> المناقصات</a> @endcan
+                @can('quotations.view') <a class="nav-link {{ request()->routeIs('quotations.*') ? 'active' : '' }}" href="{{ route('quotations.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> عروض الأسعار</a> @endcan
+            @endcanany
+
+            @can('guarantees.view')
+                <div class="nav-section">الضمانات والتأمينات</div>
+                <a class="nav-link {{ request()->routeIs('guarantees.*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}"><i class="fa-solid fa-shield-halved"></i> خطابات الضمان</a>
+                <a class="nav-link {{ request()->routeIs('insurance.*') ? 'active' : '' }}" href="{{ route('insurance.index') }}"><i class="fa-solid fa-file-shield"></i> وثائق التأمين</a>
+            @endcan
 
             @canany(['contractors.view','suppliers.view','purchase_orders.view'])
                 <div class="nav-section">المقاولون والموردون</div>
@@ -245,7 +259,9 @@
                 <div class="nav-section">المخزون والأصول</div>
                 @can('materials.view')  <a class="nav-link {{ request()->routeIs('materials.*') ? 'active' : '' }}" href="{{ route('materials.index') }}"><i class="fa-solid fa-boxes-stacked"></i> المواد</a> @endcan
                 @can('materials.view')  <a class="nav-link {{ request()->routeIs('inventory_movements.*') ? 'active' : '' }}" href="{{ route('inventory_movements.index') }}"><i class="fa-solid fa-dolly"></i> حركات المخزون</a> @endcan
+                @can('materials.view')  <a class="nav-link {{ request()->routeIs('material_requisitions.*') ? 'active' : '' }}" href="{{ route('material_requisitions.index') }}"><i class="fa-solid fa-clipboard-check"></i> أذون صرف المواد</a> @endcan
                 @can('assets.view')     <a class="nav-link {{ request()->routeIs('assets.*') ? 'active' : '' }}" href="{{ route('assets.index') }}"><i class="fa-solid fa-warehouse"></i> الأصول الثابتة</a> @endcan
+                @can('assets.view')     <a class="nav-link {{ request()->routeIs('equipment_logs.*') ? 'active' : '' }}" href="{{ route('equipment_logs.index') }}"><i class="fa-solid fa-screwdriver-wrench"></i> سجل المعدات</a> @endcan
             @endcanany
 
             @canany(['employees.view','partners.view'])

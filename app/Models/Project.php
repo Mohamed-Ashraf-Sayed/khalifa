@@ -126,4 +126,19 @@ class Project extends Model
     {
         return $this->hasMany(Partner::class);
     }
+
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(ProjectMilestone::class)->orderBy('sort')->orderBy('planned_start');
+    }
+
+    public function dailySiteReports(): HasMany
+    {
+        return $this->hasMany(DailySiteReport::class)->latest('report_date');
+    }
+
+    public function laborAttendances(): HasMany
+    {
+        return $this->hasMany(LaborAttendance::class);
+    }
 }
