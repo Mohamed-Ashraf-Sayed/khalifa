@@ -3,55 +3,58 @@
 @section('title', 'بيانات المورد')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="m-0">{{ $supplier->name }}</h5>
-        <div class="d-flex gap-2">
-            <a href="{{ route('suppliers.statement', $supplier) }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
-            @can('suppliers.edit')
-                <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
-            @endcan
-            <a href="{{ route('suppliers.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
-        </div>
+    {{-- شريط الإجراءات --}}
+    <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+        <a href="{{ route('suppliers.statement', $supplier) }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
+        @can('suppliers.edit')
+            <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
+        @endcan
+        <a href="{{ route('suppliers.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4"><div class="text-muted small">الاسم</div><div class="fw-semibold">{{ $supplier->name }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الشركة</div><div>{{ $supplier->company_name ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">النوع</div><div><span class="badge text-bg-light">{{ \App\Models\Supplier::TYPES[$supplier->type] ?? $supplier->type }}</span></div></div>
-                <div class="col-md-4"><div class="text-muted small">الهاتف</div><div dir="ltr" class="text-end">{{ $supplier->phone }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">هاتف آخر</div><div dir="ltr" class="text-end">{{ $supplier->phone2 ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">البريد</div><div dir="ltr" class="text-end">{{ $supplier->email ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الرقم الضريبي</div><div>{{ $supplier->tax_number ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">السجل التجاري</div><div>{{ $supplier->commercial_register ?: '—' }}</div></div>
-                <div class="col-md-4">
-                    <div class="text-muted small">الحالة</div>
-                    <div>
-                        @if ($supplier->is_active)
-                            <span class="badge text-bg-success">نشط</span>
-                        @else
-                            <span class="badge text-bg-secondary">غير نشط</span>
-                        @endif
+    @php($poTotal = (float) $supplier->purchaseOrders->whereIn('status', ['partial','received'])->sum('net_amount'))
+    @php($paidTotal = (float) $supplier->payments->sum('amount'))
+
+    {{-- بطاقة الملف + المؤشرات المالية --}}
+    <div class="row g-3 mb-3">
+        <div class="col-lg-5">
+            <div class="card h-100"><div class="card-body d-flex align-items-center gap-3">
+                <span class="entity-avatar"><i class="fa-solid fa-truck-field"></i></span>
+                <div class="flex-grow-1">
+                    <div class="h5 mb-1">{{ $supplier->name }}</div>
+                    <div class="text-muted small">{{ \App\Models\Supplier::TYPES[$supplier->type] ?? 'مورّد' }} · {{ $supplier->company_name ?: '—' }}</div>
+                    <div class="mt-2">
+                        @if ($supplier->is_active)<span class="badge text-bg-success">نشط</span>@else<span class="badge text-bg-secondary">غير نشط</span>@endif
+                        @if ($supplier->overCreditLimit())<span class="badge text-bg-danger ms-1">تجاوز الحد الائتماني</span>@endif
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="text-muted small">الرصيد المستحق</div>
-                    <div class="fw-semibold">
-                        {{ number_format((float) $supplier->balanceDue(), 2) }}
-                        @if ($supplier->overCreditLimit())
-                            <span class="badge text-bg-danger ms-1">تجاوز الحد الائتماني</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-md-4"><div class="text-muted small">الحد الائتماني</div><div>{{ number_format((float) $supplier->credit_limit, 2) }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">أيام السداد</div><div>{{ $supplier->payment_terms !== null ? $supplier->payment_terms . ' يوم' : '—' }}</div></div>
-                @if ($supplier->creator)<div class="col-md-4"><div class="text-muted small">أُضيف بواسطة</div><div>{{ $supplier->creator->name }}</div></div>@endif
-                <div class="col-md-12"><div class="text-muted small">العنوان</div><div>{{ $supplier->address ?: '—' }}</div></div>
-                @if ($supplier->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $supplier->notes }}</div></div>@endif
+            </div></div>
+        </div>
+        <div class="col-lg-7">
+            <div class="row g-3 h-100">
+                <div class="col-6"><div class="stat-box accent"><div class="sl">الرصيد المستحقّ</div><div class="sv text-warning">{{ number_format((float) $supplier->balanceDue(), 2) }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">الحد الائتماني</div><div class="sv">{{ number_format((float) $supplier->credit_limit, 2) }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">إجمالي أوامر الشراء المستلَمة</div><div class="sv text-success">{{ number_format($poTotal, 2) }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">إجمالي المدفوع</div><div class="sv">{{ number_format($paidTotal, 2) }}</div></div></div>
             </div>
         </div>
     </div>
+
+    {{-- بيانات المورّد --}}
+    <div class="card mb-3"><div class="card-body">
+        <h6 class="mb-3"><i class="fa-solid fa-address-card ms-1" style="color:#8b7355"></i> بيانات المورّد</h6>
+        <div class="info-list">
+            <div class="il"><span class="k">الهاتف</span><span class="v" dir="ltr">{{ $supplier->phone ?: '—' }}</span></div>
+            <div class="il"><span class="k">هاتف آخر</span><span class="v" dir="ltr">{{ $supplier->phone2 ?: '—' }}</span></div>
+            <div class="il"><span class="k">البريد</span><span class="v" dir="ltr">{{ $supplier->email ?: '—' }}</span></div>
+            <div class="il"><span class="k">الرقم الضريبي</span><span class="v">{{ $supplier->tax_number ?: '—' }}</span></div>
+            <div class="il"><span class="k">السجل التجاري</span><span class="v">{{ $supplier->commercial_register ?: '—' }}</span></div>
+            <div class="il"><span class="k">أيام السداد</span><span class="v">{{ $supplier->payment_terms !== null ? $supplier->payment_terms.' يوم' : '—' }}</span></div>
+            <div class="il"><span class="k">العنوان</span><span class="v">{{ $supplier->address ?: '—' }}</span></div>
+            @if ($supplier->creator)<div class="il"><span class="k">أُضيف بواسطة</span><span class="v">{{ $supplier->creator->name }}</span></div>@endif
+            @if ($supplier->notes)<div class="il" style="grid-column:1/-1"><span class="k">ملاحظات</span><span class="v">{{ $supplier->notes }}</span></div>@endif
+        </div>
+    </div></div>
 
     <div class="card mb-3">
         <div class="card-body">

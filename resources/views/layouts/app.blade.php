@@ -88,6 +88,18 @@
         .card .card-body { padding: 1.15rem 1.25rem; }
         .card h6 { font-weight: 700; }
 
+        /* ===== مكوّنات صفحات العرض (entity show) ===== */
+        .entity-avatar { width: 60px; height: 60px; min-width: 60px; border-radius: 16px; background: linear-gradient(145deg,#93795a,#6f5b43); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 6px 16px rgba(139,115,85,.3); }
+        .stat-box { border: 1px solid var(--line); border-radius: 13px; padding: .75rem .9rem; height: 100%; background: #fff; }
+        .stat-box .sl { font-size: .72rem; color: var(--muted); font-weight: 600; }
+        .stat-box .sv { font-size: 1.2rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; }
+        .stat-box.accent { background: linear-gradient(150deg,#fbf8f2,#f4efe4); border-color: var(--beige-dark); }
+        .info-list { display: grid; grid-template-columns: 1fr 1fr; gap: .1rem .9rem; }
+        @media (max-width: 600px) { .info-list { grid-template-columns: 1fr; } }
+        .info-list .il { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem .25rem; border-bottom: 1px dashed var(--line); }
+        .info-list .il .k { color: var(--muted); font-size: .85rem; }
+        .info-list .il .v { font-weight: 600; text-align: end; }
+
         /* ===== Buttons ===== */
         .btn { border-radius: .6rem; font-weight: 600; font-size: .9rem; transition: all .15s ease; }
         .btn:active { transform: translateY(1px); }

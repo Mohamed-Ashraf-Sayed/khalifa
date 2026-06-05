@@ -3,43 +3,58 @@
 @section('title', 'بيانات المقاول')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="m-0">{{ $contractor->name }}</h5>
-        <div class="d-flex gap-2">
-            <a href="{{ route('contractors.statement', $contractor) }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
-            @can('contractors.edit')
-                <a href="{{ route('contractors.edit', $contractor) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
-            @endcan
-            <a href="{{ route('contractors.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
-        </div>
+    {{-- شريط الإجراءات --}}
+    <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+        <a href="{{ route('contractors.statement', $contractor) }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
+        @can('contractors.edit')
+            <a href="{{ route('contractors.edit', $contractor) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
+        @endcan
+        <a href="{{ route('contractors.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4"><div class="text-muted small">الكود</div><div class="fw-semibold">{{ $contractor->contractor_code }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الاسم</div><div class="fw-semibold">{{ $contractor->name }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الشركة</div><div>{{ $contractor->company_name ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">التخصص</div><div>{{ $contractor->specialty ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الهاتف</div><div dir="ltr" class="text-end">{{ $contractor->phone ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">هاتف آخر</div><div dir="ltr" class="text-end">{{ $contractor->phone2 ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">البريد</div><div dir="ltr" class="text-end">{{ $contractor->email ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الرقم القومي</div><div>{{ $contractor->national_id ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الرقم الضريبي</div><div>{{ $contractor->tax_number ?: '—' }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">الحالة</div><div>
-                    @if ($contractor->is_active)
-                        <span class="badge text-bg-success">نشط</span>
-                    @else
-                        <span class="badge text-bg-secondary">غير نشط</span>
-                    @endif
-                </div></div>
-                <div class="col-md-4"><div class="text-muted small">الرصيد المستحقّ</div><div class="fw-semibold">{{ number_format((float) $contractor->balanceDue(), 2) }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">المحتجز (غير المُحرَّر)</div><div class="fw-semibold">{{ number_format((float) $contractor->retentionHeld(), 2) }}</div></div>
-                <div class="col-md-4"><div class="text-muted small">أضيف بواسطة</div><div>{{ $contractor->creator?->name ?? '—' }}</div></div>
-                @if ($contractor->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $contractor->notes }}</div></div>@endif
+    @php
+        $earned = (float) $contractor->extracts->whereIn('status', ['approved','partial','paid'])->sum('net_amount');
+        $paid = (float) $contractor->payments->sum('amount');
+    @endphp
+
+    {{-- بطاقة الملف + المؤشرات المالية --}}
+    <div class="row g-3 mb-3">
+        <div class="col-lg-5">
+            <div class="card h-100"><div class="card-body d-flex align-items-center gap-3">
+                <span class="entity-avatar"><i class="fa-solid fa-hard-hat"></i></span>
+                <div class="flex-grow-1">
+                    <div class="h5 mb-1">{{ $contractor->name }}</div>
+                    <div class="text-muted small">{{ $contractor->specialty ?: 'مقاول' }} · {{ $contractor->contractor_code }}</div>
+                    <div class="mt-2">
+                        @if ($contractor->is_active)<span class="badge text-bg-success">نشط</span>@else<span class="badge text-bg-secondary">غير نشط</span>@endif
+                    </div>
+                </div>
+            </div></div>
+        </div>
+        <div class="col-lg-7">
+            <div class="row g-3 h-100">
+                <div class="col-6"><div class="stat-box accent"><div class="sl">الرصيد المستحقّ</div><div class="sv text-warning">{{ number_format((float) $contractor->balanceDue(), 2) }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">المحتجز (غير المُحرَّر)</div><div class="sv text-info">{{ number_format((float) $contractor->retentionHeld(), 2) }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">إجمالي المستخلصات الصافية</div><div class="sv text-success">{{ number_format($earned, 2) }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">إجمالي المدفوع</div><div class="sv">{{ number_format($paid, 2) }}</div></div></div>
             </div>
         </div>
     </div>
+
+    {{-- بيانات المقاول --}}
+    <div class="card mb-3"><div class="card-body">
+        <h6 class="mb-3"><i class="fa-solid fa-address-card ms-1" style="color:#8b7355"></i> بيانات المقاول</h6>
+        <div class="info-list">
+            <div class="il"><span class="k">الشركة</span><span class="v">{{ $contractor->company_name ?: '—' }}</span></div>
+            <div class="il"><span class="k">الهاتف</span><span class="v" dir="ltr">{{ $contractor->phone ?: '—' }}</span></div>
+            <div class="il"><span class="k">هاتف آخر</span><span class="v" dir="ltr">{{ $contractor->phone2 ?: '—' }}</span></div>
+            <div class="il"><span class="k">البريد</span><span class="v" dir="ltr">{{ $contractor->email ?: '—' }}</span></div>
+            <div class="il"><span class="k">الرقم القومي</span><span class="v">{{ $contractor->national_id ?: '—' }}</span></div>
+            <div class="il"><span class="k">الرقم الضريبي</span><span class="v">{{ $contractor->tax_number ?: '—' }}</span></div>
+            <div class="il"><span class="k">أُضيف بواسطة</span><span class="v">{{ $contractor->creator?->name ?? '—' }}</span></div>
+            @if ($contractor->notes)<div class="il" style="grid-column:1/-1"><span class="k">ملاحظات</span><span class="v">{{ $contractor->notes }}</span></div>@endif
+        </div>
+    </div></div>
 
     <div class="card mb-3">
         <div class="card-body">
