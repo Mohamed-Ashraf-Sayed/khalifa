@@ -66,9 +66,9 @@
         .btn-light { background: #fff; border-color: var(--line); color: var(--ink); }
         .btn-light:hover { background: var(--beige); border-color: var(--beige-dark); }
         .btn-sm { border-radius: .5rem; }
-        /* الأزرار البنية (style مضمّن) — تحسين شامل */
-        [style*="8b7355"] { border: none !important; border-radius: .6rem; box-shadow: 0 2px 8px rgba(139,115,85,.25); transition: all .15s ease; }
-        [style*="8b7355"]:hover { filter: brightness(1.07); box-shadow: 0 5px 16px rgba(139,115,85,.34); transform: translateY(-1px); }
+        /* الأزرار البنية (style مضمّن) — تحسين شامل (مقصور على الأزرار والروابط) */
+        .btn[style*="8b7355"], button[style*="8b7355"], a.btn[style*="8b7355"] { border: none !important; border-radius: .6rem; box-shadow: 0 2px 8px rgba(139,115,85,.25); transition: all .15s ease; }
+        .btn[style*="8b7355"]:hover, button[style*="8b7355"]:hover, a.btn[style*="8b7355"]:hover { filter: brightness(1.07); box-shadow: 0 5px 16px rgba(139,115,85,.34); transform: translateY(-1px); }
         .btn-success { box-shadow: 0 2px 8px rgba(31,157,107,.25); }
         .btn-outline-primary, .btn-outline-secondary, .btn-outline-danger { border-radius: .5rem; }
 
