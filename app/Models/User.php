@@ -18,6 +18,13 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
+    public const ROLE_LABELS = [
+        'admin' => 'مدير النظام',
+        'manager' => 'مدير',
+        'accountant' => 'محاسب',
+        'employee' => 'موظف',
+    ];
+
     /**
      * Get the attributes that should be cast.
      *

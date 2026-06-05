@@ -51,9 +51,35 @@
 
         /* ===== Layout ===== */
         .main { margin-inline-start: 264px; min-height: 100vh; }
-        .topbar { background: rgba(255,255,255,.85); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line);
-            position: sticky; top: 0; z-index: 10; }
-        .topbar h5 { font-weight: 700; }
+        .topbar { background: rgba(255,255,255,.9); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line);
+            position: sticky; top: 0; z-index: 10; min-height: 64px; }
+        .topbar-titlewrap { line-height: 1.15; }
+        .topbar-title { font-size: 1.18rem; font-weight: 800; margin: 0; letter-spacing: -.01em; }
+        .topbar-sub { font-size: .72rem; color: var(--muted); font-weight: 600; margin-top: 1px; }
+        .topbar-sub i { opacity: .7; margin-inline-start: 2px; }
+        /* البحث */
+        .topbar-search { flex: 1 1 280px; max-width: 460px; position: relative; align-items: center; }
+        .topbar-search i { position: absolute; inset-inline-start: 14px; color: var(--muted); font-size: .85rem; pointer-events: none; }
+        .topbar-search input { width: 100%; border: 1px solid var(--line); background: #faf7f0; border-radius: 50rem; padding: .5rem 2.4rem .5rem 1rem; font-size: .85rem; transition: all .15s; }
+        .topbar-search input:focus { outline: none; background: #fff; border-color: var(--brown-light); box-shadow: 0 0 0 .2rem rgba(139,115,85,.13); }
+        /* أزرار أيقونية */
+        .icon-btn { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--brown-dark);
+            display: inline-flex; align-items: center; justify-content: center; position: relative; transition: all .15s; font-size: 1rem; }
+        .icon-btn:hover { background: var(--beige); border-color: var(--beige-dark); color: var(--brown-darker); }
+        .notif-dot { position: absolute; top: -5px; inset-inline-start: -5px; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 50rem;
+            background: #e0524e; color: #fff; font-size: .68rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+        /* كارت المستخدم */
+        .user-chip { display: flex; align-items: center; gap: .5rem; background: #fff; border: 1px solid var(--line); border-radius: 50rem;
+            padding: .25rem .85rem .25rem .3rem; cursor: pointer; transition: all .15s; }
+        .user-chip:hover { background: var(--beige); border-color: var(--beige-dark); }
+        .user-chip .avatar { width: 34px; height: 34px; min-width: 34px; border-radius: 50%; overflow: hidden;
+            background: linear-gradient(145deg, #93795a, #6f5b43); color: #fff; font-weight: 700; font-size: .95rem;
+            display: inline-flex; align-items: center; justify-content: center; }
+        .user-chip .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-chip .uinfo { flex-direction: column; align-items: flex-start; line-height: 1.1; }
+        .user-chip .uname { font-weight: 700; font-size: .85rem; color: var(--ink); }
+        .user-chip .urole { font-size: .68rem; color: var(--muted); font-weight: 600; }
+        .user-chip .chev { font-size: .7rem; color: var(--muted); margin-inline-start: .15rem; }
         main.px-4 { animation: fadein .25s ease; }
         @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
@@ -206,66 +232,76 @@
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <div class="main">
-        <header class="topbar d-flex align-items-center justify-content-between px-4 py-2 mb-4">
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-light d-md-none" id="sidebarToggle" type="button" aria-label="القائمة"><i class="fa-solid fa-bars"></i></button>
-                <h5 class="m-0">@yield('title', 'لوحة التحكم')</h5>
+        <header class="topbar d-flex align-items-center gap-3 px-4 py-2 mb-4">
+            <button class="icon-btn d-md-none" id="sidebarToggle" type="button" aria-label="القائمة"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-titlewrap">
+                <h5 class="topbar-title">@yield('title', 'لوحة التحكم')</h5>
+                <div class="topbar-sub"><i class="fa-regular fa-calendar-days"></i> {{ \Illuminate\Support\Carbon::now()->translatedFormat('l، j F Y') }}</div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-            <form method="GET" action="{{ route('search') }}" class="d-none d-md-flex align-items-center" role="search">
-                <div class="input-group input-group-sm" style="width:240px">
-                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0" placeholder="بحث شامل...">
-                </div>
+
+            <form method="GET" action="{{ route('search') }}" class="topbar-search d-none d-lg-flex" role="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="بحث شامل عن مشروع، عميل، فاتورة، مورد...">
             </form>
-            @inject('alerts', 'App\Services\AlertService')
-            @php($alertItems = $alerts->items())
-            <div class="dropdown">
-                <button class="btn btn-light position-relative" data-bs-toggle="dropdown" aria-label="التنبيهات">
-                    <i class="fa-solid fa-bell"></i>
-                    @if (count($alertItems))
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger">{{ array_sum(array_column($alertItems, 'count')) }}</span>
-                    @endif
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" style="min-width:300px">
-                    <li><h6 class="dropdown-header">التنبيهات</h6></li>
-                    @forelse ($alertItems as $a)
-                        <li>
-                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ $a['url'] }}">
-                                <span><i class="fa-solid {{ $a['icon'] }} text-{{ $a['color'] }} ms-2"></i> {{ $a['label'] }}</span>
-                                <span class="badge text-bg-{{ $a['color'] }} rounded-pill">{{ $a['count'] }}</span>
-                            </a>
+
+            <div class="topbar-actions d-flex align-items-center gap-2 ms-auto">
+                @inject('alerts', 'App\Services\AlertService')
+                @php($alertItems = $alerts->items())
+                <div class="dropdown">
+                    <button class="icon-btn" data-bs-toggle="dropdown" aria-label="التنبيهات">
+                        <i class="fa-solid fa-bell"></i>
+                        @if (count($alertItems))
+                            <span class="notif-dot">{{ array_sum(array_column($alertItems, 'count')) }}</span>
+                        @endif
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="min-width:320px">
+                        <li class="px-2 pb-1 d-flex justify-content-between align-items-center">
+                            <h6 class="dropdown-header px-1 mb-0">التنبيهات التشغيلية</h6>
+                            <a href="{{ route('notifications.index') }}" class="small text-decoration-none" style="color:#8b7355">عرض الكل</a>
                         </li>
-                    @empty
-                        <li><span class="dropdown-item text-muted">لا توجد تنبيهات حالياً ✓</span></li>
-                    @endforelse
-                </ul>
-            </div>
-            <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-                    @if ($u->avatar)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($u->avatar) }}" alt="" class="rounded-circle ms-1" style="width:24px;height:24px;object-fit:cover">
-                    @else
-                        <i class="fa-solid fa-user-circle ms-1"></i>
-                    @endif
-                    {{ $u->name }}
-                    <span class="badge text-bg-secondary">{{ $u->getRoleNames()->first() }}</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fa-solid fa-user ms-1"></i> الملف الشخصي</a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button class="dropdown-item text-danger" type="submit">
-                                <i class="fa-solid fa-right-from-bracket ms-1"></i> تسجيل الخروج
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+                        @forelse ($alertItems as $a)
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ $a['url'] }}">
+                                    <span><i class="fa-solid {{ $a['icon'] }} text-{{ $a['color'] }} ms-2"></i> {{ $a['label'] }}</span>
+                                    <span class="badge text-bg-{{ $a['color'] }} rounded-pill">{{ $a['count'] }}</span>
+                                </a>
+                            </li>
+                        @empty
+                            <li><span class="dropdown-item text-muted"><i class="fa-solid fa-circle-check text-success ms-1"></i> لا توجد تنبيهات حالياً</span></li>
+                        @endforelse
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <button class="user-chip" data-bs-toggle="dropdown">
+                        <span class="avatar">
+                            @if ($u->avatar)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($u->avatar) }}" alt="">
+                            @else
+                                {{ mb_substr($u->name, 0, 1) }}
+                            @endif
+                        </span>
+                        <span class="uinfo d-none d-md-flex">
+                            <span class="uname">{{ $u->name }}</span>
+                            <span class="urole">{{ \App\Models\User::ROLE_LABELS[$u->getRoleNames()->first()] ?? $u->getRoleNames()->first() }}</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="min-width:220px">
+                        <li class="px-3 py-2 d-md-none border-bottom mb-1">
+                            <div class="fw-bold">{{ $u->name }}</div>
+                            <div class="small text-muted">{{ $u->getRoleNames()->first() }}</div>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fa-solid fa-user ms-2 text-muted"></i> الملف الشخصي</a></li>
+                        @can('settings.view')<li><a class="dropdown-item" href="{{ route('settings.edit') }}"><i class="fa-solid fa-gear ms-2 text-muted"></i> الإعدادات</a></li>@endcan
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="dropdown-item text-danger" type="submit"><i class="fa-solid fa-right-from-bracket ms-2"></i> تسجيل الخروج</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </header>
 
