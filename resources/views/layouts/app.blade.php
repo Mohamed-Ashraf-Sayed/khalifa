@@ -39,7 +39,9 @@
         .sidebar .brand { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .6rem;
             background: rgba(40,30,20,.28); backdrop-filter: blur(6px); color: #fff; font-weight: 800; padding: 1.1rem 1.25rem; font-size: 1.12rem;
             border-bottom: 1px solid rgba(255,255,255,.12); letter-spacing: -.01em; }
-        .sidebar .brand i { background: rgba(255,255,255,.15); width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 1rem; }
+        .sidebar .brand .brand-logo { background: rgba(255,255,255,.14); width: 40px; height: 40px; min-width: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 11px; padding: 5px; color: #fff; }
+        .sidebar .brand .app-logo { width: 100%; height: 100%; object-fit: contain; }
+        .sidebar .brand img.app-logo { filter: brightness(0) invert(1); }   /* لوجو أسود → أبيض على الخلفية البنية */
         .sidebar .nav-link { position: relative; color: rgba(255,255,255,.82); border-radius: .65rem; margin: .12rem .65rem; padding: .58rem .9rem; font-size: .9rem; font-weight: 500; transition: background .15s, color .15s, padding .15s; display: flex; align-items: center; }
         .sidebar .nav-link:hover { background: rgba(255,255,255,.1); color: #fff; }
         .sidebar .nav-link.active { background: rgba(255,255,255,.16); color: #fff; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
@@ -130,7 +132,7 @@
 <body>
     @php($u = auth()->user())
     <aside class="sidebar text-white">
-        <div class="brand"><i class="fa-solid fa-helmet-safety ms-2"></i>{{ config('app.name') }}</div>
+        <div class="brand"><span class="brand-logo">@include('partials.logo')</span>{{ config('app.name') }}</div>
         <nav class="nav flex-column py-2">
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="fa-solid fa-gauge-high"></i> لوحة التحكم

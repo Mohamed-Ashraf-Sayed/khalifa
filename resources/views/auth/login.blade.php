@@ -22,9 +22,10 @@
         .login-card { width: 100%; max-width: 410px; border: none; border-radius: 20px; position: relative; z-index: 2;
             box-shadow: 0 24px 60px rgba(40,30,20,.45); overflow: hidden; }
         .login-head { background: linear-gradient(#fbf8f2, #f4f1ea); padding: 2.4rem 2rem 1.4rem; text-align: center; }
-        .brand-badge { width: 72px; height: 72px; border-radius: 20px; margin: 0 auto .9rem;
-            background: linear-gradient(150deg, #93795a, #6f5b43); color: #fff; display: flex; align-items: center; justify-content: center;
-            font-size: 1.9rem; box-shadow: 0 10px 24px rgba(139,115,85,.4); }
+        .brand-badge { width: 84px; height: 84px; border-radius: 20px; margin: 0 auto .9rem;
+            background: #fff; color: #2f2a22; display: flex; align-items: center; justify-content: center; padding: 12px;
+            box-shadow: 0 10px 24px rgba(139,115,85,.28); border: 1px solid #ece5d8; }
+        .brand-badge .app-logo { width: 100%; height: 100%; object-fit: contain; }
         .login-head h4 { font-weight: 800; color: #2f2a22; margin: 0; letter-spacing: -.01em; }
         .login-head small { color: #938974; }
         .form-label { font-weight: 600; font-size: .85rem; color: #5b5443; }
@@ -41,7 +42,7 @@
     <div>
         <div class="card login-card">
             <div class="login-head">
-                <div class="brand-badge"><i class="fa-solid fa-helmet-safety"></i></div>
+                <div class="brand-badge">@include('partials.logo')</div>
                 <h4>{{ config('app.name') }}</h4>
                 <small>سجّل دخولك للمتابعة</small>
             </div>
