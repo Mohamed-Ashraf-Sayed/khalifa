@@ -7,15 +7,15 @@
     .rt-group-title { font-size:.78rem; font-weight:700; color:var(--muted); letter-spacing:.4px; margin:.2rem 0 .6rem; display:flex; align-items:center; gap:.5rem; }
     .rt-group-title::after { content:''; flex:1; height:1px; background:var(--line); }
     .report-tile { display:flex; align-items:center; gap:.75rem; padding:.8rem .85rem; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s, border-color .15s; height:100%; }
-    .report-tile:hover { transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--beige-dark); }
-    .report-tile .rt-icon { width:44px; height:44px; min-width:44px; border-radius:12px; background:linear-gradient(145deg,#f1ead9,#e6ddca); color:var(--brown-dark); display:inline-flex; align-items:center; justify-content:center; font-size:1.05rem; }
+    .report-tile:hover { transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--bg-2); }
+    .report-tile .rt-icon { width:44px; height:44px; min-width:44px; border-radius:12px; background:var(--brown-50); color:var(--brown-dark); display:inline-flex; align-items:center; justify-content:center; font-size:1.05rem; }
     .report-tile .rt-title { font-weight:700; font-size:.92rem; color:var(--ink); display:block; }
     .report-tile .rt-arrow { margin-inline-start:auto; color:#c9bfab; font-size:.85rem; transition:.15s; }
     .report-tile:hover .rt-arrow { color:var(--brown); transform:translateX(-3px); }
     .rt-exports { display:flex; gap:.35rem; margin-top:.35rem; position:relative; z-index:2; }
     .rt-exports a { font-size:.66rem; font-weight:700; padding:.08rem .45rem; border-radius:.45rem; border:1px solid; line-height:1.5; }
-    .rt-pdf { color:#c0392b; border-color:#eccfca; } .rt-pdf:hover { background:#fbeae8; color:#c0392b; }
-    .rt-xls { color:#1f7a4d; border-color:#cce6d8; } .rt-xls:hover { background:#e8f6ee; color:#1f7a4d; }
+    .rt-pdf { color:var(--danger); border-color:var(--danger-bg); } .rt-pdf:hover { background:var(--danger-bg); color:var(--danger); }
+    .rt-xls { color:var(--success); border-color:var(--success-bg); } .rt-xls:hover { background:var(--success-bg); color:var(--success); }
 </style>
 @endpush
 

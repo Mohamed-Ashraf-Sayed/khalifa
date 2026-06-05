@@ -4,19 +4,20 @@
 
 @push('styles')
 <style>
-    .kpi { border-radius: 16px; color: #fff; position: relative; overflow: hidden; padding: 1.15rem 1.25rem !important;
-        box-shadow: 0 8px 22px rgba(87,70,51,.14); transition: transform .18s ease, box-shadow .18s ease; }
-    .kpi::after { content: ''; position: absolute; inset-inline-end: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.1); }
-    a:hover > .kpi { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(87,70,51,.22); }
-    .kpi .ic { position: absolute; inset-inline-end: 1rem; top: 1rem; font-size: 2rem; opacity: .3; z-index: 1; }
-    .kpi .v { font-size: 1.65rem; font-weight: 800; line-height: 1.1; position: relative; z-index: 1; letter-spacing: -.02em; }
-    .kpi .l { opacity: .92; font-size: .85rem; font-weight: 600; position: relative; z-index: 1; }
-    .kpi-green { background: linear-gradient(135deg,#22a874,#0f7a4f); }
-    .kpi-red   { background: linear-gradient(135deg,#e05b57,#b52b27); }
-    .kpi-blue  { background: linear-gradient(135deg,#4a86dd,#2456a6); }
-    .kpi-brown { background: linear-gradient(135deg,#9a8061,#6f5b43); }
+    .kpi { background:#fff; border:1px solid var(--line); border-top:3px solid var(--brown-light); border-radius:14px;
+        color:var(--ink); position:relative; overflow:hidden; padding:1.1rem 1.25rem !important;
+        box-shadow:var(--shadow-sm); transition:transform .18s ease, box-shadow .18s ease, border-color .18s; }
+    a:hover > .kpi { transform: translateY(-2px); box-shadow:var(--shadow); }
+    .kpi .ic { position: absolute; inset-inline-end: 1rem; top: .95rem; font-size: 1.5rem; opacity: .9; z-index: 1; }
+    .kpi .v { font-size: 1.55rem; font-weight: 800; line-height: 1.15; position: relative; z-index: 1; letter-spacing: -.02em; color:var(--ink); }
+    .kpi .l { color:var(--muted); font-size: .83rem; font-weight: 600; position: relative; z-index: 1; }
+    .kpi .small.opacity-75 { color:var(--muted) !important; opacity:1 !important; }
+    .kpi-green { border-top-color: var(--success); } .kpi-green .ic { color: var(--success); }
+    .kpi-red   { border-top-color: var(--danger);  } .kpi-red   .ic { color: var(--danger);  }
+    .kpi-blue  { border-top-color: var(--info);    } .kpi-blue  .ic { color: var(--info);    }
+    .kpi-brown { border-top-color: var(--brown);   } .kpi-brown .ic { color: var(--brown);   }
     .mini-stat { background:#fff; border:1px solid var(--line); border-radius:14px; padding:1rem 1.1rem; box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .15s, border-color .15s; height:100%; }
-    a:hover > .mini-stat { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--beige-dark); }
+    a:hover > .mini-stat { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--bg-2); }
     .mini-stat i { font-size: 1.05rem; }
     .mini-stat .n { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; }
 </style>
@@ -228,15 +229,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
     Chart.defaults.font.family = 'Cairo, sans-serif';
+    Chart.defaults.color = '#8d877b';
+    Chart.defaults.borderColor = '#e9e6e0';
     const egp = v => new Intl.NumberFormat('ar-EG').format(v);
+    const PALETTE = ['#8b7355','#a3895f','#c0ad8e','#6f5b43','#b8893f','#5b7e96','#4f8a6b'];
 
     new Chart(document.getElementById('trendChart'), {
         type: 'bar',
         data: {
             labels: @json($chartMonths),
             datasets: [
-                { label: 'إيرادات', data: @json($chartRevenue), backgroundColor: '#1f9d6b', borderRadius: 6 },
-                { label: 'مصروفات', data: @json($chartExpense), backgroundColor: '#d9534f', borderRadius: 6 },
+                { label: 'إيرادات', data: @json($chartRevenue), backgroundColor: '#4f8a6b', borderRadius: 6 },
+                { label: 'مصروفات', data: @json($chartExpense), backgroundColor: '#b65f5b', borderRadius: 6 },
             ]
         },
         options: { responsive: true, plugins: { legend: { position: 'bottom' } },
@@ -247,7 +251,7 @@
         type: 'doughnut',
         data: { labels: @json($catLabels),
             datasets: [{ data: @json($catValues),
-                backgroundColor: ['#8b7355','#1f9d6b','#3a7bd5','#d9534f','#f0ad4e','#6f5b43','#5bc0de'] }] },
+                backgroundColor: PALETTE, borderWidth: 0 }] },
         options: { plugins: { legend: { position: 'bottom' } } }
     });
 
@@ -255,7 +259,7 @@
         type: 'doughnut',
         data: { labels: @json($statusLabels),
             datasets: [{ data: @json($statusValues),
-                backgroundColor: ['#6c757d','#3a7bd5','#1f9d6b','#f0ad4e','#d9534f'] }] },
+                backgroundColor: ['#c0ad8e','#5b7e96','#4f8a6b','#b8893f','#b65f5b'], borderWidth: 0 }] },
         options: { plugins: { legend: { position: 'bottom' } } }
     });
 </script>

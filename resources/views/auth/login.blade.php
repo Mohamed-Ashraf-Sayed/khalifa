@@ -10,18 +10,17 @@
     <style>
         * { font-family: 'Cairo', sans-serif; }
         body {
-            background: radial-gradient(1200px 600px at 80% -10%, #a3895f 0%, transparent 55%),
-                        linear-gradient(150deg, #8b7355 0%, #6f5b43 50%, #564633 100%);
+            background: linear-gradient(160deg, #6f5b43 0%, #564633 100%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;
             position: relative; overflow: hidden;
         }
         body::before { content: ''; position: absolute; width: 480px; height: 480px; border-radius: 50%;
-            background: rgba(255,255,255,.05); top: -160px; inset-inline-start: -120px; }
+            background: rgba(255,255,255,.035); top: -160px; inset-inline-start: -120px; }
         body::after { content: ''; position: absolute; width: 360px; height: 360px; border-radius: 50%;
-            background: rgba(255,255,255,.04); bottom: -140px; inset-inline-end: -100px; }
-        .login-card { width: 100%; max-width: 410px; border: none; border-radius: 20px; position: relative; z-index: 2;
-            box-shadow: 0 24px 60px rgba(40,30,20,.45); overflow: hidden; }
-        .login-head { background: linear-gradient(#fbf8f2, #f4f1ea); padding: 2.4rem 2rem 1.4rem; text-align: center; }
+            background: rgba(255,255,255,.03); bottom: -140px; inset-inline-end: -100px; }
+        .login-card { width: 100%; max-width: 410px; border: none; border-radius: 18px; position: relative; z-index: 2;
+            box-shadow: 0 18px 50px rgba(40,30,20,.32); overflow: hidden; }
+        .login-head { background: #faf8f4; padding: 2.4rem 2rem 1.4rem; text-align: center; }
         .brand-badge { width: 84px; height: 84px; border-radius: 20px; margin: 0 auto .9rem;
             background: #fff; color: #2f2a22; display: flex; align-items: center; justify-content: center; padding: 12px;
             box-shadow: 0 10px 24px rgba(139,115,85,.28); border: 1px solid #ece5d8; }
@@ -32,9 +31,9 @@
         .form-control { border-radius: .7rem; border-color: #ece5d8; padding: .62rem .9rem; background: #fdfcfa; }
         .form-control:focus { border-color: #a3895f; box-shadow: 0 0 0 .2rem rgba(139,115,85,.15); background: #fff; }
         .input-group-text { background: #faf7f0; border-color: #ece5d8; color: #938974; border-radius: .7rem; }
-        .btn-brown { background: linear-gradient(120deg, #93795a, #6f5b43); color: #fff; border: none; border-radius: .7rem; font-weight: 700;
-            box-shadow: 0 6px 18px rgba(139,115,85,.35); transition: all .15s; }
-        .btn-brown:hover { color: #fff; filter: brightness(1.07); transform: translateY(-1px); box-shadow: 0 9px 24px rgba(139,115,85,.45); }
+        .btn-brown { background: #8b7355; color: #fff; border: none; border-radius: .7rem; font-weight: 700;
+            box-shadow: 0 2px 8px rgba(139,115,85,.25); transition: all .15s; }
+        .btn-brown:hover { color: #fff; filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139,115,85,.3); }
         .login-foot { color: rgba(255,255,255,.65); font-size: .8rem; text-align: center; margin-top: 1.1rem; position: relative; z-index: 2; }
     </style>
 </head>
@@ -48,7 +47,7 @@
             </div>
             <div class="card-body p-4">
                 @if ($errors->any())
-                    <div class="alert alert-danger py-2 border-0" style="background:#fbeaea;color:#a12a2a;border-radius:.7rem">
+                    <div class="alert alert-danger py-2 border-0" style="background:#f6ebea;color:#8f3f3b;border-radius:.7rem">
                         <i class="fa-solid fa-circle-exclamation ms-1"></i> {{ $errors->first() }}
                     </div>
                 @endif
