@@ -79,6 +79,9 @@
             @can('materials.view')
                 <div class="col-12 col-sm-6 col-lg-4"><a href="{{ route('materials.report') }}" class="report-tile text-reset"><span class="rt-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span class="rt-title flex-grow-1">تقرير المخزون</span><i class="fa-solid fa-chevron-left rt-arrow"></i></a></div>
             @endcan
+            @can('assets.view')
+                <div class="col-12 col-sm-6 col-lg-4"><a href="{{ route('assets.report') }}" class="report-tile text-reset"><span class="rt-icon"><i class="fa-solid fa-warehouse"></i></span><span class="rt-title flex-grow-1">الأصول والإهلاك</span><i class="fa-solid fa-chevron-left rt-arrow"></i></a></div>
+            @endcan
         </div>
     </div></div>
 

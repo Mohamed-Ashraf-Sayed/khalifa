@@ -39,7 +39,19 @@
                         <input type="number" step="0.01" min="0" name="purchase_value" value="{{ old('purchase_value', $asset->purchase_value) }}" class="form-control" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">نسبة الإهلاك (%)</label>
+                        <label class="form-label">قيمة الخردة (المتبقّية)</label>
+                        <input type="number" step="0.01" min="0" name="salvage_value" value="{{ old('salvage_value', $asset->salvage_value ?? 0) }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">طريقة الإهلاك</label>
+                        <select name="depreciation_method" class="form-select">
+                            @foreach (\App\Models\Asset::METHODS as $key => $label)
+                                <option value="{{ $key }}" @selected(old('depreciation_method', $asset->depreciation_method ?? 'straight_line') === $key)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">نسبة الإهلاك % <span class="text-muted small">(للقسط المتناقص)</span></label>
                         <input type="number" step="0.01" min="0" name="depreciation_rate" value="{{ old('depreciation_rate', $asset->depreciation_rate) }}" class="form-control">
                     </div>
                     <div class="col-md-4">

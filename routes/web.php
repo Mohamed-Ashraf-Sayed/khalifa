@@ -157,7 +157,9 @@ Route::middleware('auth')->group(function () {
     // موجة 1 — كتالوج
     Route::get('materials/report', [MaterialController::class, 'report'])->name('materials.report');
     Route::resource('materials', MaterialController::class);
+    Route::get('assets/report', [AssetController::class, 'report'])->name('assets.report');
     Route::resource('assets', AssetController::class);
+    Route::post('assets/{asset}/dispose', [AssetController::class, 'dispose'])->name('assets.dispose');
     Route::resource('contracts', ProjectContractController::class);
     Route::resource('taxes', TaxController::class);
 

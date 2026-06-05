@@ -119,9 +119,9 @@ class ReportController extends Controller implements HasMiddleware
             '0'
         );
 
-        // الأصول الثابتة: صافي القيمة الدفترية بعد الإهلاك للأصول النشطة. تبقى بالقيمة الحالية.
-        $fixedAssets = Asset::all()->reduce(
-            fn (string $carry, Asset $a) => bcadd($carry, $this->assetNetBookValue($a), 2),
+        // الأصول الثابتة: صافي القيمة الدفترية بعد الإهلاك (من موديل الأصل) — باستثناء المُباعة/المستبعدة.
+        $fixedAssets = Asset::whereNotIn('status', ['sold', 'disposed'])->get()->reduce(
+            fn (string $carry, Asset $a) => bcadd($carry, $a->bookValue(), 2),
             '0'
         );
 

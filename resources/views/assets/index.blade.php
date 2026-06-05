@@ -3,6 +3,21 @@
 @section('title', 'الأصول الثابتة')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['عدد الأصول', number_format($stats['count']), 'fa-warehouse', 'text-primary'],
+            ['إجمالي التكلفة', number_format($stats['cost'], 0), 'fa-sack-dollar', 'text-secondary'],
+            ['مجمّع الإهلاك', number_format($stats['accumulated'], 0), 'fa-arrow-trend-down', 'text-danger'],
+            ['صافي القيمة الدفترية', number_format($stats['book'], 0), 'fa-scale-balanced', 'text-success'],
+        ] as [$l, $v, $icon, $color])
+        <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body py-3">
+            <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+            <div class="fs-4 fw-bold">{{ $v }}</div>
+            <div class="small text-muted">{{ $l }}</div>
+        </div></div></div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -16,11 +31,14 @@
                     </select>
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
-                @can('assets.create')
-                    <a href="{{ route('assets.create') }}" class="btn" style="background:#8b7355;color:#fff">
-                        <i class="fa-solid fa-plus ms-1"></i> أصل جديد
-                    </a>
-                @endcan
+                <div class="d-flex gap-2">
+                    <a href="{{ route('assets.report') }}" class="btn btn-light"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير الإهلاك</a>
+                    @can('assets.create')
+                        <a href="{{ route('assets.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                            <i class="fa-solid fa-plus ms-1"></i> أصل جديد
+                        </a>
+                    @endcan
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -31,6 +49,7 @@
                             <th>اسم الأصل</th>
                             <th>التصنيف</th>
                             <th>قيمة الشراء</th>
+                            <th>القيمة الدفترية</th>
                             <th>الحالة</th>
                             <th class="text-end">إجراءات</th>
                         </tr>
@@ -45,6 +64,7 @@
                                 <td>{{ $asset->asset_name }}</td>
                                 <td>{{ $asset->category ?? '—' }}</td>
                                 <td>{{ number_format($asset->purchase_value, 2) }} ج</td>
+                                <td class="fw-semibold text-success">{{ number_format((float) $asset->bookValue(), 2) }}</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Asset::STATUSES[$asset->status] ?? $asset->status }}</span></td>
                                 <td class="text-end">
                                     <a href="{{ route('assets.show', $asset) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
@@ -63,7 +83,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-4">لا توجد أصول بعد.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted py-4">لا توجد أصول بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
