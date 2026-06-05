@@ -8,34 +8,112 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --beige: #f5f1e8; --beige-dark: #e8e0cf; --brown: #8b7355; --brown-dark: #6f5b43;
+            --beige: #f4f1ea; --beige-dark: #e8e0cf;
+            --brown: #8b7355; --brown-dark: #6f5b43; --brown-darker: #564633; --brown-light: #a3895f;
+            --ink: #2f2a22; --muted: #938974; --line: #ece5d8; --card: #fff;
+            --radius: 14px;
+            --shadow-sm: 0 1px 2px rgba(87,70,51,.06), 0 1px 3px rgba(87,70,51,.05);
+            --shadow: 0 4px 16px rgba(87,70,51,.07), 0 1px 4px rgba(87,70,51,.05);
+            --shadow-lg: 0 12px 32px rgba(87,70,51,.12);
+            --bs-primary: #8b7355;
         }
         * { font-family: 'Cairo', sans-serif; }
-        body { background: var(--beige); color: #3a342b; }
+        body { background: var(--beige); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: .95rem; }
+        ::selection { background: rgba(139,115,85,.22); }
+        h1,h2,h3,h4,h5,h6 { font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+        a { text-decoration: none; }
+
+        /* ===== Sidebar ===== */
         .sidebar {
-            background: linear-gradient(180deg, var(--brown), var(--brown-dark));
-            height: 100vh; width: 260px; position: fixed; inset-inline-start: 0; top: 0; z-index: 1045;
+            background: linear-gradient(168deg, #93795a 0%, var(--brown-dark) 55%, var(--brown-darker) 100%);
+            height: 100vh; width: 264px; position: fixed; inset-inline-start: 0; top: 0; z-index: 1045;
             overflow-y: auto; overflow-x: hidden; transition: inset-inline-start .25s ease;
+            box-shadow: 2px 0 18px rgba(87,70,51,.18);
         }
-        .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1040; display: none; }
-        /* شريط تمرير رفيع وأنيق داخل القائمة */
+        .sidebar-backdrop { position: fixed; inset: 0; background: rgba(40,30,20,.45); backdrop-filter: blur(2px); z-index: 1040; display: none; }
         .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 3px; }
-        .sidebar .brand { position: sticky; top: 0; z-index: 2; background: var(--brown-dark); }
-        .sidebar .brand { color: #fff; font-weight: 700; padding: 1.25rem; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,.15); }
-        .sidebar .nav-link { color: rgba(255,255,255,.85); border-radius: .5rem; margin: .15rem .6rem; padding: .6rem .9rem; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,.15); color: #fff; }
-        .sidebar .nav-link i { width: 22px; }
-        .sidebar .nav-section { color: rgba(255,255,255,.45); font-size: .72rem; font-weight: 700; letter-spacing: .5px; padding: 1rem 1.4rem .3rem; text-transform: none; }
-        .sidebar .nav-link { font-size: .92rem; }
-        .main { margin-inline-start: 260px; }
-        .topbar { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); position: sticky; top: 0; z-index: 10; }
-        .card { border: none; box-shadow: 0 2px 10px rgba(139,115,85,.08); border-radius: .8rem; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.22); border-radius: 3px; }
+        .sidebar .brand { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .6rem;
+            background: rgba(40,30,20,.28); backdrop-filter: blur(6px); color: #fff; font-weight: 800; padding: 1.1rem 1.25rem; font-size: 1.12rem;
+            border-bottom: 1px solid rgba(255,255,255,.12); letter-spacing: -.01em; }
+        .sidebar .brand i { background: rgba(255,255,255,.15); width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 1rem; }
+        .sidebar .nav-link { position: relative; color: rgba(255,255,255,.82); border-radius: .65rem; margin: .12rem .65rem; padding: .58rem .9rem; font-size: .9rem; font-weight: 500; transition: background .15s, color .15s, padding .15s; display: flex; align-items: center; }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .sidebar .nav-link.active { background: rgba(255,255,255,.16); color: #fff; font-weight: 700; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+        .sidebar .nav-link.active::before { content: ''; position: absolute; inset-inline-start: -4px; top: 22%; bottom: 22%; width: 4px; border-radius: 4px; background: #fff; }
+        .sidebar .nav-link i { width: 24px; text-align: center; opacity: .92; }
+        .sidebar .nav-section { color: rgba(255,255,255,.42); font-size: .68rem; font-weight: 700; letter-spacing: .6px; padding: 1.1rem 1.5rem .35rem; text-transform: uppercase; }
+
+        /* ===== Layout ===== */
+        .main { margin-inline-start: 264px; min-height: 100vh; }
+        .topbar { background: rgba(255,255,255,.85); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line);
+            position: sticky; top: 0; z-index: 10; }
+        .topbar h5 { font-weight: 700; }
+        main.px-4 { animation: fadein .25s ease; }
+        @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+        /* ===== Cards ===== */
+        .card { border: 1px solid var(--line); box-shadow: var(--shadow-sm); border-radius: var(--radius); background: var(--card); }
+        .card .card-body { padding: 1.15rem 1.25rem; }
+        .card h6 { font-weight: 700; }
+
+        /* ===== Buttons ===== */
+        .btn { border-radius: .6rem; font-weight: 600; font-size: .9rem; transition: all .15s ease; }
+        .btn:active { transform: translateY(1px); }
+        .btn-light { background: #fff; border-color: var(--line); color: var(--ink); }
+        .btn-light:hover { background: var(--beige); border-color: var(--beige-dark); }
+        .btn-sm { border-radius: .5rem; }
+        /* الأزرار البنية (style مضمّن) — تحسين شامل */
+        [style*="8b7355"] { border: none !important; border-radius: .6rem; box-shadow: 0 2px 8px rgba(139,115,85,.25); transition: all .15s ease; }
+        [style*="8b7355"]:hover { filter: brightness(1.07); box-shadow: 0 5px 16px rgba(139,115,85,.34); transform: translateY(-1px); }
+        .btn-success { box-shadow: 0 2px 8px rgba(31,157,107,.25); }
+        .btn-outline-primary, .btn-outline-secondary, .btn-outline-danger { border-radius: .5rem; }
+
+        /* ===== Tables ===== */
+        .table { --bs-table-bg: transparent; color: var(--ink); margin-bottom: 0; }
+        .table > thead { background: linear-gradient(var(--beige), #fff); }
+        .table > thead th, .table-light > tr > th, thead.table-light th { background: #faf7f0; color: var(--muted); font-weight: 700; font-size: .76rem; text-transform: uppercase; letter-spacing: .3px; border-bottom: 1px solid var(--line); padding: .7rem .75rem; white-space: nowrap; }
+        .table > tbody > tr > td { padding: .72rem .75rem; vertical-align: middle; border-bottom: 1px solid var(--line); }
+        .table-hover > tbody > tr { transition: background .12s; }
+        .table-hover > tbody > tr:hover { background: #faf7f0; }
+        .table > tbody > tr:last-child > td { border-bottom: none; }
+
+        /* ===== Badges / status ===== */
+        .badge { font-weight: 600; border-radius: .5rem; padding: .38em .65em; letter-spacing: 0; }
+        .badge.rounded-pill { border-radius: 50rem; }
+
+        /* ===== Forms ===== */
+        .form-label { font-weight: 600; font-size: .85rem; color: #5b5443; margin-bottom: .3rem; }
+        .form-control, .form-select { border-radius: .6rem; border-color: var(--line); background: #fdfcfa; font-size: .9rem; padding: .5rem .8rem; transition: border-color .15s, box-shadow .15s; }
+        .form-control:focus, .form-select:focus { border-color: var(--brown-light); box-shadow: 0 0 0 .2rem rgba(139,115,85,.15); background: #fff; }
+        .input-group-text { background: #faf7f0; border-color: var(--line); border-radius: .6rem; color: var(--muted); }
+
+        /* ===== Pagination ===== */
+        .pagination { --bs-pagination-color: var(--brown-dark); --bs-pagination-hover-color: var(--brown-darker);
+            --bs-pagination-active-bg: var(--brown); --bs-pagination-active-border-color: var(--brown);
+            --bs-pagination-border-radius: .55rem; --bs-pagination-hover-bg: var(--beige); gap: .25rem; }
+        .page-link { border-radius: .55rem !important; border-color: var(--line); margin: 0 1px; }
+
+        /* ===== Alerts ===== */
+        .alert { border: none; border-radius: .75rem; box-shadow: var(--shadow-sm); font-weight: 500; }
+        .alert-success { background: #e7f6ee; color: #166c47; }
+        .alert-danger { background: #fbeaea; color: #a12a2a; }
+
+        /* ===== Dropdowns ===== */
+        .dropdown-menu { border: 1px solid var(--line); border-radius: .8rem; box-shadow: var(--shadow-lg); padding: .4rem; }
+        .dropdown-item { border-radius: .5rem; padding: .5rem .7rem; font-size: .9rem; }
+        .dropdown-item:hover { background: var(--beige); }
+        .dropdown-header { font-weight: 700; color: var(--muted); }
+
+        /* ===== Misc ===== */
+        .text-muted { color: var(--muted) !important; }
+        body::-webkit-scrollbar { width: 11px; } body::-webkit-scrollbar-thumb { background: #d9cfbd; border-radius: 6px; border: 3px solid var(--beige); }
+
         @media (max-width: 768px) {
-            .sidebar { inset-inline-start: -270px; }
+            .sidebar { inset-inline-start: -274px; }
             .sidebar.show { inset-inline-start: 0; }
             .sidebar.show ~ .sidebar-backdrop { display: block; }
             .main { margin-inline-start: 0; }

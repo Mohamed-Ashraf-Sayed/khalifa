@@ -4,16 +4,21 @@
 
 @push('styles')
 <style>
-    .kpi { border-radius: 1rem; color: #fff; position: relative; overflow: hidden; }
-    .kpi .ic { position: absolute; inset-inline-end: 1rem; top: 1rem; font-size: 2.2rem; opacity: .25; }
-    .kpi .v { font-size: 1.7rem; font-weight: 700; line-height: 1.1; }
-    .kpi .l { opacity: .9; font-size: .9rem; }
-    .kpi-green { background: linear-gradient(135deg,#1f9d6b,#0f7a4f); }
-    .kpi-red   { background: linear-gradient(135deg,#d9534f,#b52b27); }
-    .kpi-blue  { background: linear-gradient(135deg,#3a7bd5,#2456a6); }
-    .kpi-brown { background: linear-gradient(135deg,#8b7355,#6f5b43); }
-    .mini-stat { background:#fff; border-radius:.8rem; padding:1rem; box-shadow:0 2px 10px rgba(139,115,85,.08); }
-    .mini-stat .n { font-size:1.4rem; font-weight:700; }
+    .kpi { border-radius: 16px; color: #fff; position: relative; overflow: hidden; padding: 1.15rem 1.25rem !important;
+        box-shadow: 0 8px 22px rgba(87,70,51,.14); transition: transform .18s ease, box-shadow .18s ease; }
+    .kpi::after { content: ''; position: absolute; inset-inline-end: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.1); }
+    a:hover > .kpi { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(87,70,51,.22); }
+    .kpi .ic { position: absolute; inset-inline-end: 1rem; top: 1rem; font-size: 2rem; opacity: .3; z-index: 1; }
+    .kpi .v { font-size: 1.65rem; font-weight: 800; line-height: 1.1; position: relative; z-index: 1; letter-spacing: -.02em; }
+    .kpi .l { opacity: .92; font-size: .85rem; font-weight: 600; position: relative; z-index: 1; }
+    .kpi-green { background: linear-gradient(135deg,#22a874,#0f7a4f); }
+    .kpi-red   { background: linear-gradient(135deg,#e05b57,#b52b27); }
+    .kpi-blue  { background: linear-gradient(135deg,#4a86dd,#2456a6); }
+    .kpi-brown { background: linear-gradient(135deg,#9a8061,#6f5b43); }
+    .mini-stat { background:#fff; border:1px solid var(--line); border-radius:14px; padding:1rem 1.1rem; box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .15s, border-color .15s; height:100%; }
+    a:hover > .mini-stat { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--beige-dark); }
+    .mini-stat i { font-size: 1.05rem; }
+    .mini-stat .n { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; }
 </style>
 @endpush
 
