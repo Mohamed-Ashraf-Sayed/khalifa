@@ -2,32 +2,85 @@
 
 @section('title', 'التقارير المالية')
 
+@push('styles')
+<style>
+    .rt-group-title { font-size:.78rem; font-weight:700; color:var(--muted); letter-spacing:.4px; margin:.2rem 0 .6rem; display:flex; align-items:center; gap:.5rem; }
+    .rt-group-title::after { content:''; flex:1; height:1px; background:var(--line); }
+    .report-tile { display:flex; align-items:center; gap:.75rem; padding:.8rem .85rem; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s, border-color .15s; height:100%; }
+    .report-tile:hover { transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--beige-dark); }
+    .report-tile .rt-icon { width:44px; height:44px; min-width:44px; border-radius:12px; background:linear-gradient(145deg,#f1ead9,#e6ddca); color:var(--brown-dark); display:inline-flex; align-items:center; justify-content:center; font-size:1.05rem; }
+    .report-tile .rt-title { font-weight:700; font-size:.92rem; color:var(--ink); display:block; }
+    .report-tile .rt-arrow { margin-inline-start:auto; color:#c9bfab; font-size:.85rem; transition:.15s; }
+    .report-tile:hover .rt-arrow { color:var(--brown); transform:translateX(-3px); }
+    .rt-exports { display:flex; gap:.35rem; margin-top:.35rem; position:relative; z-index:2; }
+    .rt-exports a { font-size:.66rem; font-weight:700; padding:.08rem .45rem; border-radius:.45rem; border:1px solid; line-height:1.5; }
+    .rt-pdf { color:#c0392b; border-color:#eccfca; } .rt-pdf:hover { background:#fbeae8; color:#c0392b; }
+    .rt-xls { color:#1f7a4d; border-color:#cce6d8; } .rt-xls:hover { background:#e8f6ee; color:#1f7a4d; }
+</style>
+@endpush
+
 @section('content')
-    {{-- روابط القوائم المالية --}}
-    <div class="card mb-3">
-        <div class="card-body d-flex flex-wrap gap-2 align-items-center">
-            <span class="text-muted small ms-2">القوائم المالية:</span>
-            <span class="d-inline-flex align-items-center gap-1">
-                <a href="{{ route('reports.balance_sheet') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-scale-balanced ms-1"></i> قائمة المركز المالي (الميزانية)</a>
-                <a href="{{ route('reports.balance_sheet', ['format' => 'pdf']) }}" class="btn btn-sm btn-outline-danger" title="PDF">PDF</a>
-                <a href="{{ route('reports.balance_sheet', ['format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success" title="Excel">Excel</a>
-            </span>
-            <span class="d-inline-flex align-items-center gap-1">
-                <a href="{{ route('reports.income_statement') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-chart-line ms-1"></i> قائمة الدخل العامة</a>
-                <a href="{{ route('reports.income_statement', ['format' => 'pdf']) }}" class="btn btn-sm btn-outline-danger" title="PDF">PDF</a>
-                <a href="{{ route('reports.income_statement', ['format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success" title="Excel">Excel</a>
-            </span>
-            <a href="{{ route('reports.project_income') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-diagram-project ms-1"></i> قائمة دخل المشروع</a>
-            <a href="{{ route('reports.cash_flow') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-money-bill-transfer ms-1"></i> التدفّق النقدي</a>
-            <a href="{{ route('reports.ar_aging') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-hand-holding-dollar ms-1"></i> أعمار الذمم المدينة</a>
-            <a href="{{ route('reports.ap_aging') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice-dollar ms-1"></i> أعمار الذمم الدائنة</a>
-            <a href="{{ route('reports.period_comparison') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-chart-column ms-1"></i> مقارنة الفترات</a>
-            <a href="{{ route('reports.taxes') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-receipt ms-1"></i> تقرير الضرائب</a>
-            @can('contractors.view')<a href="{{ route('contractors.report') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-hard-hat ms-1"></i> تقرير المقاولين</a>@endcan
-            @can('projects.view')<a href="{{ route('project_costs.report') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-coins ms-1"></i> تكاليف المشاريع</a>@endcan
-            @can('materials.view')<a href="{{ route('materials.report') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-boxes-stacked ms-1"></i> تقرير المخزون</a>@endcan
+    {{-- مكتبة التقارير --}}
+    <div class="card mb-3"><div class="card-body">
+        <h6 class="mb-3"><i class="fa-solid fa-folder-open ms-1" style="color:#8b7355"></i> مكتبة التقارير المالية</h6>
+
+        <div class="rt-group-title">القوائم المالية</div>
+        <div class="row g-3 mb-3">
+            @foreach ([
+                ['reports.balance_sheet', 'قائمة المركز المالي (الميزانية)', 'fa-scale-balanced', true],
+                ['reports.income_statement', 'قائمة الدخل العامة', 'fa-chart-line', true],
+                ['reports.project_income', 'قائمة دخل المشروع', 'fa-diagram-project', false],
+            ] as [$r, $label, $icon, $exp])
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="report-tile position-relative">
+                        <span class="rt-icon"><i class="fa-solid {{ $icon }}"></i></span>
+                        <div class="flex-grow-1">
+                            <a href="{{ route($r) }}" class="rt-title stretched-link text-reset">{{ $label }}</a>
+                            @if ($exp)
+                                <div class="rt-exports">
+                                    <a href="{{ route($r, ['format' => 'pdf']) }}" class="rt-pdf">PDF</a>
+                                    <a href="{{ route($r, ['format' => 'xlsx']) }}" class="rt-xls">Excel</a>
+                                </div>
+                            @endif
+                        </div>
+                        <i class="fa-solid fa-chevron-left rt-arrow"></i>
+                    </div>
+                </div>
+            @endforeach
         </div>
-    </div>
+
+        <div class="rt-group-title">الذمم والتدفقات والمقارنات</div>
+        <div class="row g-3 mb-3">
+            @foreach ([
+                ['reports.cash_flow', 'التدفّق النقدي', 'fa-money-bill-transfer'],
+                ['reports.ar_aging', 'أعمار الذمم المدينة', 'fa-hand-holding-dollar'],
+                ['reports.ap_aging', 'أعمار الذمم الدائنة', 'fa-file-invoice-dollar'],
+                ['reports.period_comparison', 'مقارنة الفترات', 'fa-chart-column'],
+                ['reports.taxes', 'تقرير الضرائب', 'fa-receipt'],
+            ] as [$r, $label, $icon])
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route($r) }}" class="report-tile text-reset">
+                        <span class="rt-icon"><i class="fa-solid {{ $icon }}"></i></span>
+                        <span class="rt-title flex-grow-1">{{ $label }}</span>
+                        <i class="fa-solid fa-chevron-left rt-arrow"></i>
+                    </a>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="rt-group-title">تقارير تشغيلية</div>
+        <div class="row g-3">
+            @can('contractors.view')
+                <div class="col-12 col-sm-6 col-lg-4"><a href="{{ route('contractors.report') }}" class="report-tile text-reset"><span class="rt-icon"><i class="fa-solid fa-hard-hat"></i></span><span class="rt-title flex-grow-1">تقرير المقاولين</span><i class="fa-solid fa-chevron-left rt-arrow"></i></a></div>
+            @endcan
+            @can('projects.view')
+                <div class="col-12 col-sm-6 col-lg-4"><a href="{{ route('project_costs.report') }}" class="report-tile text-reset"><span class="rt-icon"><i class="fa-solid fa-coins"></i></span><span class="rt-title flex-grow-1">تكاليف المشاريع</span><i class="fa-solid fa-chevron-left rt-arrow"></i></a></div>
+            @endcan
+            @can('materials.view')
+                <div class="col-12 col-sm-6 col-lg-4"><a href="{{ route('materials.report') }}" class="report-tile text-reset"><span class="rt-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span class="rt-title flex-grow-1">تقرير المخزون</span><i class="fa-solid fa-chevron-left rt-arrow"></i></a></div>
+            @endcan
+        </div>
+    </div></div>
 
     {{-- فلتر الفترة --}}
     <div class="card mb-3">
