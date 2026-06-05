@@ -358,6 +358,23 @@ class DemoSeeder extends Seeder
             });
         }
 
+        // ===== موديولات التنفيذ: أوامر التغيير + العيوب + RFI =====
+        if ($project) {
+            \App\Models\ChangeOrder::create(['co_number' => 'CO-2026-0001', 'project_id' => $project->id, 'title' => 'أعمال إضافية بالدور الأرضي', 'description' => 'تنفيذ أعمال إضافية بالدور الأرضي خارج نطاق العقد الأصلي.', 'change_type' => 'addition', 'amount' => 250000, 'status' => 'approved', 'request_date' => now()->subDays(20)->toDateString(), 'approved_by' => $this->by, 'approved_at' => now()->subDays(15), 'created_by' => $this->by]);
+            \App\Models\ChangeOrder::create(['co_number' => 'CO-2026-0002', 'project_id' => $project->id, 'title' => 'خصم بند تشطيبات ملغاة', 'description' => 'خصم قيمة بنود تشطيبات تم إلغاؤها بطلب العميل.', 'change_type' => 'deduction', 'amount' => 120000, 'status' => 'approved', 'request_date' => now()->subDays(12)->toDateString(), 'approved_by' => $this->by, 'approved_at' => now()->subDays(8), 'created_by' => $this->by]);
+            \App\Models\ChangeOrder::create(['co_number' => 'CO-2026-0003', 'project_id' => $project->id, 'title' => 'توريد وتركيب أعمال كهرباء إضافية', 'description' => 'طلب اعتماد أعمال كهرباء إضافية.', 'change_type' => 'addition', 'amount' => 80000, 'status' => 'pending', 'request_date' => now()->subDays(3)->toDateString(), 'created_by' => $this->by]);
+
+            $snagEmp = \App\Models\Employee::first()?->id;
+            \App\Models\Snag::create(['project_id' => $project->id, 'title' => 'تشققات في محارة الدور الثاني', 'description' => 'تشققات واضحة تحتاج معالجة قبل التسليم.', 'location' => 'الدور الثاني', 'priority' => 'high', 'status' => 'open', 'assigned_employee_id' => $snagEmp, 'due_date' => now()->addDays(7)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\Snag::create(['project_id' => $project->id, 'title' => 'دهان غير مكتمل في المدخل', 'location' => 'المدخل الرئيسي', 'priority' => 'medium', 'status' => 'open', 'assigned_employee_id' => $snagEmp, 'due_date' => now()->addDays(14)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\Snag::create(['project_id' => $project->id, 'title' => 'تسريب في تركيبات السباكة بالحمام', 'location' => 'حمام الدور الأرضي', 'priority' => 'high', 'status' => 'in_progress', 'assigned_employee_id' => $snagEmp, 'due_date' => now()->addDays(3)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\Snag::create(['project_id' => $project->id, 'title' => 'ضبط أبواب الألوميتال', 'location' => 'الواجهة الأمامية', 'priority' => 'low', 'status' => 'closed', 'due_date' => now()->subDays(5)->toDateString(), 'closed_at' => now()->subDays(2), 'created_by' => $this->by]);
+
+            \App\Models\Rfi::create(['rfi_number' => 'RFI-2026-0001', 'project_id' => $project->id, 'subject' => 'استفسار عن تفاصيل تسليح الأساسات', 'question' => 'برجاء توضيح أقطار حديد التسليح والمسافات البينية لقواعد المشروع طبقاً للوحات الإنشائية.', 'status' => 'open', 'raised_to' => 'الاستشاري', 'due_date' => now()->subDays(5)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\Rfi::create(['rfi_number' => 'RFI-2026-0002', 'project_id' => $project->id, 'subject' => 'نوع العزل المائي للأسطح', 'question' => 'ما هو نوع العزل المائي المعتمد للأسطح في المواصفات الفنية؟', 'answer' => 'يُستخدم عزل مائي بيتوميني بطبقتين متقاطعتين طبقاً للمواصفات المرفقة بالعقد.', 'status' => 'answered', 'raised_to' => 'المهندس المقيم', 'due_date' => now()->subDays(10)->toDateString(), 'answered_at' => now()->subDays(8), 'created_by' => $this->by]);
+            \App\Models\Rfi::create(['rfi_number' => 'RFI-2026-0003', 'project_id' => $project->id, 'subject' => 'تفاصيل تشطيبات الواجهات', 'question' => 'برجاء اعتماد عينة التشطيب النهائي للواجهات الخارجية قبل البدء في التنفيذ.', 'status' => 'open', 'raised_to' => 'الاستشاري', 'due_date' => now()->addDays(15)->toDateString(), 'created_by' => $this->by]);
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

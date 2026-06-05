@@ -60,6 +60,16 @@ class AlertService
             ['icon' => 'fa-file-contract', 'color' => 'secondary', 'label' => 'مستخلصات غير مسدّدة بالكامل', 'count' => $unpaidExtracts, 'url' => route('contractor_extracts.index')],
         ];
 
+        $pendingChangeOrders = \App\Models\ChangeOrder::where('status', 'pending')->count();
+        $all[] = ['icon' => 'fa-file-pen', 'color' => 'secondary', 'label' => 'أوامر تغيير بانتظار الاعتماد', 'count' => $pendingChangeOrders, 'url' => route('change_orders.index', ['status' => 'pending'])];
+
+        $openSnags = \App\Models\Snag::where('status', '!=', 'closed')->where('priority', 'high')->count();
+        $all[] = ['icon' => 'fa-triangle-exclamation', 'color' => 'danger', 'label' => 'ملاحظات عالية الأولوية مفتوحة', 'count' => $openSnags, 'url' => route('snags.index', ['priority' => 'high'])];
+
+        $overdueRfis = \App\Models\Rfi::where('status', 'open')->whereNotNull('due_date')
+            ->whereDate('due_date', '<', $today)->count();
+        $all[] = ['icon' => 'fa-circle-question', 'color' => 'warning', 'label' => 'طلبات استفسار متأخرة', 'count' => $overdueRfis, 'url' => route('rfis.index', ['status' => 'open'])];
+
         return array_values(array_filter($all, fn ($a) => $a['count'] > 0));
     }
 

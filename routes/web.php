@@ -13,6 +13,7 @@ use App\Http\Controllers\BankTransferController;
 use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractorController;
+use App\Http\Controllers\ChangeOrderController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\ContractorExtractController;
 use App\Http\Controllers\ContractorExtractItemController;
@@ -59,7 +60,9 @@ use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RevenueCollectionController;
 use App\Http\Controllers\RevenueController;
+use App\Http\Controllers\RfiController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SnagController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
@@ -300,4 +303,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('material-requisitions', MaterialRequisitionController::class)->names('material_requisitions')->parameters(['material-requisitions' => 'materialRequisition']);
     Route::post('material-requisitions/{materialRequisition}/items', [MaterialRequisitionItemController::class, 'store'])->name('material_requisition_items.store');
     Route::delete('material-requisition-items/{materialRequisitionItem}', [MaterialRequisitionItemController::class, 'destroy'])->name('material_requisition_items.destroy');
+
+    // أوامر التغيير + قائمة العيوب + طلبات الاستفسار (RFI)
+    Route::post('change-orders/{changeOrder}/approve', [ChangeOrderController::class, 'approve'])->name('change_orders.approve');
+    Route::post('change-orders/{changeOrder}/reject', [ChangeOrderController::class, 'reject'])->name('change_orders.reject');
+    Route::resource('change-orders', ChangeOrderController::class)->names('change_orders')->parameters(['change-orders' => 'changeOrder']);
+    Route::post('snags/{snag}/close', [SnagController::class, 'close'])->name('snags.close');
+    Route::resource('snags', SnagController::class);
+    Route::post('rfis/{rfi}/answer', [RfiController::class, 'answer'])->name('rfis.answer');
+    Route::post('rfis/{rfi}/close', [RfiController::class, 'close'])->name('rfis.close');
+    Route::resource('rfis', RfiController::class);
 });

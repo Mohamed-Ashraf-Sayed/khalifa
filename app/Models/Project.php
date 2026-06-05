@@ -141,4 +141,19 @@ class Project extends Model
     {
         return $this->hasMany(LaborAttendance::class);
     }
+
+    public function changeOrders(): HasMany
+    {
+        return $this->hasMany(ChangeOrder::class)->latest('request_date');
+    }
+
+    public function snags(): HasMany
+    {
+        return $this->hasMany(Snag::class)->latest();
+    }
+
+    public function rfis(): HasMany
+    {
+        return $this->hasMany(Rfi::class)->latest();
+    }
 }

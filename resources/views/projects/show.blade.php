@@ -162,6 +162,109 @@
         </div>
     </div>
 
+    {{-- المخطط الزمني (Gantt) --}}
+    @php($ms = $project->milestones->whereNotNull('planned_start')->whereNotNull('planned_end'))
+    @if ($ms->count())
+        @php($gStart = \Illuminate\Support\Carbon::parse($ms->min('planned_start')))
+        @php($gEnd = \Illuminate\Support\Carbon::parse($ms->max('planned_end')))
+        @php($gSpan = max(1, $gStart->diffInDays($gEnd)))
+        <div class="card mb-3"><div class="card-body">
+            <h6 class="mb-3"><i class="fa-solid fa-bars-staggered ms-1" style="color:#8b7355"></i> المخطط الزمني (Gantt)</h6>
+            @foreach ($ms as $m)
+                @php($s = \Illuminate\Support\Carbon::parse($m->planned_start))
+                @php($e = \Illuminate\Support\Carbon::parse($m->planned_end))
+                @php($offset = ($gStart->diffInDays($s) / $gSpan) * 100)
+                @php($width = max(2, ($s->diffInDays($e) / $gSpan) * 100))
+                @php($color = match($m->status) { 'done' => '#4f8a6b', 'in_progress' => '#8b7355', 'delayed' => '#b65f5b', default => '#a3895f' })
+                <div class="d-flex align-items-center mb-2" style="gap:.5rem">
+                    <div style="width:140px;min-width:140px;font-size:.82rem" class="text-truncate" title="{{ $m->name }}">{{ $m->name }}</div>
+                    <div style="position:relative;flex:1;height:22px;background:var(--bg-2);border-radius:6px">
+                        <div title="{{ $s->format('Y-m-d') }} ← {{ $e->format('Y-m-d') }}" style="position:absolute;top:0;bottom:0;right:{{ $offset }}%;width:{{ $width }}%;background:{{ $color }};border-radius:6px;min-width:6px"></div>
+                    </div>
+                    <div style="width:42px;font-size:.78rem" class="text-muted text-end">{{ (int) $m->progress_percent }}%</div>
+                </div>
+            @endforeach
+            <div class="d-flex justify-content-between text-muted small mt-1"><span>{{ $gStart->format('Y-m-d') }}</span><span>{{ $gEnd->format('Y-m-d') }}</span></div>
+        </div></div>
+    @endif
+
+    {{-- أوامر التغيير --}}
+    @can('contracts.view')
+        @php($coAdd = $project->changeOrders->where('status', 'approved')->where('change_type', 'addition')->sum('amount'))
+        @php($coDed = $project->changeOrders->where('status', 'approved')->where('change_type', 'deduction')->sum('amount'))
+        @php($coNetSigned = bcsub((string) $coAdd, (string) $coDed, 2))
+        @php($revisedContractValue = bcadd((string) ($project->contract_value ?? '0'), $coNetSigned, 2))
+        <div class="card mb-3"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0"><i class="fa-solid fa-file-pen ms-1" style="color:#8b7355"></i> أوامر التغيير <span class="badge text-bg-secondary">{{ $project->changeOrders->count() }}</span></h6>
+                @can('contracts.create')<a href="{{ route('change_orders.create') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> أمر تغيير</a>@endcan
+            </div>
+            @forelse ($project->changeOrders as $order)
+                @php($coBadge = match($order->status) { 'approved'=>'success','pending'=>'warning','rejected'=>'danger', default=>'secondary' })
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div><a href="{{ route('change_orders.show', $order) }}" class="fw-semibold text-decoration-none">{{ $order->co_number }}</a> <span class="text-muted small">· {{ $order->title }}</span></div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge text-bg-{{ $order->change_type === 'deduction' ? 'danger' : 'success' }}">{{ \App\Models\ChangeOrder::TYPES[$order->change_type] ?? $order->change_type }}</span>
+                        <span class="{{ $order->change_type === 'deduction' ? 'text-danger' : '' }}">{{ number_format((float) $order->signedAmount(), 2) }} ج</span>
+                        <span class="badge text-bg-{{ $coBadge }}">{{ \App\Models\ChangeOrder::STATUSES[$order->status] ?? $order->status }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="text-muted small py-2">لا توجد أوامر تغيير لهذا المشروع.</div>
+            @endforelse
+            <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-scale-balanced ms-1" style="color:#8b7355"></i> قيمة العقد المعدّلة = الأصلي ({{ number_format((float) ($project->contract_value ?? 0), 2) }}) + صافي أوامر التغيير المعتمدة ({{ number_format((float) $coNetSigned, 2) }}) = <strong>{{ number_format((float) $revisedContractValue, 2) }} ج</strong></div>
+        </div></div>
+    @endcan
+
+    {{-- قائمة العيوب --}}
+    @can('projects.view')
+        <div class="card mb-3"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0"><i class="fa-solid fa-clipboard-check ms-1" style="color:#8b7355"></i> قائمة العيوب</h6>
+                <div class="small text-muted">مفتوحة: {{ $project->snags->where('status', '!=', 'closed')->count() }} · مغلقة: {{ $project->snags->where('status', 'closed')->count() }}</div>
+            </div>
+            @forelse ($project->snags->take(8) as $snag)
+                @php($statusBadge = match($snag->status) { 'open'=>'warning','in_progress'=>'info','closed'=>'success', default=>'secondary' })
+                @php($priorityBadge = match($snag->priority) { 'high'=>'danger','medium'=>'warning','low'=>'secondary', default=>'secondary' })
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div><a href="{{ route('snags.show', $snag) }}" class="fw-semibold text-decoration-none">{{ $snag->title }}</a>@if ($snag->location)<span class="text-muted small ms-1">· {{ $snag->location }}</span>@endif</div>
+                    <div class="d-flex gap-2">
+                        <span class="badge text-bg-{{ $priorityBadge }}">{{ \App\Models\Snag::PRIORITIES[$snag->priority] ?? $snag->priority }}</span>
+                        <span class="badge text-bg-{{ $statusBadge }}">{{ \App\Models\Snag::STATUSES[$snag->status] ?? $snag->status }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="text-muted small">لا توجد ملاحظات لهذا المشروع.</div>
+            @endforelse
+        </div></div>
+    @endcan
+
+    {{-- طلبات الاستفسار (RFI) --}}
+    @if ($project->rfis->isNotEmpty())
+        <div class="card mb-3"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0"><i class="fa-solid fa-circle-question ms-1" style="color:#8b7355"></i> طلبات الاستفسار (RFI) <span class="badge text-bg-secondary">{{ $project->rfis->count() }}</span></h6>
+                <a href="{{ route('rfis.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>الرقم</th><th>الموضوع</th><th>موعد الرد</th><th>الحالة</th></tr></thead>
+                    <tbody>
+                        @foreach ($project->rfis as $rfi)
+                            @php($badge = match($rfi->status) { 'open'=>'warning','answered'=>'success','closed'=>'secondary', default=>'secondary' })
+                            <tr @class(['table-warning' => $rfi->isOverdue()])>
+                                <td class="fw-semibold"><a href="{{ route('rfis.show', $rfi) }}">{{ $rfi->rfi_number }}</a></td>
+                                <td>{{ $rfi->subject }}</td>
+                                <td>{{ $rfi->due_date?->format('Y-m-d') ?? '—' }}</td>
+                                <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Rfi::STATUSES[$rfi->status] ?? $rfi->status }}</span></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div></div>
+    @endif
+
     {{-- آخر يوميات الموقع --}}
     <div class="card mb-3">
         <div class="card-body">
