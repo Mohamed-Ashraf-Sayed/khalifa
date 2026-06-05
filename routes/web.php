@@ -63,6 +63,7 @@ use App\Http\Controllers\RevenueController;
 use App\Http\Controllers\RfiController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SnagController;
+use App\Http\Controllers\SubmittalController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
@@ -243,6 +244,7 @@ Route::middleware('auth')->group(function () {
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance_sheet');
     Route::get('reports/project-income', [ReportController::class, 'projectIncome'])->name('reports.project_income');
+    Route::get('reports/work-in-progress', [ReportController::class, 'workInProgress'])->name('reports.work_in_progress');
     // دفتر الأستاذ + كشوف الحساب الموحّدة
     Route::get('ledger', [GeneralLedgerController::class, 'index'])->name('general_ledger.index');
     Route::get('ledger/project/{project}', [GeneralLedgerController::class, 'project'])->name('general_ledger.project');
@@ -313,4 +315,6 @@ Route::middleware('auth')->group(function () {
     Route::post('rfis/{rfi}/answer', [RfiController::class, 'answer'])->name('rfis.answer');
     Route::post('rfis/{rfi}/close', [RfiController::class, 'close'])->name('rfis.close');
     Route::resource('rfis', RfiController::class);
+    Route::post('submittals/{submittal}/review', [SubmittalController::class, 'review'])->name('submittals.review');
+    Route::resource('submittals', SubmittalController::class);
 });

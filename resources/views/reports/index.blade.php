@@ -30,6 +30,7 @@
                 ['reports.balance_sheet', 'قائمة المركز المالي (الميزانية)', 'fa-scale-balanced', true],
                 ['reports.income_statement', 'قائمة الدخل العامة', 'fa-chart-line', true],
                 ['reports.project_income', 'قائمة دخل المشروع', 'fa-diagram-project', false],
+                ['reports.work_in_progress', 'العمل تحت التنفيذ (WIP)', 'fa-bars-progress', false],
             ] as [$r, $label, $icon, $exp])
                 <div class="col-12 col-sm-6 col-lg-4">
                     <div class="report-tile position-relative">

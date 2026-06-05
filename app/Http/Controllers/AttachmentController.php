@@ -27,6 +27,7 @@ class AttachmentController extends Controller
         \App\Models\Project::class => ['edit' => 'projects.edit', 'view' => 'projects.view'],
         \App\Models\Supplier::class => ['edit' => 'suppliers.edit', 'view' => 'suppliers.view'],
         \App\Models\Contractor::class => ['edit' => 'contractors.edit', 'view' => 'contractors.view'],
+        \App\Models\DailySiteReport::class => ['edit' => 'projects.edit', 'view' => 'projects.view'],
     ];
 
     public function store(Request $request): RedirectResponse

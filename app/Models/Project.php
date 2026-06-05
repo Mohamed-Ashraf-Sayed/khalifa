@@ -156,4 +156,9 @@ class Project extends Model
     {
         return $this->hasMany(Rfi::class)->latest();
     }
+
+    public function submittals(): HasMany
+    {
+        return $this->hasMany(Submittal::class)->latest();
+    }
 }

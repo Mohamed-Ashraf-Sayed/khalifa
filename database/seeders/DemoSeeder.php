@@ -375,6 +375,13 @@ class DemoSeeder extends Seeder
             \App\Models\Rfi::create(['rfi_number' => 'RFI-2026-0003', 'project_id' => $project->id, 'subject' => 'تفاصيل تشطيبات الواجهات', 'question' => 'برجاء اعتماد عينة التشطيب النهائي للواجهات الخارجية قبل البدء في التنفيذ.', 'status' => 'open', 'raised_to' => 'الاستشاري', 'due_date' => now()->addDays(15)->toDateString(), 'created_by' => $this->by]);
         }
 
+        // الاعتمادات الفنية (Submittals)
+        if ($project) {
+            \App\Models\Submittal::create(['submittal_number' => 'SUB-2026-0001', 'project_id' => $project->id, 'title' => 'اعتماد عينة بلاط الأرضيات', 'type' => 'material', 'spec_section' => '09 30 00', 'description' => 'عينة بلاط بورسلين للواجهات الداخلية.', 'status' => 'approved', 'submitted_to' => 'الاستشاري', 'due_date' => now()->subDays(10)->toDateString(), 'reviewed_at' => now()->subDays(8), 'review_notes' => 'معتمد حسب المواصفات.', 'created_by' => $this->by]);
+            \App\Models\Submittal::create(['submittal_number' => 'SUB-2026-0002', 'project_id' => $project->id, 'title' => 'لوحة تنفيذية لأعمال الحديد', 'type' => 'shop_drawing', 'spec_section' => '03 20 00', 'description' => 'لوحات تسليح الأعمدة والكمرات.', 'status' => 'under_review', 'submitted_to' => 'المكتب الاستشاري', 'due_date' => now()->addDays(7)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\Submittal::create(['submittal_number' => 'SUB-2026-0003', 'project_id' => $project->id, 'title' => 'طريقة تنفيذ صب الخرسانة', 'type' => 'method_statement', 'spec_section' => '03 30 00', 'description' => 'method statement لأعمال الصب الجماعي.', 'status' => 'submitted', 'submitted_to' => 'الاستشاري', 'due_date' => now()->subDays(3)->toDateString(), 'created_by' => $this->by]);
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

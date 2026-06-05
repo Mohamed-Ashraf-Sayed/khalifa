@@ -220,6 +220,7 @@
                 @can('contracts.view')  <a class="nav-link {{ request()->routeIs('change_orders.*') ? 'active' : '' }}" href="{{ route('change_orders.index') }}"><i class="fa-solid fa-file-pen"></i> أوامر التغيير</a> @endcan
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('snags.*') ? 'active' : '' }}" href="{{ route('snags.index') }}"><i class="fa-solid fa-clipboard-check"></i> قائمة العيوب</a> @endcan
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('rfis.*') ? 'active' : '' }}" href="{{ route('rfis.index') }}"><i class="fa-solid fa-circle-question"></i> طلبات الاستفسار (RFI)</a> @endcan
+                @can('projects.view')   <a class="nav-link {{ request()->routeIs('submittals.*') ? 'active' : '' }}" href="{{ route('submittals.index') }}"><i class="fa-solid fa-stamp"></i> الاعتمادات الفنية</a> @endcan
             @endcanany
 
             @canany(['tenders.view','quotations.view'])

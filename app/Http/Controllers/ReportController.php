@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Asset;
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\ChangeOrder;
 use App\Models\Contractor;
 use App\Models\ContractorExtract;
 use App\Models\Expense;
@@ -437,6 +438,88 @@ class ReportController extends Controller implements HasMiddleware
             'contractValue' => $contractValue,
             'varianceVsContract' => $varianceVsContract,
         ]);
+    }
+
+    /**
+     * تقرير العمل تحت التنفيذ (WIP) — موقف تنفيذي/مالي لكل المشاريع:
+     * قيمة العقد المعدّلة (+ أوامر التغيير المعتمدة)، نسبة الإنجاز (من المراحل)،
+     * القيمة المكتسبة، المُفوتر، المحصّل، التكلفة الفعلية، فائض/عجز الفوترة، الربح المقدّر.
+     */
+    public function workInProgress(Request $request)
+    {
+        $projects = Project::whereNotIn('status', ['cancelled'])->orderBy('name')->get();
+
+        $rows = $projects->map(function (Project $p) {
+            // قيمة العقد المعدّلة = الأصلي + صافي أوامر التغيير المعتمدة
+            $coAdd = (string) ChangeOrder::where('project_id', $p->id)->where('status', 'approved')->where('change_type', 'addition')->sum('amount');
+            $coDed = (string) ChangeOrder::where('project_id', $p->id)->where('status', 'approved')->where('change_type', 'deduction')->sum('amount');
+            $coNet = bcsub($coAdd, $coDed, 2);
+            $revised = bcadd((string) $p->contract_value, $coNet, 2);
+
+            // نسبة الإنجاز = متوسط تقدّم المراحل (إن وُجدت)
+            $milestones = $p->milestones;
+            $percent = $milestones->count() > 0
+                ? round($milestones->avg('progress_percent'))
+                : 0;
+
+            // القيمة المكتسبة = العقد المعدّل × النسبة
+            $earned = bcdiv(bcmul($revised, (string) $percent, 4), '100', 2);
+
+            // المُفوتر والمحصّل من الفواتير (عدا الملغاة)
+            $invoiced = (string) Invoice::where('project_id', $p->id)->where('status', '!=', 'cancelled')->sum('total_amount');
+            $collected = (string) Invoice::where('project_id', $p->id)->where('status', '!=', 'cancelled')->sum('paid_amount');
+
+            // التكلفة الفعلية (نفس أساس قائمة دخل المشروع)
+            $cost = array_reduce([
+                (string) ContractorExtract::where('project_id', $p->id)->whereIn('status', ['approved', 'partial', 'paid'])->sum('net_amount'),
+                (string) SupplierTransaction::where('project_id', $p->id)->sum('net_amount'),
+                (string) ProjectCost::where('project_id', $p->id)->sum('amount'),
+                (string) Expense::where('project_id', $p->id)->sum('amount'),
+            ], fn (string $c, string $v) => bcadd($c, $v, 2), '0');
+
+            // فائض/عجز الفوترة = المُفوتر − القيمة المكتسبة (موجب = فوترة زائدة)
+            $overUnder = bcsub($invoiced, $earned, 2);
+            // الربح المقدّر = القيمة المكتسبة − التكلفة الفعلية
+            $profit = bcsub($earned, $cost, 2);
+
+            return [
+                'id' => $p->id,
+                'name' => $p->name,
+                'status' => Project::STATUSES[$p->status] ?? $p->status,
+                'revised' => $revised,
+                'percent' => $percent,
+                'earned' => $earned,
+                'invoiced' => $invoiced,
+                'collected' => $collected,
+                'cost' => $cost,
+                'over_under' => $overUnder,
+                'profit' => $profit,
+            ];
+        });
+
+        $totals = [
+            'revised' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['revised'], 2), '0'),
+            'earned' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['earned'], 2), '0'),
+            'invoiced' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['invoiced'], 2), '0'),
+            'collected' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['collected'], 2), '0'),
+            'cost' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['cost'], 2), '0'),
+            'over_under' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['over_under'], 2), '0'),
+            'profit' => $rows->reduce(fn ($c, $r) => bcadd($c, $r['profit'], 2), '0'),
+        ];
+
+        if ($request->query('format') === 'xlsx') {
+            $headers = ['المشروع', 'الحالة', 'العقد المعدّل', 'الإنجاز %', 'القيمة المكتسبة', 'المُفوتر', 'المحصّل', 'التكلفة الفعلية', 'فائض/عجز الفوترة', 'الربح المقدّر'];
+            $data = $rows->map(fn ($r) => [
+                $r['name'], $r['status'], number_format((float) $r['revised'], 2), $r['percent'].'%',
+                number_format((float) $r['earned'], 2), number_format((float) $r['invoiced'], 2),
+                number_format((float) $r['collected'], 2), number_format((float) $r['cost'], 2),
+                number_format((float) $r['over_under'], 2), number_format((float) $r['profit'], 2),
+            ])->all();
+
+            return app(ExportService::class)->excel($headers, $data, 'work_in_progress', 'تقرير العمل تحت التنفيذ (WIP)');
+        }
+
+        return view('reports.work_in_progress', compact('rows', 'totals'));
     }
 
     /**

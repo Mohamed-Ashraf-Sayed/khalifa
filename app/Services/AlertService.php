@@ -70,6 +70,10 @@ class AlertService
             ->whereDate('due_date', '<', $today)->count();
         $all[] = ['icon' => 'fa-circle-question', 'color' => 'warning', 'label' => 'طلبات استفسار متأخرة', 'count' => $overdueRfis, 'url' => route('rfis.index', ['status' => 'open'])];
 
+        $overdueSubmittals = \App\Models\Submittal::whereIn('status', ['submitted', 'under_review'])
+            ->whereNotNull('due_date')->whereDate('due_date', '<', $today)->count();
+        $all[] = ['icon' => 'fa-stamp', 'color' => 'warning', 'label' => 'اعتمادات فنية متأخرة', 'count' => $overdueSubmittals, 'url' => route('submittals.index', ['status' => 'submitted'])];
+
         return array_values(array_filter($all, fn ($a) => $a['count'] > 0));
     }
 

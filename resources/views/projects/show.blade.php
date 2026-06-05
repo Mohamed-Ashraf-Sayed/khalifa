@@ -265,6 +265,33 @@
         </div></div>
     @endif
 
+    {{-- الاعتمادات الفنية --}}
+    @if ($project->submittals->isNotEmpty())
+        <div class="card mb-3"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0"><i class="fa-solid fa-stamp ms-1" style="color:#8b7355"></i> الاعتمادات الفنية <span class="badge text-bg-secondary">{{ $project->submittals->count() }}</span></h6>
+                <a href="{{ route('submittals.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>الرقم</th><th>العنوان</th><th>النوع</th><th>الحالة</th><th>موعد المراجعة</th></tr></thead>
+                    <tbody>
+                        @foreach ($project->submittals as $submittal)
+                            @php($sBadge = match($submittal->status) { 'submitted'=>'primary','under_review'=>'warning','approved'=>'success','approved_as_noted'=>'info','rejected'=>'danger', default=>'secondary' })
+                            <tr>
+                                <td class="fw-semibold"><a href="{{ route('submittals.show', $submittal) }}">{{ $submittal->submittal_number }}</a></td>
+                                <td>{{ $submittal->title }}</td>
+                                <td>{{ \App\Models\Submittal::TYPES[$submittal->type] ?? $submittal->type }}</td>
+                                <td><span class="badge text-bg-{{ $sBadge }}">{{ \App\Models\Submittal::STATUSES[$submittal->status] ?? $submittal->status }}</span></td>
+                                <td>{{ $submittal->due_date?->format('Y-m-d') ?? '—' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div></div>
+    @endif
+
     {{-- آخر يوميات الموقع --}}
     <div class="card mb-3">
         <div class="card-body">
