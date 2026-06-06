@@ -6,6 +6,7 @@ use App\Http\Controllers\AccountingPostingController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\FiscalYearController;
 use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\Auth\LoginController;
@@ -346,4 +347,10 @@ Route::middleware('auth')->group(function () {
     // الترحيل التلقائي للقيود من المستندات
     Route::get('accounting/posting', [AccountingPostingController::class, 'index'])->name('accounting.posting');
     Route::post('accounting/posting/generate', [AccountingPostingController::class, 'generate'])->name('accounting.posting.generate');
+    // السنوات والفترات المالية + الإقفال
+    Route::post('fiscal-years/{fiscalYear}/close', [FiscalYearController::class, 'closeYear'])->name('fiscal_years.close');
+    Route::post('fiscal-years/{fiscalYear}/reopen', [FiscalYearController::class, 'reopenYear'])->name('fiscal_years.reopen');
+    Route::post('fiscal-periods/{fiscalPeriod}/close', [FiscalYearController::class, 'closePeriod'])->name('fiscal_periods.close');
+    Route::post('fiscal-periods/{fiscalPeriod}/open', [FiscalYearController::class, 'openPeriod'])->name('fiscal_periods.open');
+    Route::resource('fiscal-years', FiscalYearController::class)->names('fiscal_years')->parameters(['fiscal-years' => 'fiscalYear'])->except(['edit', 'update']);
 });

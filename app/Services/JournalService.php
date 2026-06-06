@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\FiscalPeriod;
 use App\Models\JournalEntry;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,10 @@ class JournalService
     {
         if (count($lines) < 2) {
             throw new \InvalidArgumentException('القيد لازم يحتوي على بندين على الأقل.');
+        }
+
+        if (FiscalPeriod::isLocked((string) $data['entry_date'])) {
+            throw new \InvalidArgumentException('لا يمكن الترحيل على فترة مالية مقفلة.');
         }
 
         foreach ($lines as $line) {
@@ -84,6 +89,10 @@ class JournalService
     {
         if ($e->status !== 'draft' || ! $e->isBalanced()) {
             return $e;
+        }
+
+        if (FiscalPeriod::isLocked(\Illuminate\Support\Carbon::parse($e->entry_date)->toDateString())) {
+            throw new \InvalidArgumentException('لا يمكن ترحيل قيد على فترة مالية مقفلة.');
         }
 
         $e->update([

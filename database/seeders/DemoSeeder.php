@@ -432,6 +432,16 @@ class DemoSeeder extends Seeder
             app(\App\Services\JournalPostingService::class)->generateAll($this->by);
         }
 
+        // سنوات مالية (مفتوحة) — السنة الحالية والسابقة
+        if (class_exists(\App\Services\FiscalYearService::class)) {
+            $fyService = app(\App\Services\FiscalYearService::class);
+            foreach ([now()->subYear()->year, now()->year] as $yr) {
+                if (! \App\Models\FiscalYear::where('name', (string) $yr)->exists()) {
+                    $fyService->createYear((int) $yr, $this->by);
+                }
+            }
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

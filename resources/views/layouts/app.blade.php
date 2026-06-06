@@ -289,6 +289,7 @@
                 <a class="nav-link {{ request()->routeIs('accounting.ledger') ? 'active' : '' }}" href="{{ route('accounting.ledger') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a>
                 <a class="nav-link {{ request()->routeIs('accounting.income_statement') ? 'active' : '' }}" href="{{ route('accounting.income_statement') }}"><i class="fa-solid fa-chart-line"></i> قائمة الدخل (محاسبي)</a>
                 <a class="nav-link {{ request()->routeIs('accounting.balance_sheet') ? 'active' : '' }}" href="{{ route('accounting.balance_sheet') }}"><i class="fa-solid fa-building-columns"></i> المركز المالي (محاسبي)</a>
+                <a class="nav-link {{ request()->routeIs('fiscal_years.*') ? 'active' : '' }}" href="{{ route('fiscal_years.index') }}"><i class="fa-solid fa-calendar-check"></i> السنوات والإقفال</a>
             @endcan
 
             @canany(['reports.view','users.view','settings.view'])
