@@ -161,4 +161,14 @@ class Project extends Model
     {
         return $this->hasMany(Submittal::class)->latest();
     }
+
+    public function inspectionRequests(): HasMany
+    {
+        return $this->hasMany(InspectionRequest::class)->latest();
+    }
+
+    public function meetings(): HasMany
+    {
+        return $this->hasMany(Meeting::class)->latest('meeting_date');
+    }
 }

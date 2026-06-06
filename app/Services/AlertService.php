@@ -74,6 +74,10 @@ class AlertService
             ->whereNotNull('due_date')->whereDate('due_date', '<', $today)->count();
         $all[] = ['icon' => 'fa-stamp', 'color' => 'warning', 'label' => 'اعتمادات فنية متأخرة', 'count' => $overdueSubmittals, 'url' => route('submittals.index', ['status' => 'submitted'])];
 
+        $overdueInspections = \App\Models\InspectionRequest::where('status', 'pending')
+            ->whereNotNull('scheduled_date')->whereDate('scheduled_date', '<', $today)->count();
+        $all[] = ['icon' => 'fa-clipboard-list', 'color' => 'warning', 'label' => 'طلبات فحص متأخرة', 'count' => $overdueInspections, 'url' => route('inspection_requests.index', ['status' => 'pending'])];
+
         return array_values(array_filter($all, fn ($a) => $a['count'] > 0));
     }
 

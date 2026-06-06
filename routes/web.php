@@ -39,11 +39,14 @@ use App\Http\Controllers\LetterOfGuaranteeController;
 use App\Http\Controllers\LoginLogController;
 use App\Http\Controllers\MaterialRequisitionController;
 use App\Http\Controllers\MaterialRequisitionItemController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerDepositController;
 use App\Http\Controllers\PartnerTransactionController;
+use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\InspectionRequestController;
 use App\Http\Controllers\ProjectContractController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCostController;
@@ -317,4 +320,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('rfis', RfiController::class);
     Route::post('submittals/{submittal}/review', [SubmittalController::class, 'review'])->name('submittals.review');
     Route::resource('submittals', SubmittalController::class);
+
+    // طلبات الفحص (IR) + محاضر الاجتماعات + مسيّر الرواتب
+    Route::post('inspection-requests/{inspectionRequest}/inspect', [InspectionRequestController::class, 'inspect'])->name('inspection_requests.inspect');
+    Route::resource('inspection-requests', InspectionRequestController::class)->names('inspection_requests')->parameters(['inspection-requests' => 'inspectionRequest']);
+    Route::resource('meetings', MeetingController::class);
+    Route::post('payroll-runs/{payrollRun}/approve', [PayrollController::class, 'approve'])->name('payroll.approve');
+    Route::post('payroll-runs/{payrollRun}/pay', [PayrollController::class, 'pay'])->name('payroll.pay');
+    Route::post('payroll-runs/{payrollRun}/items/{item}', [PayrollController::class, 'updateItem'])->name('payroll.update_item');
+    Route::resource('payroll-runs', PayrollController::class)->names('payroll')->parameters(['payroll-runs' => 'payrollRun']);
 });

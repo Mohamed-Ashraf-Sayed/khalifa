@@ -292,6 +292,57 @@
         </div></div>
     @endif
 
+    {{-- طلبات الفحص والمعاينة --}}
+    @if ($project->inspectionRequests->isNotEmpty())
+        <div class="card mb-3"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0"><i class="fa-solid fa-clipboard-list ms-1" style="color:#8b7355"></i> طلبات الفحص والمعاينة <span class="badge text-bg-secondary">{{ $project->inspectionRequests->count() }}</span></h6>
+                <a href="{{ route('inspection_requests.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>الرقم</th><th>العنوان</th><th>النوع</th><th>الحالة</th><th>الموعد المجدول</th></tr></thead>
+                    <tbody>
+                        @foreach ($project->inspectionRequests as $ir)
+                            @php($irBadge = match($ir->status) { 'pending'=>'warning','approved'=>'success','rejected'=>'danger','closed'=>'secondary', default=>'secondary' })
+                            <tr @class(['table-warning' => $ir->isOverdue()])>
+                                <td class="fw-semibold"><a href="{{ route('inspection_requests.show', $ir) }}">{{ $ir->ir_number }}</a></td>
+                                <td>{{ $ir->title }}</td>
+                                <td>{{ \App\Models\InspectionRequest::TYPES[$ir->type] ?? $ir->type }}</td>
+                                <td><span class="badge text-bg-{{ $irBadge }}">{{ \App\Models\InspectionRequest::STATUSES[$ir->status] ?? $ir->status }}</span></td>
+                                <td>{{ $ir->scheduled_date?->format('Y-m-d') ?? '—' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div></div>
+    @endif
+
+    {{-- محاضر الاجتماعات --}}
+    @if ($project->meetings->isNotEmpty())
+        <div class="card mb-3"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0"><i class="fa-solid fa-users-rectangle ms-1" style="color:#8b7355"></i> محاضر الاجتماعات <span class="badge text-bg-secondary">{{ $project->meetings->count() }}</span></h6>
+                <a href="{{ route('meetings.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>الرقم</th><th>العنوان</th><th>التاريخ</th></tr></thead>
+                    <tbody>
+                        @foreach ($project->meetings->take(5) as $meeting)
+                            <tr>
+                                <td class="fw-semibold"><a href="{{ route('meetings.show', $meeting) }}">{{ $meeting->meeting_number }}</a></td>
+                                <td>{{ $meeting->title }}</td>
+                                <td>{{ $meeting->meeting_date?->format('Y-m-d') ?? '—' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div></div>
+    @endif
+
     {{-- آخر يوميات الموقع --}}
     <div class="card mb-3">
         <div class="card-body">

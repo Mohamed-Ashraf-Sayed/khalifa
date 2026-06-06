@@ -382,6 +382,37 @@ class DemoSeeder extends Seeder
             \App\Models\Submittal::create(['submittal_number' => 'SUB-2026-0003', 'project_id' => $project->id, 'title' => 'طريقة تنفيذ صب الخرسانة', 'type' => 'method_statement', 'spec_section' => '03 30 00', 'description' => 'method statement لأعمال الصب الجماعي.', 'status' => 'submitted', 'submitted_to' => 'الاستشاري', 'due_date' => now()->subDays(3)->toDateString(), 'created_by' => $this->by]);
         }
 
+        // مسيّر الرواتب — مسيّر معتمد للشهر الماضي (بدون ترحيل بنكي)
+        $run = \App\Models\PayrollRun::create([
+            'run_number' => 'PR-'.now()->subMonth()->format('Y-m'),
+            'period_year' => now()->subMonth()->year,
+            'period_month' => now()->subMonth()->month,
+            'status' => 'approved',
+            'total_net' => 0,
+            'created_by' => $this->by,
+        ]);
+        foreach (\App\Models\Employee::where('is_active', true)->get() as $employee) {
+            $item = new \App\Models\PayrollItem([
+                'payroll_run_id' => $run->id, 'employee_id' => $employee->id,
+                'basic_salary' => (string) $employee->salary, 'allowances' => 0,
+                'bonus' => 0, 'deductions' => 0, 'advance_deduction' => 0,
+            ]);
+            $item->net_salary = $item->computeNet();
+            $item->save();
+        }
+        $run->load('items');
+        $run->recomputeTotal();
+
+        // طلبات الفحص (IR) + محاضر الاجتماعات
+        if ($project) {
+            \App\Models\InspectionRequest::create(['ir_number' => 'IR-2026-0001', 'project_id' => $project->id, 'title' => 'فحص صب خرسانة القواعد', 'type' => 'concrete_pour', 'location' => 'القطاع الأول - القواعد', 'scheduled_date' => now()->subDays(10)->toDateString(), 'status' => 'approved', 'result' => 'تم الفحص ومطابقة المواصفات، الموافقة على الصب.', 'inspector' => 'م. خالد عبد الله', 'inspected_at' => now()->subDays(10), 'created_by' => $this->by]);
+            \App\Models\InspectionRequest::create(['ir_number' => 'IR-2026-0002', 'project_id' => $project->id, 'title' => 'فحص حديد تسليح الأعمدة', 'type' => 'steel', 'location' => 'الدور الأرضي - الأعمدة', 'scheduled_date' => now()->addDays(5)->toDateString(), 'status' => 'pending', 'created_by' => $this->by]);
+            \App\Models\InspectionRequest::create(['ir_number' => 'IR-2026-0003', 'project_id' => $project->id, 'title' => 'معاينة أعمال التشطيبات', 'type' => 'finishing', 'location' => 'الدور الثاني - الشقق', 'scheduled_date' => now()->subDays(3)->toDateString(), 'status' => 'pending', 'created_by' => $this->by]);
+
+            \App\Models\Meeting::create(['meeting_number' => 'MIN-2026-0001', 'project_id' => $project->id, 'title' => 'اجتماع انطلاق المشروع (Kickoff)', 'meeting_date' => now()->subMonth()->startOfMonth()->addDays(3)->toDateString(), 'location' => 'قاعة الاجتماعات الرئيسية', 'attendees' => "م. أحمد عبد الله - مدير المشروع\nم. سارة محمود - مهندسة موقع\nأ. خالد فؤاد - ممثل العميل", 'agenda' => "1. استعراض نطاق العمل والجدول الزمني\n2. توزيع المسؤوليات\n3. آلية الموافقات والمستخلصات", 'decisions' => "- اعتماد الجدول الزمني المبدئي 6 أشهر\n- بدء أعمال الحفر خلال أسبوع", 'action_items' => "- تجهيز خطة السلامة (م. ياسر)\n- إصدار أمر توريد الخرسانة (م. أحمد)", 'next_meeting_date' => now()->subMonth()->startOfMonth()->addDays(10)->toDateString(), 'created_by' => $this->by]);
+            \App\Models\Meeting::create(['meeting_number' => 'MIN-2026-0002', 'project_id' => $project->id, 'title' => 'اجتماع المتابعة الأسبوعي', 'meeting_date' => now()->startOfWeek()->addDay()->toDateString(), 'location' => 'مكتب الموقع', 'attendees' => "م. أحمد عبد الله\nم. سارة محمود\nم. ياسر النجار", 'agenda' => "1. نسبة الإنجاز مقابل الخطة\n2. معوقات التنفيذ\n3. حالة التوريدات", 'decisions' => "- اعتماد صرف مستخلص المقاول الأول\n- زيادة عمالة الموقع", 'action_items' => "- متابعة توريد حديد التسليح (م. أحمد)\n- إعداد تقرير الإنجاز للعميل (م. سارة)", 'next_meeting_date' => now()->startOfWeek()->addWeek()->addDay()->toDateString(), 'created_by' => $this->by]);
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }

@@ -221,6 +221,8 @@
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('snags.*') ? 'active' : '' }}" href="{{ route('snags.index') }}"><i class="fa-solid fa-clipboard-check"></i> قائمة العيوب</a> @endcan
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('rfis.*') ? 'active' : '' }}" href="{{ route('rfis.index') }}"><i class="fa-solid fa-circle-question"></i> طلبات الاستفسار (RFI)</a> @endcan
                 @can('projects.view')   <a class="nav-link {{ request()->routeIs('submittals.*') ? 'active' : '' }}" href="{{ route('submittals.index') }}"><i class="fa-solid fa-stamp"></i> الاعتمادات الفنية</a> @endcan
+                @can('projects.view')   <a class="nav-link {{ request()->routeIs('inspection_requests.*') ? 'active' : '' }}" href="{{ route('inspection_requests.index') }}"><i class="fa-solid fa-clipboard-list"></i> طلبات الفحص</a> @endcan
+                @can('projects.view')   <a class="nav-link {{ request()->routeIs('meetings.*') ? 'active' : '' }}" href="{{ route('meetings.index') }}"><i class="fa-solid fa-users-rectangle"></i> محاضر الاجتماعات</a> @endcan
             @endcanany
 
             @canany(['tenders.view','quotations.view'])
@@ -272,6 +274,7 @@
                 <div class="nav-section">الموارد البشرية والشركاء</div>
                 @can('employees.view')  <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" href="{{ route('employees.index') }}"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
                 @can('employees.view')  <a class="nav-link {{ request()->routeIs('employee_transactions.*') ? 'active' : '' }}" href="{{ route('employee_transactions.index') }}"><i class="fa-solid fa-wallet"></i> معاملات الموظفين</a> @endcan
+                @can('employees.view')  <a class="nav-link {{ request()->routeIs('payroll.*') ? 'active' : '' }}" href="{{ route('payroll.index') }}"><i class="fa-solid fa-money-check-dollar"></i> مسيّر الرواتب</a> @endcan
                 @can('partners.view')   <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" href="{{ route('partners.index') }}"><i class="fa-solid fa-handshake"></i> الشركاء</a> @endcan
                 @can('partners.view')   <a class="nav-link {{ request()->routeIs('partner_transactions.*') ? 'active' : '' }}" href="{{ route('partner_transactions.index') }}"><i class="fa-solid fa-coins"></i> حركات الشركاء</a> @endcan
                 @can('partners.view')<a class="nav-link {{ request()->routeIs('partner_deposits.*') ? 'active' : '' }}" href="{{ route('partner_deposits.index') }}"><i class="fa-solid fa-piggy-bank"></i> إيداعات الشركاء</a> @endcan
