@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AccountingReportController;
+use App\Http\Controllers\AccountingPostingController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\TwoFactorController;
@@ -329,4 +333,17 @@ Route::middleware('auth')->group(function () {
     Route::post('payroll-runs/{payrollRun}/pay', [PayrollController::class, 'pay'])->name('payroll.pay');
     Route::post('payroll-runs/{payrollRun}/items/{item}', [PayrollController::class, 'updateItem'])->name('payroll.update_item');
     Route::resource('payroll-runs', PayrollController::class)->names('payroll')->parameters(['payroll-runs' => 'payrollRun']);
+
+    // ===== المحاسبة الدفترية (قيد مزدوج) =====
+    Route::resource('accounts', AccountController::class);
+    Route::post('journal-entries/{journalEntry}/post', [JournalEntryController::class, 'post'])->name('journal_entries.post');
+    Route::post('journal-entries/{journalEntry}/unpost', [JournalEntryController::class, 'unpost'])->name('journal_entries.unpost');
+    Route::resource('journal-entries', JournalEntryController::class)->names('journal_entries')->parameters(['journal-entries' => 'journalEntry']);
+    Route::get('accounting/trial-balance', [AccountingReportController::class, 'trialBalance'])->name('accounting.trial_balance');
+    Route::get('accounting/ledger', [AccountingReportController::class, 'accountLedger'])->name('accounting.ledger');
+    Route::get('accounting/income-statement', [AccountingReportController::class, 'incomeStatement'])->name('accounting.income_statement');
+    Route::get('accounting/balance-sheet', [AccountingReportController::class, 'balanceSheet'])->name('accounting.balance_sheet');
+    // الترحيل التلقائي للقيود من المستندات
+    Route::get('accounting/posting', [AccountingPostingController::class, 'index'])->name('accounting.posting');
+    Route::post('accounting/posting/generate', [AccountingPostingController::class, 'generate'])->name('accounting.posting.generate');
 });

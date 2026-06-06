@@ -280,6 +280,17 @@
                 @can('partners.view')<a class="nav-link {{ request()->routeIs('partner_deposits.*') ? 'active' : '' }}" href="{{ route('partner_deposits.index') }}"><i class="fa-solid fa-piggy-bank"></i> إيداعات الشركاء</a> @endcan
             @endcanany
 
+            @can('accounting.view')
+                <div class="nav-section">المحاسبة الدفترية</div>
+                <a class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}"><i class="fa-solid fa-sitemap"></i> دليل الحسابات</a>
+                <a class="nav-link {{ request()->routeIs('journal_entries.*') ? 'active' : '' }}" href="{{ route('journal_entries.index') }}"><i class="fa-solid fa-book-journal-whills"></i> قيود اليومية</a>
+                <a class="nav-link {{ request()->routeIs('accounting.posting') ? 'active' : '' }}" href="{{ route('accounting.posting') }}"><i class="fa-solid fa-wand-magic-sparkles"></i> الترحيل التلقائي</a>
+                <a class="nav-link {{ request()->routeIs('accounting.trial_balance') ? 'active' : '' }}" href="{{ route('accounting.trial_balance') }}"><i class="fa-solid fa-scale-balanced"></i> ميزان المراجعة</a>
+                <a class="nav-link {{ request()->routeIs('accounting.ledger') ? 'active' : '' }}" href="{{ route('accounting.ledger') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a>
+                <a class="nav-link {{ request()->routeIs('accounting.income_statement') ? 'active' : '' }}" href="{{ route('accounting.income_statement') }}"><i class="fa-solid fa-chart-line"></i> قائمة الدخل (محاسبي)</a>
+                <a class="nav-link {{ request()->routeIs('accounting.balance_sheet') ? 'active' : '' }}" href="{{ route('accounting.balance_sheet') }}"><i class="fa-solid fa-building-columns"></i> المركز المالي (محاسبي)</a>
+            @endcan
+
             @canany(['reports.view','users.view','settings.view'])
                 <div class="nav-section">التقارير والنظام</div>
                 @can('reports.view')    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan

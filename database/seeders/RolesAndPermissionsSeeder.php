@@ -16,7 +16,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'projects', 'clients', 'contractors', 'suppliers', 'employees',
         'partners', 'materials', 'expenses', 'revenues', 'invoices',
         'bank_accounts', 'purchase_orders', 'assets', 'contracts', 'taxes',
-        'tenders', 'quotations', 'guarantees',
+        'tenders', 'quotations', 'guarantees', 'accounting',
     ];
 
     /**
@@ -76,13 +76,13 @@ class RolesAndPermissionsSeeder extends Seeder
                 $perms[] = "{$m}.{$a}";
             }
         }
-        return array_merge($perms, ['reports.view', 'reports.export']);
+        return array_merge($perms, ['reports.view', 'reports.export', 'accounting.view']);
     }
 
     private function accountantPermissions(): array
     {
         $perms = [];
-        foreach (['expenses', 'revenues', 'invoices', 'bank_accounts', 'purchase_orders'] as $m) {
+        foreach (['expenses', 'revenues', 'invoices', 'bank_accounts', 'purchase_orders', 'accounting'] as $m) {
             foreach (['view', 'create', 'edit'] as $a) {
                 $perms[] = "{$m}.{$a}";
             }

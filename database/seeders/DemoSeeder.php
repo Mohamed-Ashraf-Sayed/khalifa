@@ -413,6 +413,25 @@ class DemoSeeder extends Seeder
             \App\Models\Meeting::create(['meeting_number' => 'MIN-2026-0002', 'project_id' => $project->id, 'title' => 'اجتماع المتابعة الأسبوعي', 'meeting_date' => now()->startOfWeek()->addDay()->toDateString(), 'location' => 'مكتب الموقع', 'attendees' => "م. أحمد عبد الله\nم. سارة محمود\nم. ياسر النجار", 'agenda' => "1. نسبة الإنجاز مقابل الخطة\n2. معوقات التنفيذ\n3. حالة التوريدات", 'decisions' => "- اعتماد صرف مستخلص المقاول الأول\n- زيادة عمالة الموقع", 'action_items' => "- متابعة توريد حديد التسليح (م. أحمد)\n- إعداد تقرير الإنجاز للعميل (م. سارة)", 'next_meeting_date' => now()->startOfWeek()->addWeek()->addDay()->toDateString(), 'created_by' => $this->by]);
         }
 
+        // ===== قيود يومية تجريبية + ترحيل تلقائي من المستندات =====
+        if (class_exists(\App\Models\Account::class) && class_exists(\App\Services\JournalService::class)) {
+            $journal = app(\App\Services\JournalService::class);
+            $cashId = \App\Models\Account::resolve('1102')?->id;
+            $capitalId = \App\Models\Account::resolve('3101')?->id;
+            if ($cashId && $capitalId) {
+                $e1 = $journal->createEntry(
+                    ['entry_date' => now()->subMonths(12)->toDateString(), 'description' => 'ضخّ رأس مال نقدي افتتاحي', 'created_by' => $this->by],
+                    [
+                        ['account_id' => $cashId, 'debit' => 5000000, 'credit' => 0, 'description' => 'إيداع رأس المال'],
+                        ['account_id' => $capitalId, 'debit' => 0, 'credit' => 5000000, 'description' => 'رأس المال'],
+                    ]
+                );
+                $journal->post($e1, $this->by);
+            }
+            // ترحيل تلقائي لكل المستندات التشغيلية (فواتير/مصروفات/مستخلصات/دفعات/رواتب...)
+            app(\App\Services\JournalPostingService::class)->generateAll($this->by);
+        }
+
         $this->command->info('تم إنشاء بيانات تجريبية واقعية لشركة مقاولات.');
     }
 }
