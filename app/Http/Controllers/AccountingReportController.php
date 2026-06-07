@@ -207,43 +207,138 @@ class AccountingReportController extends Controller implements HasMiddleware
      */
     public function incomeStatement(Request $request)
     {
-        $from = $request->date('from');
-        $to = $request->date('to');
+        // السنة المختارة (افتراضياً أحدث سنة مالية أو السنة الحالية) + سنة المقارنة السابقة
+        $defaultYear = \App\Models\FiscalYear::orderByDesc('start_date')->value('name') ?: (string) now()->year;
+        $year = (int) $request->query('year', $defaultYear);
+        $priorYear = $year - 1;
 
-        $revenueGroups = $this->groupSection('revenue', $from, $to);
-        $expenseGroups = $this->groupSection('expense', $from, $to);
+        $cur = $this->statementFigures($year.'-01-01', $year.'-12-31');
+        $prior = $this->statementFigures($priorYear.'-01-01', $priorYear.'-12-31');
 
-        $totalRevenue = $revenueGroups['total'];
-        $totalExpense = $expenseGroups['total'];
-        $netProfit = bcsub($totalRevenue, $totalExpense, 2);
-
-        if ($request->query('export') === 'xlsx') {
-            $headers = ['البند', 'القيمة'];
-            $data = [['الإيرادات', '']];
-            foreach ($revenueGroups['groups'] as $g) {
-                $data[] = [$g['name'], number_format((float) $g['total'], 2)];
-            }
-            $data[] = ['إجمالي الإيرادات', number_format((float) $totalRevenue, 2)];
-            $data[] = ['المصروفات', ''];
-            foreach ($expenseGroups['groups'] as $g) {
-                $data[] = [$g['name'], number_format((float) $g['total'], 2)];
-            }
-            $data[] = ['إجمالي المصروفات', number_format((float) $totalExpense, 2)];
-            $data[] = ['صافي الربح / الخسارة', number_format((float) $netProfit, 2)];
-            $title = 'قائمة الدخل (محاسبي)';
-
-            return app(ExportService::class)->excel($headers, $data, 'gl_income_statement', $title);
+        // قائمة السنوات المتاحة للاختيار
+        $years = \App\Models\FiscalYear::orderByDesc('start_date')->pluck('name')->map(fn ($n) => (int) $n)->all();
+        if (! in_array($year, $years, true)) {
+            $years[] = $year;
+            rsort($years);
         }
 
-        return view('reports.gl_income_statement', [
-            'from' => $from?->toDateString(),
-            'to' => $to?->toDateString(),
-            'revenueGroups' => $revenueGroups['groups'],
-            'expenseGroups' => $expenseGroups['groups'],
-            'totalRevenue' => $totalRevenue,
-            'totalExpense' => $totalExpense,
-            'netProfit' => $netProfit,
-        ]);
+        $company = [
+            'name' => \App\Models\Setting::get('company_name') ?: config('app.name'),
+            'legal_form' => \App\Models\Setting::get('legal_form', 'شركة فردية'),
+            'commercial_register' => \App\Models\Setting::get('commercial_register'),
+            'tax_number' => \App\Models\Setting::get('tax_number'),
+        ];
+
+        // ترتيب بنود القائمة (مطابق للنموذج المصري) — مفتاح، تسمية، النوع
+        $lines = $this->incomeStatementLines();
+
+        if ($request->query('export') === 'xlsx') {
+            $headers = ['بيان', (string) $year, (string) $priorYear];
+            $data = [];
+            foreach ($lines as $ln) {
+                if ($ln['type'] === 'header') {
+                    $data[] = [$ln['label'], '', ''];
+
+                    continue;
+                }
+                $data[] = [
+                    $ln['label'],
+                    $this->fmtCell($cur[$ln['key']] ?? '0', $ln),
+                    $this->fmtCell($prior[$ln['key']] ?? '0', $ln),
+                ];
+            }
+            $title = 'قائمة الدخل عن السنة المنتهية في 31 ديسمبر '.$year;
+
+            return app(ExportService::class)->excel($headers, $data, 'income_statement_'.$year, $title);
+        }
+
+        return view('reports.gl_income_statement', compact('year', 'priorYear', 'cur', 'prior', 'years', 'company', 'lines'));
+    }
+
+    /** تنسيق خلية للتصدير: المخصومات بين قوسين. */
+    private function fmtCell(string $value, array $line): string
+    {
+        if (bccomp($value, '0', 2) === 0 && ($line['blank_if_zero'] ?? false)) {
+            return '';
+        }
+        $n = number_format((float) $value, 0);
+
+        return ($line['deduct'] ?? false) ? '('.$n.')' : $n;
+    }
+
+    /** تعريف بنود قائمة الدخل بالترتيب المعتمد. */
+    private function incomeStatementLines(): array
+    {
+        return [
+            ['key' => 'activity_revenue', 'label' => 'إيراد النشاط', 'type' => 'line'],
+            ['key' => 'activity_cost', 'label' => 'يخصم: تكاليف النشاط', 'type' => 'line', 'deduct' => true],
+            ['key' => 'gross_profit', 'label' => 'مجمل الربح', 'type' => 'total'],
+            ['key' => '_sep1', 'label' => '(يخصم) / يضاف:', 'type' => 'header'],
+            ['key' => 'admin_general', 'label' => 'مصروفات إدارية وعمومية', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'selling', 'label' => 'مصروفات بيعية وتسويقية', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'takaful', 'label' => 'المساهمة التكافلية في منظمة التأمين الصحي', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'financing', 'label' => 'مصروفات وفوائد تمويلية', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'ecl', 'label' => 'الخسائر الائتمانية المتوقعة', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'fx', 'label' => 'خسائر وأرباح فروق عملة', 'type' => 'line', 'blank_if_zero' => true],
+            ['key' => 'other_income', 'label' => 'إيرادات أخرى', 'type' => 'line', 'blank_if_zero' => true],
+            ['key' => 'net_before_tax', 'label' => 'صافي أرباح (خسائر) الفترة قبل الضرائب', 'type' => 'total'],
+            ['key' => '_sep2', 'label' => 'يخصم:', 'type' => 'header'],
+            ['key' => 'income_tax', 'label' => 'ضريبة الدخل', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'deferred_tax', 'label' => 'الضريبة المؤجلة - التزام', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'net_after_tax', 'label' => 'صافي أرباح (خسائر) الفترة بعد الضرائب', 'type' => 'total'],
+            ['key' => 'distributions', 'label' => 'أرباح موزعة', 'type' => 'line', 'deduct' => true, 'blank_if_zero' => true],
+            ['key' => 'retained', 'label' => 'أرباح محتجزة للعام التالي', 'type' => 'grand'],
+        ];
+    }
+
+    /** يحسب بنود قائمة الدخل لفترة [from..to] من القيود المرحّلة. */
+    private function statementFigures(string $from, string $to): array
+    {
+        $activityRevenue = $this->periodAmount(fn ($q) => $q->where('type', 'revenue')->where('code', '4101'), 'credit', $from, $to);
+        $otherIncome = $this->periodAmount(fn ($q) => $q->where('type', 'revenue')->where('code', '!=', '4101'), 'credit', $from, $to);
+        $activityCost = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '51%'), 'debit', $from, $to);
+        $adminGeneral = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'not like', '51%'), 'debit', $from, $to);
+
+        $gross = bcsub($activityRevenue, $activityCost, 2);
+        $deductions = ['selling' => '0', 'takaful' => '0', 'financing' => '0', 'ecl' => '0', 'fx' => '0'];
+        $netBeforeTax = bcadd(bcsub($gross, $adminGeneral, 2), $otherIncome, 2);
+        $incomeTax = '0';
+        $deferredTax = '0';
+        $netAfterTax = bcsub(bcsub($netBeforeTax, $incomeTax, 2), $deferredTax, 2);
+        $distributions = '0';
+        $retained = bcsub($netAfterTax, $distributions, 2);
+
+        return array_merge([
+            'activity_revenue' => $activityRevenue,
+            'activity_cost' => $activityCost,
+            'gross_profit' => $gross,
+            'admin_general' => $adminGeneral,
+            'other_income' => $otherIncome,
+            'net_before_tax' => $netBeforeTax,
+            'income_tax' => $incomeTax,
+            'deferred_tax' => $deferredTax,
+            'net_after_tax' => $netAfterTax,
+            'distributions' => $distributions,
+            'retained' => $retained,
+        ], $deductions);
+    }
+
+    /** صافي حركة مجموعة حسابات (مرحّلة) خلال فترة، باتجاه الطبيعة. */
+    private function periodAmount(\Closure $scope, string $natural, string $from, string $to): string
+    {
+        $ids = $scope(Account::query()->where('is_group', false))->pluck('id')->all();
+        if (empty($ids)) {
+            return '0';
+        }
+
+        $base = fn () => JournalEntryLine::query()
+            ->whereIn('account_id', $ids)
+            ->whereHas('entry', fn ($q) => $q->where('status', 'posted')->whereBetween('entry_date', [$from, $to]));
+
+        $debit = $this->num($base()->sum('debit'));
+        $credit = $this->num($base()->sum('credit'));
+
+        return $natural === 'credit' ? bcsub($credit, $debit, 2) : bcsub($debit, $credit, 2);
     }
 
     /**

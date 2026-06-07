@@ -17,7 +17,7 @@ use Illuminate\View\View;
 
 class SettingController extends Controller implements HasMiddleware
 {
-    private const KEYS = ['site_name', 'company_name', 'company_phone', 'company_email', 'company_address'];
+    private const KEYS = ['site_name', 'company_name', 'company_phone', 'company_email', 'company_address', 'commercial_register', 'tax_number', 'legal_form'];
 
     /** الإعدادات الإضافية: المفتاح => القيمة الافتراضية. */
     private const EXTRA_KEYS = [
@@ -75,6 +75,9 @@ class SettingController extends Controller implements HasMiddleware
             'company_phone' => ['nullable', 'string', 'max:50'],
             'company_email' => ['nullable', 'email', 'max:255'],
             'company_address' => ['nullable', 'string', 'max:500'],
+            'commercial_register' => ['nullable', 'string', 'max:100'],
+            'tax_number' => ['nullable', 'string', 'max:100'],
+            'legal_form' => ['nullable', 'string', 'max:100'],
             'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'retention_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'insurance_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],

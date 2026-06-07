@@ -55,6 +55,18 @@
                                 <label class="form-label">العنوان</label>
                                 <textarea name="company_address" rows="2" class="form-control">{{ old('company_address', $settings['company_address']) }}</textarea>
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الشكل القانوني</label>
+                                <input type="text" name="legal_form" value="{{ old('legal_form', $settings['legal_form'] ?? '') }}" class="form-control" placeholder="شركة فردية">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">السجل التجاري</label>
+                                <input type="text" name="commercial_register" value="{{ old('commercial_register', $settings['commercial_register'] ?? '') }}" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الرقم القومي/الضريبي للمنشأة</label>
+                                <input type="text" name="tax_number" value="{{ old('tax_number', $settings['tax_number'] ?? '') }}" class="form-control">
+                            </div>
                         </div>
                     </div>
                 </div>
