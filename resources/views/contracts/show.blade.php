@@ -62,4 +62,45 @@
             </div>
         </div>
     @endif
+
+    {{-- مرفقات العقد --}}
+    <div class="card mb-3"><div class="card-body">
+        <h6 class="mb-3"><i class="fa-solid fa-paperclip ms-1" style="color:#8b7355"></i> مرفقات العقد <span class="badge text-bg-secondary">{{ $contract->attachments->count() }}</span></h6>
+        <div class="row g-2 mb-2">
+            @forelse ($contract->attachments as $att)
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="border rounded p-1 h-100 d-flex flex-column" style="background:var(--bg)">
+                        @if (str_starts_with($att->mime, 'image/'))
+                            <a href="{{ route('attachments.download', $att) }}" target="_blank" title="{{ $att->original_name }}">
+                                <img src="{{ route('attachments.download', $att) }}" alt="{{ $att->original_name }}" style="width:100%;height:90px;object-fit:cover;border-radius:6px">
+                            </a>
+                        @else
+                            <a href="{{ route('attachments.download', $att) }}" class="d-flex align-items-center justify-content-center text-decoration-none" style="height:90px"><i class="fa-solid fa-file-lines fa-2x" style="color:#8b7355"></i></a>
+                        @endif
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <span class="text-truncate small" style="max-width:70%" title="{{ $att->original_name }}">{{ $att->original_name }}</span>
+                            @can('contracts.edit')
+                                <form method="POST" action="{{ route('attachments.destroy', $att) }}" onsubmit="return confirm('حذف الملف؟')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm p-0 text-danger border-0 bg-transparent"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-12"><div class="text-muted small">لا توجد ملفات مرفقة بعد (نسخة العقد PDF، التعديلات، الملاحق...).</div></div>
+            @endforelse
+        </div>
+        @can('contracts.edit')
+            <form method="POST" action="{{ route('attachments.store') }}" enctype="multipart/form-data" class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                @csrf
+                <input type="hidden" name="attachable_type" value="App\Models\ProjectContract">
+                <input type="hidden" name="attachable_id" value="{{ $contract->id }}">
+                <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.docx,.xlsx" class="form-control form-control-sm" style="max-width:320px" required>
+                <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع ملف</button>
+                <span class="text-muted small">الحد الأقصى 8MB · PDF/صور/مستندات</span>
+            </form>
+        @endcan
+    </div></div>
 @endsection
