@@ -430,7 +430,35 @@ class DemoSeeder extends Seeder
             }
             // ترحيل تلقائي لكل المستندات التشغيلية (فواتير/مصروفات/مستخلصات/دفعات/رواتب...)
             app(\App\Services\JournalPostingService::class)->generateAll($this->by);
+
+            // قيود تشغيلية واقعية للسنتين (عشان قائمة الدخل تعرض ربحاً منطقياً)
+            $acc = fn ($code) => \App\Models\Account::resolve($code)?->id;
+            $mkEntry = function (string $date, string $desc, array $rows) use ($journal, $acc) {
+                $lines = [];
+                foreach ($rows as [$code, $dr, $cr]) {
+                    if (! $acc($code)) { return; }
+                    $lines[] = ['account_id' => $acc($code), 'debit' => $dr, 'credit' => $cr];
+                }
+                if (count($lines) >= 2) {
+                    $journal->post($journal->createEntry(['entry_date' => $date, 'description' => $desc, 'created_by' => $this->by], $lines), $this->by);
+                }
+            };
+            // 2025: إيراد 40م، تكلفة 26م، إداري 3م، إيراد آخر 1.5م
+            $mkEntry('2025-06-30', 'إيراد عقود مقاولات 2025', [['1103', '40000000', 0], ['4101', 0, '40000000']]);
+            $mkEntry('2025-07-31', 'تكاليف تنفيذ مشاريع 2025', [['5101', '26000000', 0], ['2102', 0, '26000000']]);
+            $mkEntry('2025-08-31', 'مصروفات إدارية وعمومية 2025', [['5204', '3000000', 0], ['1102', 0, '3000000']]);
+            $mkEntry('2025-09-30', 'إيرادات أخرى 2025', [['1102', '1500000', 0], ['4102', 0, '1500000']]);
+            // 2026: إيراد إضافي 38م، تكلفة 22م، إداري 2م، إيراد آخر 1.2م
+            $mkEntry('2026-03-31', 'إيراد عقود مقاولات 2026', [['1103', '38000000', 0], ['4101', 0, '38000000']]);
+            $mkEntry('2026-04-30', 'تكاليف تنفيذ مشاريع 2026', [['5101', '22000000', 0], ['2102', 0, '22000000']]);
+            $mkEntry('2026-05-31', 'مصروفات إدارية وعمومية 2026', [['5204', '2000000', 0], ['1102', 0, '2000000']]);
+            $mkEntry('2026-05-31', 'إيرادات أخرى 2026', [['1102', '1200000', 0], ['4102', 0, '1200000']]);
         }
+
+        // بيانات المنشأة للقوائم المالية
+        \App\Models\Setting::put('legal_form', 'شركة فردية');
+        \App\Models\Setting::put('commercial_register', '11017');
+        \App\Models\Setting::put('tax_number', '547686579');
 
         // سنوات مالية (مفتوحة) — السنة الحالية والسابقة
         if (class_exists(\App\Services\FiscalYearService::class)) {

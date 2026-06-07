@@ -227,6 +227,7 @@ class AccountingReportController extends Controller implements HasMiddleware
             'legal_form' => \App\Models\Setting::get('legal_form', 'شركة فردية'),
             'commercial_register' => \App\Models\Setting::get('commercial_register'),
             'tax_number' => \App\Models\Setting::get('tax_number'),
+            'currency' => \App\Models\Setting::get('currency', 'ج.م'),
         ];
 
         // ترتيب بنود القائمة (مطابق للنموذج المصري) — مفتاح، تسمية، النوع
