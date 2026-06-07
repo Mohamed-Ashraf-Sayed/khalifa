@@ -64,17 +64,22 @@
         .sidebar .nav-link.active::before { content: ''; position: absolute; inset-inline-start: -4px; top: 22%; bottom: 22%; width: 4px; border-radius: 4px; background: #fff; }
         .sidebar .nav-link i { width: 24px; text-align: center; opacity: .92; }
         .sidebar .nav-section { color: rgba(255,255,255,.42); font-size: .68rem; font-weight: 700; letter-spacing: .6px; padding: 1.1rem 1.5rem .35rem; text-transform: uppercase; }
-        /* أقسام قابلة للطي (accordion) */
-        .nav-sec-head { width: 100%; text-align: start; background: none; border: none; color: rgba(255,255,255,.45);
-            font-size: .68rem; font-weight: 700; letter-spacing: .6px; padding: .85rem 1.5rem .4rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; transition: color .15s; }
-        .nav-sec-head:hover { color: rgba(255,255,255,.85); }
-        .nav-sec-head .chev { font-size: .62rem; opacity: .65; transition: transform .2s; }
-        .nav-sec.open > .nav-sec-head { color: rgba(255,255,255,.7); }
-        .nav-sec.open > .nav-sec-head .chev { transform: rotate(180deg); }
-        .nav-sec-body { display: none; padding-bottom: .25rem; }
+        /* أقسام قابلة للطي (accordion) — عناوين واضحة بأيقونات */
+        .nav-sec { margin-top: .15rem; }
+        .nav-sec-head { width: calc(100% - 1.3rem); text-align: start; background: none; border: none; color: rgba(255,255,255,.92);
+            font-size: .92rem; font-weight: 700; padding: .6rem .9rem; margin: .1rem .65rem; border-radius: .65rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between; transition: background .15s, color .15s; }
+        .nav-sec-head:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .nav-sec-head .lbl { display: flex; align-items: center; }
+        .nav-sec-head .lbl > i { width: 24px; text-align: center; opacity: .95; margin-inline-end: .15rem; }
+        .nav-sec-head .chev { font-size: .72rem; opacity: .6; transition: transform .2s; }
+        .nav-sec.open > .nav-sec-head { background: rgba(255,255,255,.08); color: #fff; }
+        .nav-sec.open > .nav-sec-head .chev { transform: rotate(180deg); opacity: .9; }
+        /* البنود الفرعية: مميّزة بمسافة بادئة وحجم أصغر + خط جانبي خفيف */
+        .nav-sec-body { display: none; margin: .1rem .65rem .35rem 1.4rem; padding-inline-start: .55rem; border-inline-start: 1px solid rgba(255,255,255,.12); }
         .nav-sec.open > .nav-sec-body { display: block; animation: navfade .18s ease; }
-        @keyframes navfade { from { opacity: 0; } to { opacity: 1; } }
+        .nav-sec-body .nav-link { margin: .1rem 0; padding: .48rem .7rem; font-size: .86rem; }
+        @keyframes navfade { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 
         /* ===== Layout ===== */
         .main { margin-inline-start: 264px; min-height: 100vh; }
@@ -230,7 +235,7 @@
             </a>
             @canany(['projects.view','clients.view','contracts.view'])
                 <div class="nav-sec {{ request()->routeIs('projects.*','clients.*','contracts.*','project_costs.*','project_files.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="ops">العمليات <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="ops"><span class="lbl"><i class="fa-solid fa-briefcase"></i> العمليات</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('projects.view')   <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}"><i class="fa-solid fa-diagram-project"></i> المشاريع</a> @endcan
                         @can('clients.view')    <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" href="{{ route('clients.index') }}"><i class="fa-solid fa-users"></i> العملاء</a> @endcan
@@ -241,7 +246,7 @@
                 </div>
 
                 <div class="nav-sec {{ request()->routeIs('daily_site_reports.*','labor_attendances.*','change_orders.*','snags.*','rfis.*','submittals.*','inspection_requests.*','meetings.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="exec">تنفيذ المشاريع والجودة <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="exec"><span class="lbl"><i class="fa-solid fa-helmet-safety"></i> تنفيذ المشاريع والجودة</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('projects.view')   <a class="nav-link {{ request()->routeIs('daily_site_reports.*') ? 'active' : '' }}" href="{{ route('daily_site_reports.index') }}"><i class="fa-solid fa-clipboard-list"></i> يومية الموقع</a> @endcan
                         @can('projects.view')   <a class="nav-link {{ request()->routeIs('labor_attendances.*') ? 'active' : '' }}" href="{{ route('labor_attendances.index') }}"><i class="fa-solid fa-user-clock"></i> حضور العمالة</a> @endcan
@@ -257,7 +262,7 @@
 
             @canany(['tenders.view','quotations.view'])
                 <div class="nav-sec {{ request()->routeIs('tenders.*','quotations.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="tenders">المناقصات والعروض <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="tenders"><span class="lbl"><i class="fa-solid fa-gavel"></i> المناقصات والعروض</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('tenders.view')    <a class="nav-link {{ request()->routeIs('tenders.*') ? 'active' : '' }}" href="{{ route('tenders.index') }}"><i class="fa-solid fa-gavel"></i> المناقصات</a> @endcan
                         @can('quotations.view') <a class="nav-link {{ request()->routeIs('quotations.*') ? 'active' : '' }}" href="{{ route('quotations.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> عروض الأسعار</a> @endcan
@@ -267,7 +272,7 @@
 
             @can('guarantees.view')
                 <div class="nav-sec {{ request()->routeIs('guarantees.*','insurance.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="guar">الضمانات والتأمينات <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="guar"><span class="lbl"><i class="fa-solid fa-shield-halved"></i> الضمانات والتأمينات</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         <a class="nav-link {{ request()->routeIs('guarantees.*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}"><i class="fa-solid fa-shield-halved"></i> خطابات الضمان</a>
                         <a class="nav-link {{ request()->routeIs('insurance.*') ? 'active' : '' }}" href="{{ route('insurance.index') }}"><i class="fa-solid fa-file-shield"></i> وثائق التأمين</a>
@@ -277,7 +282,7 @@
 
             @canany(['contractors.view','suppliers.view','purchase_orders.view'])
                 <div class="nav-sec {{ request()->routeIs('contractors.*','contractor_extracts.*','contractor_payments.*','suppliers.*','purchase_orders.*','supplier_transactions.*','supplier_payments.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="vendors">المقاولون والموردون <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="vendors"><span class="lbl"><i class="fa-solid fa-truck"></i> المقاولون والموردون</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractors.*') ? 'active' : '' }}" href="{{ route('contractors.index') }}"><i class="fa-solid fa-hard-hat"></i> المقاولون</a> @endcan
                         @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractor_extracts.*') ? 'active' : '' }}" href="{{ route('contractor_extracts.index') }}"><i class="fa-solid fa-file-invoice"></i> مستخلصات المقاولين</a> @endcan
@@ -292,7 +297,7 @@
 
             @canany(['expenses.view','revenues.view','invoices.view','bank_accounts.view','taxes.view'])
                 <div class="nav-sec {{ request()->routeIs('expenses.*','expense_categories.*','revenues.*','invoices.*','taxes.*','bank_accounts.*','bank_transfers.*','cheques.*','payment_methods.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="finance">المالية <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="finance"><span class="lbl"><i class="fa-solid fa-money-bill-trend-up"></i> المالية</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}" href="{{ route('expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> المصروفات</a> @endcan
                         @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expense_categories.*') ? 'active' : '' }}" href="{{ route('expense_categories.index') }}"><i class="fa-solid fa-tags"></i> فئات المصروفات</a> @endcan
@@ -309,7 +314,7 @@
 
             @canany(['materials.view','assets.view'])
                 <div class="nav-sec {{ request()->routeIs('materials.*','inventory_movements.*','material_requisitions.*','assets.*','equipment_logs.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="inventory">المخزون والأصول <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="inventory"><span class="lbl"><i class="fa-solid fa-boxes-stacked"></i> المخزون والأصول</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('materials.view')  <a class="nav-link {{ request()->routeIs('materials.*') ? 'active' : '' }}" href="{{ route('materials.index') }}"><i class="fa-solid fa-boxes-stacked"></i> المواد</a> @endcan
                         @can('materials.view')  <a class="nav-link {{ request()->routeIs('inventory_movements.*') ? 'active' : '' }}" href="{{ route('inventory_movements.index') }}"><i class="fa-solid fa-dolly"></i> حركات المخزون</a> @endcan
@@ -322,7 +327,7 @@
 
             @canany(['employees.view','partners.view'])
                 <div class="nav-sec {{ request()->routeIs('employees.*','employee_transactions.*','payroll.*','partners.*','partner_transactions.*','partner_deposits.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="hr">الموارد البشرية والشركاء <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="hr"><span class="lbl"><i class="fa-solid fa-users-gear"></i> الموارد البشرية والشركاء</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('employees.view')  <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" href="{{ route('employees.index') }}"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
                         @can('employees.view')  <a class="nav-link {{ request()->routeIs('employee_transactions.*') ? 'active' : '' }}" href="{{ route('employee_transactions.index') }}"><i class="fa-solid fa-wallet"></i> معاملات الموظفين</a> @endcan
@@ -336,7 +341,7 @@
 
             @can('accounting.view')
                 <div class="nav-sec {{ request()->routeIs('accounts.*','journal_entries.*','accounting.*','fiscal_years.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="accounting">المحاسبة الدفترية <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="accounting"><span class="lbl"><i class="fa-solid fa-book"></i> المحاسبة الدفترية</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         <a class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}"><i class="fa-solid fa-sitemap"></i> دليل الحسابات</a>
                         <a class="nav-link {{ request()->routeIs('journal_entries.*') ? 'active' : '' }}" href="{{ route('journal_entries.index') }}"><i class="fa-solid fa-book-journal-whills"></i> قيود اليومية</a>
@@ -352,7 +357,7 @@
 
             @canany(['reports.view','users.view','settings.view'])
                 <div class="nav-sec {{ request()->routeIs('reports.*','general_ledger.*','analytics.*','cost_centers.*','users.*','roles.*','trash.*','activity_logs.*','login_logs.*','data_port.*','backups.*','settings.*') ? 'open' : '' }}">
-                    <button type="button" class="nav-sec-head" data-sec="system">التقارير والنظام <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <button type="button" class="nav-sec-head" data-sec="system"><span class="lbl"><i class="fa-solid fa-gear"></i> التقارير والنظام</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('reports.view')    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan
                         @can('reports.view')    <a class="nav-link {{ request()->routeIs('general_ledger.*') ? 'active' : '' }}" href="{{ route('general_ledger.index') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a> @endcan
