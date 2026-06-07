@@ -149,7 +149,7 @@
                             <tr>
                                 <td>{{ $t->transaction_date->format('Y-m-d') }}</td>
                                 <td>{{ $t->description }}</td>
-                                <td><span class="badge text-bg-light">{{ \App\Models\BankTransaction::CATEGORIES[$t->category] ?? ($t->category ?: '—') }}</span></td>
+                                <td><span class="badge text-bg-light">{{ $t->category ? (\App\Models\BankTransaction::CATEGORIES[$t->category] ?? $t->category) : '—' }}</span></td>
                                 <td class="text-success">{{ $t->type === 'deposit' ? number_format($t->amount, 2) : '' }}</td>
                                 <td class="text-danger">{{ $t->type === 'withdrawal' ? number_format($t->amount, 2) : '' }}</td>
                                 <td class="fw-semibold">{{ number_format((float) $row['running'], 2) }}</td>

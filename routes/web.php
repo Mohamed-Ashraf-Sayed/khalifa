@@ -333,10 +333,10 @@ Route::middleware('auth')->group(function () {
     Route::post('payroll-runs/{payrollRun}/approve', [PayrollController::class, 'approve'])->name('payroll.approve');
     Route::post('payroll-runs/{payrollRun}/pay', [PayrollController::class, 'pay'])->name('payroll.pay');
     Route::post('payroll-runs/{payrollRun}/items/{item}', [PayrollController::class, 'updateItem'])->name('payroll.update_item');
-    Route::resource('payroll-runs', PayrollController::class)->names('payroll')->parameters(['payroll-runs' => 'payrollRun']);
+    Route::resource('payroll-runs', PayrollController::class)->names('payroll')->parameters(['payroll-runs' => 'payrollRun'])->except(['edit', 'update']);
 
     // ===== المحاسبة الدفترية (قيد مزدوج) =====
-    Route::resource('accounts', AccountController::class);
+    Route::resource('accounts', AccountController::class)->except(['show']);
     Route::post('journal-entries/{journalEntry}/post', [JournalEntryController::class, 'post'])->name('journal_entries.post');
     Route::post('journal-entries/{journalEntry}/unpost', [JournalEntryController::class, 'unpost'])->name('journal_entries.unpost');
     Route::resource('journal-entries', JournalEntryController::class)->names('journal_entries')->parameters(['journal-entries' => 'journalEntry']);
