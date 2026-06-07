@@ -21,42 +21,54 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap align-items-center" method="GET">
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث باسم المادة">
-                    <select name="category" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <a href="{{ route('materials.report') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير المخزون</a>
+                @can('materials.create')
+                    <a href="{{ route('materials.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مادة جديدة</a>
+                @endcan
+            </div>
+            <form class="row g-2 align-items-end mb-3" method="GET">
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small mb-1">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="اسم المادة">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small mb-1">التصنيف</label>
+                    <select name="category" class="form-select" onchange="this.form.submit()">
                         <option value="">كل التصنيفات</option>
                         @foreach (\App\Models\Material::CATEGORIES as $key => $label)
                             <option value="{{ $key }}" @selected($category === $key)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <select name="supplier_id" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small mb-1">المورّد</label>
+                    <select name="supplier_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المورّدين</option>
                         @foreach ($suppliers as $s)
                             <option value="{{ $s->id }}" @selected($supplierId === (string) $s->id)>{{ $s->name }}</option>
                         @endforeach
                     </select>
-                    <select name="project_id" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small mb-1">المشروع</label>
+                    <select name="project_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المشاريع</option>
                         @foreach ($projects as $p)
                             <option value="{{ $p->id }}" @selected($projectId === (string) $p->id)>{{ $p->name }}</option>
                         @endforeach
                     </select>
-                    <div class="form-check ms-1">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="form-check mb-2">
                         <input type="checkbox" class="form-check-input" id="low_stock" name="low_stock" value="1" @checked($lowStock === '1') onchange="this.form.submit()">
                         <label class="form-check-label" for="low_stock">تحت الحد فقط</label>
                     </div>
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('materials.report') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير المخزون</a>
-                    @can('materials.create')
-                        <a href="{{ route('materials.create') }}" class="btn" style="background:#8b7355;color:#fff">
-                            <i class="fa-solid fa-plus ms-1"></i> مادة جديدة
-                        </a>
-                    @endcan
                 </div>
-            </div>
+                <div class="col-lg-1 col-md-6">
+                    <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
