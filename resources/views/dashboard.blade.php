@@ -20,6 +20,17 @@
     a:hover > .mini-stat { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--bg-2); }
     .mini-stat i { font-size: 1.05rem; }
     .mini-stat .n { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; }
+    /* شرائح التنبيهات — واضحة ومريحة: أبيض + حدّ ملوّن خفيف + عدّاد بلون صريح */
+    .alert-chip { display:inline-flex; align-items:center; gap:.5rem; background:#fff; border:1px solid var(--line); border-radius:50rem; padding:.45rem .9rem; font-size:.84rem; font-weight:700; color:var(--ink); box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s, border-color .15s; }
+    .alert-chip:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
+    .alert-chip i { font-size:.92rem; }
+    .alert-chip .c { min-width:21px; height:21px; padding:0 6px; border-radius:50rem; color:#fff; font-size:.73rem; font-weight:800; display:inline-flex; align-items:center; justify-content:center; }
+    .alert-chip.warning   { border-color:#e7d3a8; } .alert-chip.warning i   { color:var(--warning); } .alert-chip.warning .c   { background:var(--warning); }
+    .alert-chip.danger    { border-color:#e8c2bf; } .alert-chip.danger i    { color:var(--danger);  } .alert-chip.danger .c    { background:var(--danger);  }
+    .alert-chip.info      { border-color:#c2d2db; } .alert-chip.info i      { color:var(--info);    } .alert-chip.info .c      { background:var(--info);    }
+    .alert-chip.success   { border-color:#bfdcc9; } .alert-chip.success i   { color:var(--success); } .alert-chip.success .c   { background:var(--success); }
+    .alert-chip.secondary { border-color:var(--line); } .alert-chip.secondary i { color:var(--muted); } .alert-chip.secondary .c { background:var(--muted); }
+    .alert-chip.primary   { border-color:var(--brown-100); } .alert-chip.primary i { color:var(--brown); } .alert-chip.primary .c { background:var(--brown); }
 </style>
 @endpush
 
@@ -49,12 +60,10 @@
     @if (count($alerts))
     <div class="d-flex flex-wrap gap-2 mb-3">
         @foreach ($alerts as $a)
-            <a href="{{ $a['url'] }}" class="text-decoration-none">
-                <span class="badge rounded-pill bg-{{ $a['color'] }} py-2 px-3">
-                    <i class="fa-solid {{ $a['icon'] }} ms-1"></i>
-                    {{ $a['label'] }}
-                    <span class="badge bg-light text-dark ms-1">{{ $a['count'] }}</span>
-                </span>
+            <a href="{{ $a['url'] }}" class="alert-chip {{ $a['color'] }}">
+                <i class="fa-solid {{ $a['icon'] }}"></i>
+                <span>{{ $a['label'] }}</span>
+                <span class="c">{{ $a['count'] }}</span>
             </a>
         @endforeach
     </div>

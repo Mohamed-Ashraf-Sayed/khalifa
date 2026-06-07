@@ -148,6 +148,15 @@
         .badge.text-bg-primary, .badge.bg-primary   { background: var(--brown-50)   !important; color: var(--brown-darker) !important; }
         .badge.text-bg-light,   .badge.bg-light     { background: var(--bg-2)       !important; color: var(--ink-2) !important; }
 
+        /* عدّاد صريح (نص أبيض على لون مكتوم) للتنبيهات/الشارات المهمة */
+        .cpill { color: #fff !important; font-weight: 800; }
+        .cpill.warning { background: var(--warning) !important; }
+        .cpill.danger { background: var(--danger) !important; }
+        .cpill.info { background: var(--info) !important; }
+        .cpill.success { background: var(--success) !important; }
+        .cpill.secondary { background: var(--muted) !important; }
+        .cpill.primary { background: var(--brown) !important; }
+
         /* ===== تهدئة ألوان الأيقونات/الأرقام عالمياً (334 استخدام) ===== */
         .text-success { color: var(--success) !important; }
         .text-danger  { color: var(--danger)  !important; }
@@ -343,7 +352,7 @@
                             <li>
                                 <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ $a['url'] }}">
                                     <span><i class="fa-solid {{ $a['icon'] }} text-{{ $a['color'] }} ms-2"></i> {{ $a['label'] }}</span>
-                                    <span class="badge text-bg-{{ $a['color'] }} rounded-pill">{{ $a['count'] }}</span>
+                                    <span class="badge rounded-pill cpill {{ $a['color'] }}">{{ $a['count'] }}</span>
                                 </a>
                             </li>
                         @empty
