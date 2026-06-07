@@ -64,6 +64,17 @@
         .sidebar .nav-link.active::before { content: ''; position: absolute; inset-inline-start: -4px; top: 22%; bottom: 22%; width: 4px; border-radius: 4px; background: #fff; }
         .sidebar .nav-link i { width: 24px; text-align: center; opacity: .92; }
         .sidebar .nav-section { color: rgba(255,255,255,.42); font-size: .68rem; font-weight: 700; letter-spacing: .6px; padding: 1.1rem 1.5rem .35rem; text-transform: uppercase; }
+        /* أقسام قابلة للطي (accordion) */
+        .nav-sec-head { width: 100%; text-align: start; background: none; border: none; color: rgba(255,255,255,.45);
+            font-size: .68rem; font-weight: 700; letter-spacing: .6px; padding: .85rem 1.5rem .4rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; transition: color .15s; }
+        .nav-sec-head:hover { color: rgba(255,255,255,.85); }
+        .nav-sec-head .chev { font-size: .62rem; opacity: .65; transition: transform .2s; }
+        .nav-sec.open > .nav-sec-head { color: rgba(255,255,255,.7); }
+        .nav-sec.open > .nav-sec-head .chev { transform: rotate(180deg); }
+        .nav-sec-body { display: none; padding-bottom: .25rem; }
+        .nav-sec.open > .nav-sec-body { display: block; animation: navfade .18s ease; }
+        @keyframes navfade { from { opacity: 0; } to { opacity: 1; } }
 
         /* ===== Layout ===== */
         .main { margin-inline-start: 264px; min-height: 100vh; }
@@ -218,103 +229,145 @@
                 <i class="fa-solid fa-gauge-high"></i> لوحة التحكم
             </a>
             @canany(['projects.view','clients.view','contracts.view'])
-                <div class="nav-section">العمليات</div>
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}"><i class="fa-solid fa-diagram-project"></i> المشاريع</a> @endcan
-                @can('clients.view')    <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" href="{{ route('clients.index') }}"><i class="fa-solid fa-users"></i> العملاء</a> @endcan
-                @can('contracts.view')  <a class="nav-link {{ request()->routeIs('contracts.*') ? 'active' : '' }}" href="{{ route('contracts.index') }}"><i class="fa-solid fa-file-contract"></i> عقود المشاريع</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('project_costs.*') ? 'active' : '' }}" href="{{ route('project_costs.index') }}"><i class="fa-solid fa-coins"></i> تكاليف المشاريع</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('project_files.*') ? 'active' : '' }}" href="{{ route('project_files.index') }}"><i class="fa-solid fa-folder-open"></i> ملفات المشاريع</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('daily_site_reports.*') ? 'active' : '' }}" href="{{ route('daily_site_reports.index') }}"><i class="fa-solid fa-clipboard-list"></i> يومية الموقع</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('labor_attendances.*') ? 'active' : '' }}" href="{{ route('labor_attendances.index') }}"><i class="fa-solid fa-user-clock"></i> حضور العمالة</a> @endcan
-                @can('contracts.view')  <a class="nav-link {{ request()->routeIs('change_orders.*') ? 'active' : '' }}" href="{{ route('change_orders.index') }}"><i class="fa-solid fa-file-pen"></i> أوامر التغيير</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('snags.*') ? 'active' : '' }}" href="{{ route('snags.index') }}"><i class="fa-solid fa-clipboard-check"></i> قائمة العيوب</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('rfis.*') ? 'active' : '' }}" href="{{ route('rfis.index') }}"><i class="fa-solid fa-circle-question"></i> طلبات الاستفسار (RFI)</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('submittals.*') ? 'active' : '' }}" href="{{ route('submittals.index') }}"><i class="fa-solid fa-stamp"></i> الاعتمادات الفنية</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('inspection_requests.*') ? 'active' : '' }}" href="{{ route('inspection_requests.index') }}"><i class="fa-solid fa-clipboard-list"></i> طلبات الفحص</a> @endcan
-                @can('projects.view')   <a class="nav-link {{ request()->routeIs('meetings.*') ? 'active' : '' }}" href="{{ route('meetings.index') }}"><i class="fa-solid fa-users-rectangle"></i> محاضر الاجتماعات</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('projects.*','clients.*','contracts.*','project_costs.*','project_files.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="ops">العمليات <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}"><i class="fa-solid fa-diagram-project"></i> المشاريع</a> @endcan
+                        @can('clients.view')    <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" href="{{ route('clients.index') }}"><i class="fa-solid fa-users"></i> العملاء</a> @endcan
+                        @can('contracts.view')  <a class="nav-link {{ request()->routeIs('contracts.*') ? 'active' : '' }}" href="{{ route('contracts.index') }}"><i class="fa-solid fa-file-contract"></i> عقود المشاريع</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('project_costs.*') ? 'active' : '' }}" href="{{ route('project_costs.index') }}"><i class="fa-solid fa-coins"></i> تكاليف المشاريع</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('project_files.*') ? 'active' : '' }}" href="{{ route('project_files.index') }}"><i class="fa-solid fa-folder-open"></i> ملفات المشاريع</a> @endcan
+                    </div>
+                </div>
+
+                <div class="nav-sec {{ request()->routeIs('daily_site_reports.*','labor_attendances.*','change_orders.*','snags.*','rfis.*','submittals.*','inspection_requests.*','meetings.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="exec">تنفيذ المشاريع والجودة <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('daily_site_reports.*') ? 'active' : '' }}" href="{{ route('daily_site_reports.index') }}"><i class="fa-solid fa-clipboard-list"></i> يومية الموقع</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('labor_attendances.*') ? 'active' : '' }}" href="{{ route('labor_attendances.index') }}"><i class="fa-solid fa-user-clock"></i> حضور العمالة</a> @endcan
+                        @can('contracts.view')  <a class="nav-link {{ request()->routeIs('change_orders.*') ? 'active' : '' }}" href="{{ route('change_orders.index') }}"><i class="fa-solid fa-file-pen"></i> أوامر التغيير</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('snags.*') ? 'active' : '' }}" href="{{ route('snags.index') }}"><i class="fa-solid fa-clipboard-check"></i> قائمة العيوب</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('rfis.*') ? 'active' : '' }}" href="{{ route('rfis.index') }}"><i class="fa-solid fa-circle-question"></i> طلبات الاستفسار (RFI)</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('submittals.*') ? 'active' : '' }}" href="{{ route('submittals.index') }}"><i class="fa-solid fa-stamp"></i> الاعتمادات الفنية</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('inspection_requests.*') ? 'active' : '' }}" href="{{ route('inspection_requests.index') }}"><i class="fa-solid fa-clipboard-list"></i> طلبات الفحص</a> @endcan
+                        @can('projects.view')   <a class="nav-link {{ request()->routeIs('meetings.*') ? 'active' : '' }}" href="{{ route('meetings.index') }}"><i class="fa-solid fa-users-rectangle"></i> محاضر الاجتماعات</a> @endcan
+                    </div>
+                </div>
             @endcanany
 
             @canany(['tenders.view','quotations.view'])
-                <div class="nav-section">المناقصات والعروض</div>
-                @can('tenders.view')    <a class="nav-link {{ request()->routeIs('tenders.*') ? 'active' : '' }}" href="{{ route('tenders.index') }}"><i class="fa-solid fa-gavel"></i> المناقصات</a> @endcan
-                @can('quotations.view') <a class="nav-link {{ request()->routeIs('quotations.*') ? 'active' : '' }}" href="{{ route('quotations.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> عروض الأسعار</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('tenders.*','quotations.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="tenders">المناقصات والعروض <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('tenders.view')    <a class="nav-link {{ request()->routeIs('tenders.*') ? 'active' : '' }}" href="{{ route('tenders.index') }}"><i class="fa-solid fa-gavel"></i> المناقصات</a> @endcan
+                        @can('quotations.view') <a class="nav-link {{ request()->routeIs('quotations.*') ? 'active' : '' }}" href="{{ route('quotations.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> عروض الأسعار</a> @endcan
+                    </div>
+                </div>
             @endcanany
 
             @can('guarantees.view')
-                <div class="nav-section">الضمانات والتأمينات</div>
-                <a class="nav-link {{ request()->routeIs('guarantees.*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}"><i class="fa-solid fa-shield-halved"></i> خطابات الضمان</a>
-                <a class="nav-link {{ request()->routeIs('insurance.*') ? 'active' : '' }}" href="{{ route('insurance.index') }}"><i class="fa-solid fa-file-shield"></i> وثائق التأمين</a>
+                <div class="nav-sec {{ request()->routeIs('guarantees.*','insurance.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="guar">الضمانات والتأمينات <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        <a class="nav-link {{ request()->routeIs('guarantees.*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}"><i class="fa-solid fa-shield-halved"></i> خطابات الضمان</a>
+                        <a class="nav-link {{ request()->routeIs('insurance.*') ? 'active' : '' }}" href="{{ route('insurance.index') }}"><i class="fa-solid fa-file-shield"></i> وثائق التأمين</a>
+                    </div>
+                </div>
             @endcan
 
             @canany(['contractors.view','suppliers.view','purchase_orders.view'])
-                <div class="nav-section">المقاولون والموردون</div>
-                @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractors.*') ? 'active' : '' }}" href="{{ route('contractors.index') }}"><i class="fa-solid fa-hard-hat"></i> المقاولون</a> @endcan
-                @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractor_extracts.*') ? 'active' : '' }}" href="{{ route('contractor_extracts.index') }}"><i class="fa-solid fa-file-invoice"></i> مستخلصات المقاولين</a> @endcan
-                @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractor_payments.*') ? 'active' : '' }}" href="{{ route('contractor_payments.index') }}"><i class="fa-solid fa-hand-holding-dollar"></i> دفعات المقاولين</a> @endcan
-                @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}"><i class="fa-solid fa-truck"></i> الموردون</a> @endcan
-                @can('purchase_orders.view')<a class="nav-link {{ request()->routeIs('purchase_orders.*') ? 'active' : '' }}" href="{{ route('purchase_orders.index') }}"><i class="fa-solid fa-cart-shopping"></i> أوامر الشراء</a> @endcan
-                @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('supplier_transactions.*') ? 'active' : '' }}" href="{{ route('supplier_transactions.index') }}"><i class="fa-solid fa-bag-shopping"></i> مشتريات الموردين</a> @endcan
-                @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('supplier_payments.*') ? 'active' : '' }}" href="{{ route('supplier_payments.index') }}"><i class="fa-solid fa-money-check-dollar"></i> مدفوعات الموردين</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('contractors.*','contractor_extracts.*','contractor_payments.*','suppliers.*','purchase_orders.*','supplier_transactions.*','supplier_payments.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="vendors">المقاولون والموردون <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractors.*') ? 'active' : '' }}" href="{{ route('contractors.index') }}"><i class="fa-solid fa-hard-hat"></i> المقاولون</a> @endcan
+                        @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractor_extracts.*') ? 'active' : '' }}" href="{{ route('contractor_extracts.index') }}"><i class="fa-solid fa-file-invoice"></i> مستخلصات المقاولين</a> @endcan
+                        @can('contractors.view')<a class="nav-link {{ request()->routeIs('contractor_payments.*') ? 'active' : '' }}" href="{{ route('contractor_payments.index') }}"><i class="fa-solid fa-hand-holding-dollar"></i> دفعات المقاولين</a> @endcan
+                        @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}"><i class="fa-solid fa-truck"></i> الموردون</a> @endcan
+                        @can('purchase_orders.view')<a class="nav-link {{ request()->routeIs('purchase_orders.*') ? 'active' : '' }}" href="{{ route('purchase_orders.index') }}"><i class="fa-solid fa-cart-shopping"></i> أوامر الشراء</a> @endcan
+                        @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('supplier_transactions.*') ? 'active' : '' }}" href="{{ route('supplier_transactions.index') }}"><i class="fa-solid fa-bag-shopping"></i> مشتريات الموردين</a> @endcan
+                        @can('suppliers.view')  <a class="nav-link {{ request()->routeIs('supplier_payments.*') ? 'active' : '' }}" href="{{ route('supplier_payments.index') }}"><i class="fa-solid fa-money-check-dollar"></i> مدفوعات الموردين</a> @endcan
+                    </div>
+                </div>
             @endcanany
 
             @canany(['expenses.view','revenues.view','invoices.view','bank_accounts.view','taxes.view'])
-                <div class="nav-section">المالية</div>
-                @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}" href="{{ route('expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> المصروفات</a> @endcan
-                @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expense_categories.*') ? 'active' : '' }}" href="{{ route('expense_categories.index') }}"><i class="fa-solid fa-tags"></i> فئات المصروفات</a> @endcan
-                @can('revenues.view')   <a class="nav-link {{ request()->routeIs('revenues.*') ? 'active' : '' }}" href="{{ route('revenues.index') }}"><i class="fa-solid fa-sack-dollar"></i> الإيرادات</a> @endcan
-                @can('invoices.view')   <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" href="{{ route('invoices.index') }}"><i class="fa-solid fa-file-lines"></i> الفواتير</a> @endcan
-                @can('taxes.view')      <a class="nav-link {{ request()->routeIs('taxes.*') ? 'active' : '' }}" href="{{ route('taxes.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> الضرائب</a> @endcan
-                @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_accounts.*') ? 'active' : '' }}" href="{{ route('bank_accounts.index') }}"><i class="fa-solid fa-building-columns"></i> الحسابات البنكية</a> @endcan
-                @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_transfers.*') ? 'active' : '' }}" href="{{ route('bank_transfers.index') }}"><i class="fa-solid fa-right-left"></i> التحويلات البنكية</a> @endcan
-                @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('cheques.*') ? 'active' : '' }}" href="{{ route('cheques.index') }}"><i class="fa-solid fa-money-check"></i> سجل الشيكات</a> @endcan
-                @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('payment_methods.*') ? 'active' : '' }}" href="{{ route('payment_methods.index') }}"><i class="fa-solid fa-credit-card"></i> طرق الدفع</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('expenses.*','expense_categories.*','revenues.*','invoices.*','taxes.*','bank_accounts.*','bank_transfers.*','cheques.*','payment_methods.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="finance">المالية <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}" href="{{ route('expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> المصروفات</a> @endcan
+                        @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expense_categories.*') ? 'active' : '' }}" href="{{ route('expense_categories.index') }}"><i class="fa-solid fa-tags"></i> فئات المصروفات</a> @endcan
+                        @can('revenues.view')   <a class="nav-link {{ request()->routeIs('revenues.*') ? 'active' : '' }}" href="{{ route('revenues.index') }}"><i class="fa-solid fa-sack-dollar"></i> الإيرادات</a> @endcan
+                        @can('invoices.view')   <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" href="{{ route('invoices.index') }}"><i class="fa-solid fa-file-lines"></i> الفواتير</a> @endcan
+                        @can('taxes.view')      <a class="nav-link {{ request()->routeIs('taxes.*') ? 'active' : '' }}" href="{{ route('taxes.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> الضرائب</a> @endcan
+                        @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_accounts.*') ? 'active' : '' }}" href="{{ route('bank_accounts.index') }}"><i class="fa-solid fa-building-columns"></i> الحسابات البنكية</a> @endcan
+                        @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_transfers.*') ? 'active' : '' }}" href="{{ route('bank_transfers.index') }}"><i class="fa-solid fa-right-left"></i> التحويلات البنكية</a> @endcan
+                        @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('cheques.*') ? 'active' : '' }}" href="{{ route('cheques.index') }}"><i class="fa-solid fa-money-check"></i> سجل الشيكات</a> @endcan
+                        @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('payment_methods.*') ? 'active' : '' }}" href="{{ route('payment_methods.index') }}"><i class="fa-solid fa-credit-card"></i> طرق الدفع</a> @endcan
+                    </div>
+                </div>
             @endcanany
 
             @canany(['materials.view','assets.view'])
-                <div class="nav-section">المخزون والأصول</div>
-                @can('materials.view')  <a class="nav-link {{ request()->routeIs('materials.*') ? 'active' : '' }}" href="{{ route('materials.index') }}"><i class="fa-solid fa-boxes-stacked"></i> المواد</a> @endcan
-                @can('materials.view')  <a class="nav-link {{ request()->routeIs('inventory_movements.*') ? 'active' : '' }}" href="{{ route('inventory_movements.index') }}"><i class="fa-solid fa-dolly"></i> حركات المخزون</a> @endcan
-                @can('materials.view')  <a class="nav-link {{ request()->routeIs('material_requisitions.*') ? 'active' : '' }}" href="{{ route('material_requisitions.index') }}"><i class="fa-solid fa-clipboard-check"></i> أذون صرف المواد</a> @endcan
-                @can('assets.view')     <a class="nav-link {{ request()->routeIs('assets.*') ? 'active' : '' }}" href="{{ route('assets.index') }}"><i class="fa-solid fa-warehouse"></i> الأصول الثابتة</a> @endcan
-                @can('assets.view')     <a class="nav-link {{ request()->routeIs('equipment_logs.*') ? 'active' : '' }}" href="{{ route('equipment_logs.index') }}"><i class="fa-solid fa-screwdriver-wrench"></i> سجل المعدات</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('materials.*','inventory_movements.*','material_requisitions.*','assets.*','equipment_logs.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="inventory">المخزون والأصول <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('materials.view')  <a class="nav-link {{ request()->routeIs('materials.*') ? 'active' : '' }}" href="{{ route('materials.index') }}"><i class="fa-solid fa-boxes-stacked"></i> المواد</a> @endcan
+                        @can('materials.view')  <a class="nav-link {{ request()->routeIs('inventory_movements.*') ? 'active' : '' }}" href="{{ route('inventory_movements.index') }}"><i class="fa-solid fa-dolly"></i> حركات المخزون</a> @endcan
+                        @can('materials.view')  <a class="nav-link {{ request()->routeIs('material_requisitions.*') ? 'active' : '' }}" href="{{ route('material_requisitions.index') }}"><i class="fa-solid fa-clipboard-check"></i> أذون صرف المواد</a> @endcan
+                        @can('assets.view')     <a class="nav-link {{ request()->routeIs('assets.*') ? 'active' : '' }}" href="{{ route('assets.index') }}"><i class="fa-solid fa-warehouse"></i> الأصول الثابتة</a> @endcan
+                        @can('assets.view')     <a class="nav-link {{ request()->routeIs('equipment_logs.*') ? 'active' : '' }}" href="{{ route('equipment_logs.index') }}"><i class="fa-solid fa-screwdriver-wrench"></i> سجل المعدات</a> @endcan
+                    </div>
+                </div>
             @endcanany
 
             @canany(['employees.view','partners.view'])
-                <div class="nav-section">الموارد البشرية والشركاء</div>
-                @can('employees.view')  <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" href="{{ route('employees.index') }}"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
-                @can('employees.view')  <a class="nav-link {{ request()->routeIs('employee_transactions.*') ? 'active' : '' }}" href="{{ route('employee_transactions.index') }}"><i class="fa-solid fa-wallet"></i> معاملات الموظفين</a> @endcan
-                @can('employees.view')  <a class="nav-link {{ request()->routeIs('payroll.*') ? 'active' : '' }}" href="{{ route('payroll.index') }}"><i class="fa-solid fa-money-check-dollar"></i> مسيّر الرواتب</a> @endcan
-                @can('partners.view')   <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" href="{{ route('partners.index') }}"><i class="fa-solid fa-handshake"></i> الشركاء</a> @endcan
-                @can('partners.view')   <a class="nav-link {{ request()->routeIs('partner_transactions.*') ? 'active' : '' }}" href="{{ route('partner_transactions.index') }}"><i class="fa-solid fa-coins"></i> حركات الشركاء</a> @endcan
-                @can('partners.view')<a class="nav-link {{ request()->routeIs('partner_deposits.*') ? 'active' : '' }}" href="{{ route('partner_deposits.index') }}"><i class="fa-solid fa-piggy-bank"></i> إيداعات الشركاء</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('employees.*','employee_transactions.*','payroll.*','partners.*','partner_transactions.*','partner_deposits.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="hr">الموارد البشرية والشركاء <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('employees.view')  <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" href="{{ route('employees.index') }}"><i class="fa-solid fa-id-badge"></i> الموظفون</a> @endcan
+                        @can('employees.view')  <a class="nav-link {{ request()->routeIs('employee_transactions.*') ? 'active' : '' }}" href="{{ route('employee_transactions.index') }}"><i class="fa-solid fa-wallet"></i> معاملات الموظفين</a> @endcan
+                        @can('employees.view')  <a class="nav-link {{ request()->routeIs('payroll.*') ? 'active' : '' }}" href="{{ route('payroll.index') }}"><i class="fa-solid fa-money-check-dollar"></i> مسيّر الرواتب</a> @endcan
+                        @can('partners.view')   <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" href="{{ route('partners.index') }}"><i class="fa-solid fa-handshake"></i> الشركاء</a> @endcan
+                        @can('partners.view')   <a class="nav-link {{ request()->routeIs('partner_transactions.*') ? 'active' : '' }}" href="{{ route('partner_transactions.index') }}"><i class="fa-solid fa-coins"></i> حركات الشركاء</a> @endcan
+                        @can('partners.view')<a class="nav-link {{ request()->routeIs('partner_deposits.*') ? 'active' : '' }}" href="{{ route('partner_deposits.index') }}"><i class="fa-solid fa-piggy-bank"></i> إيداعات الشركاء</a> @endcan
+                    </div>
+                </div>
             @endcanany
 
             @can('accounting.view')
-                <div class="nav-section">المحاسبة الدفترية</div>
-                <a class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}"><i class="fa-solid fa-sitemap"></i> دليل الحسابات</a>
-                <a class="nav-link {{ request()->routeIs('journal_entries.*') ? 'active' : '' }}" href="{{ route('journal_entries.index') }}"><i class="fa-solid fa-book-journal-whills"></i> قيود اليومية</a>
-                <a class="nav-link {{ request()->routeIs('accounting.posting') ? 'active' : '' }}" href="{{ route('accounting.posting') }}"><i class="fa-solid fa-wand-magic-sparkles"></i> الترحيل التلقائي</a>
-                <a class="nav-link {{ request()->routeIs('accounting.trial_balance') ? 'active' : '' }}" href="{{ route('accounting.trial_balance') }}"><i class="fa-solid fa-scale-balanced"></i> ميزان المراجعة</a>
-                <a class="nav-link {{ request()->routeIs('accounting.ledger') ? 'active' : '' }}" href="{{ route('accounting.ledger') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a>
-                <a class="nav-link {{ request()->routeIs('accounting.income_statement') ? 'active' : '' }}" href="{{ route('accounting.income_statement') }}"><i class="fa-solid fa-chart-line"></i> قائمة الدخل (محاسبي)</a>
-                <a class="nav-link {{ request()->routeIs('accounting.balance_sheet') ? 'active' : '' }}" href="{{ route('accounting.balance_sheet') }}"><i class="fa-solid fa-building-columns"></i> المركز المالي (محاسبي)</a>
-                <a class="nav-link {{ request()->routeIs('fiscal_years.*') ? 'active' : '' }}" href="{{ route('fiscal_years.index') }}"><i class="fa-solid fa-calendar-check"></i> السنوات والإقفال</a>
+                <div class="nav-sec {{ request()->routeIs('accounts.*','journal_entries.*','accounting.*','fiscal_years.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="accounting">المحاسبة الدفترية <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        <a class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}"><i class="fa-solid fa-sitemap"></i> دليل الحسابات</a>
+                        <a class="nav-link {{ request()->routeIs('journal_entries.*') ? 'active' : '' }}" href="{{ route('journal_entries.index') }}"><i class="fa-solid fa-book-journal-whills"></i> قيود اليومية</a>
+                        <a class="nav-link {{ request()->routeIs('accounting.posting') ? 'active' : '' }}" href="{{ route('accounting.posting') }}"><i class="fa-solid fa-wand-magic-sparkles"></i> الترحيل التلقائي</a>
+                        <a class="nav-link {{ request()->routeIs('accounting.trial_balance') ? 'active' : '' }}" href="{{ route('accounting.trial_balance') }}"><i class="fa-solid fa-scale-balanced"></i> ميزان المراجعة</a>
+                        <a class="nav-link {{ request()->routeIs('accounting.ledger') ? 'active' : '' }}" href="{{ route('accounting.ledger') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a>
+                        <a class="nav-link {{ request()->routeIs('accounting.income_statement') ? 'active' : '' }}" href="{{ route('accounting.income_statement') }}"><i class="fa-solid fa-chart-line"></i> قائمة الدخل (محاسبي)</a>
+                        <a class="nav-link {{ request()->routeIs('accounting.balance_sheet') ? 'active' : '' }}" href="{{ route('accounting.balance_sheet') }}"><i class="fa-solid fa-building-columns"></i> المركز المالي (محاسبي)</a>
+                        <a class="nav-link {{ request()->routeIs('fiscal_years.*') ? 'active' : '' }}" href="{{ route('fiscal_years.index') }}"><i class="fa-solid fa-calendar-check"></i> السنوات والإقفال</a>
+                    </div>
+                </div>
             @endcan
 
             @canany(['reports.view','users.view','settings.view'])
-                <div class="nav-section">التقارير والنظام</div>
-                @can('reports.view')    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan
-                @can('reports.view')    <a class="nav-link {{ request()->routeIs('general_ledger.*') ? 'active' : '' }}" href="{{ route('general_ledger.index') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a> @endcan
-                @can('reports.view')    <a class="nav-link {{ request()->routeIs('analytics.*') ? 'active' : '' }}" href="{{ route('analytics.project_profitability') }}"><i class="fa-solid fa-chart-pie"></i> التحليلات</a> @endcan
-                @can('reports.view')    <a class="nav-link {{ request()->routeIs('cost_centers.*') ? 'active' : '' }}" href="{{ route('cost_centers.index') }}"><i class="fa-solid fa-sitemap"></i> مراكز التكلفة</a> @endcan
-                @can('users.view')      <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}"><i class="fa-solid fa-user-gear"></i> المستخدمون</a> @endcan
-                @can('users.view')      <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}"><i class="fa-solid fa-user-shield"></i> الأدوار والصلاحيات</a> @endcan
-                @can('users.view')      <a class="nav-link {{ request()->routeIs('trash.*') ? 'active' : '' }}" href="{{ route('trash.index') }}"><i class="fa-solid fa-trash-can-arrow-up"></i> سلة المحذوفات</a> @endcan
-                @can('users.view')      <a class="nav-link {{ request()->routeIs('activity_logs.*') ? 'active' : '' }}" href="{{ route('activity_logs.index') }}"><i class="fa-solid fa-clock-rotate-left"></i> سجل النشاطات</a> @endcan
-                @can('users.view')      <a class="nav-link {{ request()->routeIs('login_logs.*') ? 'active' : '' }}" href="{{ route('login_logs.index') }}"><i class="fa-solid fa-right-to-bracket"></i> سجل الدخول</a> @endcan
-                @can('settings.view')   <a class="nav-link {{ request()->routeIs('data_port.*') ? 'active' : '' }}" href="{{ route('data_port.index') }}"><i class="fa-solid fa-file-import"></i> استيراد/تصدير</a> @endcan
-                @can('settings.view')   <a class="nav-link {{ request()->routeIs('backups.*') ? 'active' : '' }}" href="{{ route('backups.index') }}"><i class="fa-solid fa-database"></i> النسخ الاحتياطي</a> @endcan
-                @can('settings.view')   <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.edit') }}"><i class="fa-solid fa-gear"></i> الإعدادات</a> @endcan
+                <div class="nav-sec {{ request()->routeIs('reports.*','general_ledger.*','analytics.*','cost_centers.*','users.*','roles.*','trash.*','activity_logs.*','login_logs.*','data_port.*','backups.*','settings.*') ? 'open' : '' }}">
+                    <button type="button" class="nav-sec-head" data-sec="system">التقارير والنظام <i class="fa-solid fa-chevron-down chev"></i></button>
+                    <div class="nav-sec-body">
+                        @can('reports.view')    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-line"></i> التقارير</a> @endcan
+                        @can('reports.view')    <a class="nav-link {{ request()->routeIs('general_ledger.*') ? 'active' : '' }}" href="{{ route('general_ledger.index') }}"><i class="fa-solid fa-book"></i> دفتر الأستاذ</a> @endcan
+                        @can('reports.view')    <a class="nav-link {{ request()->routeIs('analytics.*') ? 'active' : '' }}" href="{{ route('analytics.project_profitability') }}"><i class="fa-solid fa-chart-pie"></i> التحليلات</a> @endcan
+                        @can('reports.view')    <a class="nav-link {{ request()->routeIs('cost_centers.*') ? 'active' : '' }}" href="{{ route('cost_centers.index') }}"><i class="fa-solid fa-sitemap"></i> مراكز التكلفة</a> @endcan
+                        @can('users.view')      <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}"><i class="fa-solid fa-user-gear"></i> المستخدمون</a> @endcan
+                        @can('users.view')      <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}"><i class="fa-solid fa-user-shield"></i> الأدوار والصلاحيات</a> @endcan
+                        @can('users.view')      <a class="nav-link {{ request()->routeIs('trash.*') ? 'active' : '' }}" href="{{ route('trash.index') }}"><i class="fa-solid fa-trash-can-arrow-up"></i> سلة المحذوفات</a> @endcan
+                        @can('users.view')      <a class="nav-link {{ request()->routeIs('activity_logs.*') ? 'active' : '' }}" href="{{ route('activity_logs.index') }}"><i class="fa-solid fa-clock-rotate-left"></i> سجل النشاطات</a> @endcan
+                        @can('users.view')      <a class="nav-link {{ request()->routeIs('login_logs.*') ? 'active' : '' }}" href="{{ route('login_logs.index') }}"><i class="fa-solid fa-right-to-bracket"></i> سجل الدخول</a> @endcan
+                        @can('settings.view')   <a class="nav-link {{ request()->routeIs('data_port.*') ? 'active' : '' }}" href="{{ route('data_port.index') }}"><i class="fa-solid fa-file-import"></i> استيراد/تصدير</a> @endcan
+                        @can('settings.view')   <a class="nav-link {{ request()->routeIs('backups.*') ? 'active' : '' }}" href="{{ route('backups.index') }}"><i class="fa-solid fa-database"></i> النسخ الاحتياطي</a> @endcan
+                        @can('settings.view')   <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.edit') }}"><i class="fa-solid fa-gear"></i> الإعدادات</a> @endcan
+                    </div>
+                </div>
             @endcanany
         </nav>
     </aside>
@@ -422,6 +475,26 @@
             tg && tg.addEventListener('click', () => sb.classList.toggle('show'));
             bd && bd.addEventListener('click', close);
             document.querySelectorAll('.sidebar .nav-link').forEach(l => l.addEventListener('click', () => { if (window.innerWidth <= 768) close(); }));
+
+            // أقسام القائمة القابلة للطي + حفظ الحالة + التمرير للقسم النشط
+            document.querySelectorAll('.nav-sec').forEach(sec => {
+                const head = sec.querySelector('.nav-sec-head');
+                const key = 'nav.' + (head?.dataset.sec || '');
+                const hasActive = !!sec.querySelector('.nav-link.active');
+                if (!hasActive) {
+                    // القسم غير النشط: يفتح فقط لو المستخدم فتحه سابقاً
+                    if (localStorage.getItem(key) === 'open') sec.classList.add('open');
+                    else sec.classList.remove('open');
+                }
+                head && head.addEventListener('click', () => {
+                    sec.classList.toggle('open');
+                    localStorage.setItem(key, sec.classList.contains('open') ? 'open' : 'closed');
+                });
+            });
+            // تمرير القسم النشط للعرض
+            const activeLink = document.querySelector('.sidebar .nav-link.active');
+            if (activeLink) activeLink.scrollIntoView({ block: 'center' });
+
             // إخفاء تنبيهات النجاح تلقائياً بعد 4 ثوانٍ
             document.querySelectorAll('.alert-success').forEach(a => setTimeout(() => { try { bootstrap.Alert.getOrCreateInstance(a).close(); } catch (e) {} }, 4000));
         })();
