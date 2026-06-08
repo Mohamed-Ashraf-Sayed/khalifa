@@ -166,6 +166,11 @@
         .table-hover > tbody > tr { transition: background .12s; }
         .table-hover > tbody > tr:hover { background: var(--bg); }
         .table > tbody > tr:last-child > td { border-bottom: none; }
+        /* تمييز صفوف الحالات بدرجات مكتومة هادئة (بدل ألوان Bootstrap الصارخة) */
+        .table-warning { --bs-table-bg: var(--warning-bg); --bs-table-color: #8a6322; --bs-table-hover-bg: #f0e6cf; --bs-table-border-color: var(--line-2); }
+        .table-danger  { --bs-table-bg: var(--danger-bg);  --bs-table-color: #8f3f3b; --bs-table-hover-bg: #f0dad8; --bs-table-border-color: var(--line-2); }
+        .table-success { --bs-table-bg: var(--success-bg); --bs-table-color: #356a4f; --bs-table-hover-bg: #dcecdf; --bs-table-border-color: var(--line-2); }
+        .table-info    { --bs-table-bg: var(--info-bg);    --bs-table-color: #3f5d70; --bs-table-hover-bg: #dde7ed; --bs-table-border-color: var(--line-2); }
 
         /* ===== Badges / status (مكتومة وهادئة) ===== */
         .badge { font-weight: 600; border-radius: 50rem; padding: .34em .7em; letter-spacing: 0; }
