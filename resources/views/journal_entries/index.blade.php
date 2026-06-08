@@ -20,25 +20,45 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث برقم القيد أو الوصف">
-                    <select name="status" class="form-select" style="min-width:150px" onchange="this.form.submit()">
-                        <option value="">كل الحالات</option>
-                        @foreach (\App\Models\JournalEntry::STATUSES as $key => $label)
-                            <option value="{{ $key }}" @selected($status === $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    <input type="date" name="from" value="{{ $from }}" class="form-control" title="من تاريخ">
-                    <input type="date" name="to" value="{{ $to }}" class="form-control" title="إلى تاريخ">
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
+            <div class="d-flex justify-content-end gap-2 mb-3">
                 @can('accounting.create')
                     <a href="{{ route('journal_entries.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> قيد جديد
                     </a>
                 @endcan
             </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="رقم القيد أو الوصف">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">كل الحالات</option>
+                        @foreach (\App\Models\JournalEntry::STATUSES as $key => $label)
+                            <option value="{{ $key }}" @selected($status === $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="from" value="{{ $from }}" class="form-control">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="to" value="{{ $to }}" class="form-control">
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

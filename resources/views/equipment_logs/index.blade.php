@@ -18,28 +18,42 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <select name="asset_id" class="form-select" style="min-width:200px" onchange="this.form.submit()">
-                        <option value="">كل المعدات</option>
-                        @foreach ($assets as $a)
-                            <option value="{{ $a->id }}" @selected($assetId == $a->id)>{{ $a->asset_name }}</option>
-                        @endforeach
-                    </select>
-                    <select name="log_type" class="form-select" style="min-width:160px" onchange="this.form.submit()">
-                        <option value="">كل الأنواع</option>
-                        @foreach (\App\Models\EquipmentLog::LOG_TYPES as $key => $label)
-                            <option value="{{ $key }}" @selected($logType === $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
+            <div class="d-flex justify-content-end gap-2 mb-3">
                 @can('assets.edit')
                     <button class="btn" style="background:#2b4c80;color:#fff" type="button" data-bs-toggle="collapse" data-bs-target="#newLogForm">
                         <i class="fa-solid fa-plus ms-1"></i> سجل جديد
                     </button>
                 @endcan
             </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">المعدة</label>
+                    <select name="asset_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">كل المعدات</option>
+                        @foreach ($assets as $a)
+                            <option value="{{ $a->id }}" @selected($assetId == $a->id)>{{ $a->asset_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">النوع</label>
+                    <select name="log_type" class="form-select" onchange="this.form.submit()">
+                        <option value="">كل الأنواع</option>
+                        @foreach (\App\Models\EquipmentLog::LOG_TYPES as $key => $label)
+                            <option value="{{ $key }}" @selected($logType === $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             @can('assets.edit')
                 <div class="collapse mb-3" id="newLogForm">

@@ -20,37 +20,55 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث بعنوان الملاحظة">
-                    <select name="project_id" class="form-select" style="min-width:160px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('projects.create')
+                    <a href="{{ route('snags.create') }}" class="btn" style="background:#2b4c80;color:#fff">
+                        <i class="fa-solid fa-plus ms-1"></i> ملاحظة جديدة
+                    </a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">المشروع</label>
+                    <select name="project_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المشاريع</option>
                         @foreach ($projects as $project)
                             <option value="{{ $project->id }}" @selected((string) $projectId === (string) $project->id)>{{ $project->name }}</option>
                         @endforeach
                     </select>
-                    <select name="status" class="form-select" style="min-width:140px" onchange="this.form.submit()">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الحالات</option>
                         @foreach (\App\Models\Snag::STATUSES as $key => $label)
                             <option value="{{ $key }}" @selected($status === $key)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <select name="priority" class="form-select" style="min-width:140px" onchange="this.form.submit()">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">الأولوية</label>
+                    <select name="priority" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الأولويات</option>
                         @foreach (\App\Models\Snag::PRIORITIES as $key => $label)
                             <option value="{{ $key }}" @selected($priority === $key)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
-                <div class="d-flex gap-2">
-                    @can('projects.create')
-                        <a href="{{ route('snags.create') }}" class="btn" style="background:#2b4c80;color:#fff">
-                            <i class="fa-solid fa-plus ms-1"></i> ملاحظة جديدة
-                        </a>
-                    @endcan
                 </div>
-            </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

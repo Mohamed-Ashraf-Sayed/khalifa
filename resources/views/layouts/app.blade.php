@@ -133,6 +133,12 @@
         .info-list .il .k { color: var(--muted); font-size: .85rem; }
         .info-list .il .v { font-weight: 600; text-align: end; }
 
+        /* ===== Filter bar (موحّد لكل صفحات القوائم) ===== */
+        .filter-bar { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: .7rem .85rem; }
+        .filter-bar .form-label { font-size: .72rem; color: var(--muted); font-weight: 700; margin-bottom: .2rem; }
+        .filter-bar .form-control, .filter-bar .form-select { font-size: .85rem; }
+        .filter-bar .filter-actions { display: flex; gap: .4rem; }
+
         /* ===== Buttons ===== */
         .btn { border-radius: .6rem; font-weight: 600; font-size: .9rem; transition: all .15s ease; }
         .btn:active { transform: translateY(1px); }

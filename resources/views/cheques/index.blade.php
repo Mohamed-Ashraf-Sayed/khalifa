@@ -29,30 +29,50 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex flex-wrap gap-2" method="GET">
-                    <select name="direction" class="form-select" style="min-width:140px" onchange="this.form.submit()">
-                        <option value="">كل الأنواع</option>
-                        @foreach (\App\Models\Cheque::DIRECTIONS as $key => $label)
-                            <option value="{{ $key }}" @selected($direction === $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    <select name="status" class="form-select" style="min-width:160px" onchange="this.form.submit()">
-                        <option value="">كل الحالات</option>
-                        @foreach (\App\Models\Cheque::STATUSES as $key => $label)
-                            <option value="{{ $key }}" @selected($status === $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    <input type="date" name="date_from" value="{{ $dateFrom }}" class="form-control" style="min-width:150px">
-                    <input type="date" name="date_to" value="{{ $dateTo }}" class="form-control" style="min-width:150px">
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
+            <div class="d-flex justify-content-end gap-2 mb-3">
                 @can('bank_accounts.create')
                     <a href="{{ route('cheques.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> شيك جديد
                     </a>
                 @endcan
             </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">النوع</label>
+                    <select name="direction" class="form-select" onchange="this.form.submit()">
+                        <option value="">كل الأنواع</option>
+                        @foreach (\App\Models\Cheque::DIRECTIONS as $key => $label)
+                            <option value="{{ $key }}" @selected($direction === $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">كل الحالات</option>
+                        @foreach (\App\Models\Cheque::STATUSES as $key => $label)
+                            <option value="{{ $key }}" @selected($status === $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="date_from" value="{{ $dateFrom }}" class="form-control">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="date_to" value="{{ $dateTo }}" class="form-control">
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

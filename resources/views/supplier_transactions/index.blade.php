@@ -11,25 +11,40 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2" method="GET">
-                    <select name="supplier_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('suppliers.create')
+                    <a href="{{ route('supplier_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عملية شراء جديدة</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">المورد</label>
+                    <select name="supplier_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الموردين</option>
                         @foreach ($suppliers as $s)
                             <option value="{{ $s->id }}" @selected($supplierId == $s->id)>{{ $s->name }}</option>
                         @endforeach
                     </select>
-                    <select name="category" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الفئة</label>
+                    <select name="category" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الفئات</option>
                         @foreach (\App\Models\SupplierTransaction::CATEGORIES as $k => $label)
                             <option value="{{ $k }}" @selected($category === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
-                </form>
-                @can('suppliers.create')
-                    <a href="{{ route('supplier_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عملية شراء جديدة</a>
-                @endcan
-            </div>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

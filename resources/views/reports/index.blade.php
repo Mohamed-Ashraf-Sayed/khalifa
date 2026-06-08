@@ -109,18 +109,22 @@
     {{-- فلتر الفترة --}}
     <div class="card mb-3">
         <div class="card-body">
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label small">من تاريخ</label>
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">من تاريخ</label>
                     <input type="date" name="from" value="{{ $from }}" class="form-control">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label small">إلى تاريخ</label>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">إلى تاريخ</label>
                     <input type="date" name="to" value="{{ $to }}" class="form-control">
                 </div>
-                <div class="col-md-3">
-                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
-                    <a href="{{ route('reports.index') }}" class="btn btn-light">الكل</a>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
                 </div>
             </form>
         </div>

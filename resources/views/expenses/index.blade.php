@@ -13,13 +13,13 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label small">بحث (البيان / المستلِم)</label>
-                <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="ابحث...">
+        <form method="GET" class="filter-bar row g-2 align-items-end">
+            <div class="col-6 col-md-3">
+                <label class="form-label">بحث (البيان / المستلِم)</label>
+                <input type="text" name="search" value="{{ $search }}" class="form-control">
             </div>
-            <div class="col-md-2">
-                <label class="form-label small">الفئة</label>
+            <div class="col-6 col-md-2">
+                <label class="form-label">الفئة</label>
                 <select name="category" class="form-select">
                     <option value="">كل الفئات</option>
                     @foreach ($categories as $k => $label)
@@ -27,8 +27,8 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2">
-                <label class="form-label small">المشروع</label>
+            <div class="col-6 col-md-3">
+                <label class="form-label">المشروع</label>
                 <select name="project_id" class="form-select">
                     <option value="">كل المشاريع</option>
                     @foreach ($projects as $p)
@@ -36,17 +36,21 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2">
-                <label class="form-label small">من تاريخ</label>
+            <div class="col-6 col-md-2">
+                <label class="form-label">من تاريخ</label>
                 <input type="date" name="from" value="{{ $from }}" class="form-control">
             </div>
-            <div class="col-md-2">
-                <label class="form-label small">إلى تاريخ</label>
+            <div class="col-6 col-md-2">
+                <label class="form-label">إلى تاريخ</label>
                 <input type="date" name="to" value="{{ $to }}" class="form-control">
             </div>
-            <div class="col-md-1 d-flex gap-2">
-                <button class="btn flex-fill" style="background:#2b4c80;color:#fff" title="تصفية"><i class="fa-solid fa-filter"></i></button>
-                <a href="{{ route('expenses.index') }}" class="btn btn-light" title="إعادة"><i class="fa-solid fa-rotate-right"></i></a>
+            <div class="col-12 col-md-auto">
+                <div class="filter-actions">
+                    <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                    @if (request()->query())
+                        <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                    @endif
+                </div>
             </div>
         </form>
     </div></div>

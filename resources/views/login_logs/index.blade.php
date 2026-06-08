@@ -54,34 +54,38 @@
     {{-- نموذج الفلترة --}}
     <div class="card mb-3">
         <div class="card-body">
-            <form method="GET" action="{{ route('login_logs.index') }}" class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label small">البريد الإلكتروني</label>
-                    <input type="text" name="email" value="{{ request('email') }}" class="form-control form-control-sm" dir="ltr">
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="text" name="email" value="{{ request('email') }}" class="form-control" dir="ltr">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small">عنوان IP</label>
-                    <input type="text" name="ip_address" value="{{ request('ip_address') }}" class="form-control form-control-sm" dir="ltr">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">عنوان IP</label>
+                    <input type="text" name="ip_address" value="{{ request('ip_address') }}" class="form-control" dir="ltr">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small">الحالة</label>
-                    <select name="status" class="form-select form-select-sm">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select">
                         <option value="">الكل</option>
                         <option value="success" @selected(request('status') === 'success')>ناجح</option>
                         <option value="fail" @selected(request('status') === 'fail')>فاشل</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small">من تاريخ</label>
-                    <input type="date" name="from" value="{{ request('from') }}" class="form-control form-control-sm">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="from" value="{{ request('from') }}" class="form-control">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small">إلى تاريخ</label>
-                    <input type="date" name="to" value="{{ request('to') }}" class="form-control form-control-sm">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="to" value="{{ request('to') }}" class="form-control">
                 </div>
-                <div class="col-md-1 d-flex gap-1">
-                    <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    <a href="{{ route('login_logs.index') }}" class="btn btn-sm btn-light" title="مسح"><i class="fa-solid fa-rotate-left"></i></a>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
                 </div>
             </form>
         </div>

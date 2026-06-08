@@ -32,26 +32,40 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <select name="partner_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('partners.create')
+                    <a href="{{ route('partner_deposits.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إيداع جديد</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الشريك</label>
+                    <select name="partner_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الشركاء</option>
                         @foreach ($partners as $p)
                             <option value="{{ $p->id }}" @selected($partnerId == $p->id)>{{ $p->name }}</option>
                         @endforeach
                     </select>
-                    <select name="status" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الحالات</option>
                         @foreach (\App\Models\PartnerDeposit::STATUSES as $k => $label)
                             <option value="{{ $k }}" @selected($status === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <a href="{{ route('partner_deposits.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
-                </form>
-                @can('partners.create')
-                    <a href="{{ route('partner_deposits.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إيداع جديد</a>
-                @endcan
-            </div>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

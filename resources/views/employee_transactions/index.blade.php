@@ -22,21 +22,35 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form method="GET" class="d-flex gap-2 flex-wrap">
-                    <select name="type" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('employees.create')
+                    <a href="{{ route('employee_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> معاملة جديدة</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">النوع</label>
+                    <select name="type" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الأنواع</option>
                         @foreach (\App\Models\EmployeeTransaction::TYPES as $k => $label)
                             <option value="{{ $k }}" @selected($type === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" style="min-width:180px" placeholder="بحث بالموظف أو البيان">
-                    <button class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
-                @can('employees.create')
-                    <a href="{{ route('employee_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> معاملة جديدة</a>
-                @endcan
-            </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بالموظف أو البيان">
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

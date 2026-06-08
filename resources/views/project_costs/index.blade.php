@@ -11,25 +11,40 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <select name="project_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <a href="{{ route('project_costs.report', ['project_id' => $projectId]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير التكاليف</a>
+                @can('projects.create')
+                    <a href="{{ route('project_costs.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> تكلفة جديدة</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">المشروع</label>
+                    <select name="project_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المشاريع</option>
                         @foreach ($projects as $p)
                             <option value="{{ $p->id }}" @selected($projectId == $p->id)>{{ $p->name }}</option>
                         @endforeach
                     </select>
-                    <input type="text" name="work_item" value="{{ $workItem }}" class="form-control" style="min-width:160px" placeholder="بند الأعمال">
-                    <input type="text" name="contractor_supplier" value="{{ $contractorSupplier }}" class="form-control" style="min-width:160px" placeholder="الجهة">
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('project_costs.report', ['project_id' => $projectId]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير التكاليف</a>
-                    @can('projects.create')
-                        <a href="{{ route('project_costs.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> تكلفة جديدة</a>
-                    @endcan
                 </div>
-            </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بند الأعمال</label>
+                    <input type="text" name="work_item" value="{{ $workItem }}" class="form-control">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الجهة</label>
+                    <input type="text" name="contractor_supplier" value="{{ $contractorSupplier }}" class="form-control">
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

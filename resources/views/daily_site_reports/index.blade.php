@@ -5,24 +5,41 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <select name="project_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
-                        <option value="">كل المشاريع</option>
-                        @foreach ($projects as $project)
-                            <option value="{{ $project->id }}" @selected((string) $projectId === (string) $project->id)>{{ $project->name }}</option>
-                        @endforeach
-                    </select>
-                    <input type="date" name="from" value="{{ $from }}" class="form-control" style="min-width:150px" title="من تاريخ">
-                    <input type="date" name="to" value="{{ $to }}" class="form-control" style="min-width:150px" title="إلى تاريخ">
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
+            <div class="d-flex justify-content-end gap-2 mb-3">
                 @can('projects.create')
                     <a href="{{ route('daily_site_reports.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> يومية جديدة
                     </a>
                 @endcan
             </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">المشروع</label>
+                    <select name="project_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">كل المشاريع</option>
+                        @foreach ($projects as $project)
+                            <option value="{{ $project->id }}" @selected((string) $projectId === (string) $project->id)>{{ $project->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="from" value="{{ $from }}" class="form-control">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="to" value="{{ $to }}" class="form-control">
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

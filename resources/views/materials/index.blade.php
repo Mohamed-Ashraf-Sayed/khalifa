@@ -27,13 +27,13 @@
                     <a href="{{ route('materials.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مادة جديدة</a>
                 @endcan
             </div>
-            <form class="row g-2 align-items-end mb-3" method="GET">
-                <div class="col-lg-3 col-md-6">
-                    <label class="form-label small mb-1">بحث</label>
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="اسم المادة">
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control">
                 </div>
-                <div class="col-lg-2 col-md-6">
-                    <label class="form-label small mb-1">التصنيف</label>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">الفئة</label>
                     <select name="category" class="form-select" onchange="this.form.submit()">
                         <option value="">كل التصنيفات</option>
                         @foreach (\App\Models\Material::CATEGORIES as $key => $label)
@@ -41,8 +41,8 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-6">
-                    <label class="form-label small mb-1">المورّد</label>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">المورد</label>
                     <select name="supplier_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المورّدين</option>
                         @foreach ($suppliers as $s)
@@ -50,8 +50,8 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-6">
-                    <label class="form-label small mb-1">المشروع</label>
+                <div class="col-6 col-md-2">
+                    <label class="form-label">المشروع</label>
                     <select name="project_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المشاريع</option>
                         @foreach ($projects as $p)
@@ -59,14 +59,20 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-6">
-                    <div class="form-check mb-2">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">تحت الحد فقط</label>
+                    <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="low_stock" name="low_stock" value="1" @checked($lowStock === '1') onchange="this.form.submit()">
-                        <label class="form-check-label" for="low_stock">تحت الحد فقط</label>
+                        <label class="form-check-label" for="low_stock">عرض الأصناف تحت الحد</label>
                     </div>
                 </div>
-                <div class="col-lg-1 col-md-6">
-                    <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
                 </div>
             </form>
 

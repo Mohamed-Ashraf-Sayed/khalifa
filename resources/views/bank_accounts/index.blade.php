@@ -14,22 +14,26 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label small">بحث (الاسم / البنك / رقم الحساب)</label>
-                    <input type="text" name="search" value="{{ $filters['search'] }}" class="form-control" placeholder="اكتب للبحث...">
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $filters['search'] }}" class="form-control">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label small">الحالة</label>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الحالة</label>
                     <select name="status" class="form-select">
                         <option value="" @selected($filters['status'] === '')>الكل</option>
                         <option value="active" @selected($filters['status'] === 'active')>نشط</option>
                         <option value="inactive" @selected($filters['status'] === 'inactive')>معطّل</option>
                     </select>
                 </div>
-                <div class="col-md-5 d-flex gap-2">
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
-                    <a href="{{ route('bank_accounts.index') }}" class="btn btn-light">إعادة ضبط</a>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
                 </div>
             </form>
         </div>

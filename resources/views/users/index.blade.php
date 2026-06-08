@@ -7,27 +7,43 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2 flex-wrap" method="GET">
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" style="min-width:180px" placeholder="بحث بالاسم أو البريد">
-                    <select name="role" class="form-select" style="min-width:150px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('users.create')
+                    <a href="{{ route('users.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مستخدم جديد</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الدور</label>
+                    <select name="role" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الأدوار</option>
                         @foreach ($roles as $r)
                             <option value="{{ $r }}" @selected($role === $r)>{{ $roleLabels[$r] ?? $r }}</option>
                         @endforeach
                     </select>
-                    <select name="is_active" class="form-select" style="min-width:140px" onchange="this.form.submit()">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الحالة</label>
+                    <select name="is_active" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الحالات</option>
                         <option value="1" @selected($isActive === '1')>نشط</option>
                         <option value="0" @selected($isActive === '0')>معطّل</option>
                     </select>
-                    <button type="submit" class="btn btn-outline-secondary" title="بحث"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
-                </form>
-                @can('users.create')
-                    <a href="{{ route('users.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مستخدم جديد</a>
-                @endcan
-            </div>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

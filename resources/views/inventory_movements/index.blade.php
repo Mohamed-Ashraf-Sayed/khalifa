@@ -26,25 +26,40 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form method="GET" class="d-flex gap-2 flex-wrap">
-                    <select name="type" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('materials.edit')
+                    <a href="{{ route('inventory_movements.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> حركة جديدة</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">النوع</label>
+                    <select name="type" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الحركات</option>
                         @foreach (\App\Models\InventoryMovement::TYPES as $k => $label)
                             <option value="{{ $k }}" @selected($type === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <select name="material_id" class="form-select" style="min-width:200px" onchange="this.form.submit()">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">المادة</label>
+                    <select name="material_id" class="form-select" onchange="this.form.submit()">
                         <option value="">كل المواد</option>
                         @foreach ($materials as $mat)
                             <option value="{{ $mat->id }}" @selected($materialId === (string) $mat->id)>{{ $mat->name }}</option>
                         @endforeach
                     </select>
-                </form>
-                @can('materials.edit')
-                    <a href="{{ route('inventory_movements.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> حركة جديدة</a>
-                @endcan
-            </div>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">

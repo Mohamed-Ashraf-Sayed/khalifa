@@ -19,21 +19,35 @@
 
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2" method="GET">
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث برقم العرض">
-                    <select name="status" class="form-select" style="min-width:160px" onchange="this.form.submit()">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                @can('quotations.create')
+                    <a href="{{ route('quotations.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عرض سعر جديد</a>
+                @endcan
+            </div>
+
+            <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label">بحث</label>
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="رقم العرض">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">كل الحالات</option>
                         @foreach (\App\Models\Quotation::STATUSES as $k => $label)
                             <option value="{{ $k }}" @selected($status === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </form>
-                @can('quotations.create')
-                    <a href="{{ route('quotations.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عرض سعر جديد</a>
-                @endcan
-            </div>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div class="filter-actions">
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                        @if (request()->query())
+                            <a href="{{ url()->current() }}" class="btn btn-light">مسح</a>
+                        @endif
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
