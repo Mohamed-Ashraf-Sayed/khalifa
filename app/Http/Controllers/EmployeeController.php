@@ -41,7 +41,18 @@ class EmployeeController extends Controller implements HasMiddleware
             ->paginate(15)
             ->withQueryString();
 
-        return view('employees.index', compact('employees', 'search'));
+        $stats = [
+            'count' => Employee::count(),
+            'active' => Employee::where('is_active', true)->count(),
+            'salaries' => (string) Employee::where('is_active', true)->sum('salary'),
+            'advances' => bcsub(
+                (string) EmployeeTransaction::where('type', 'advance')->sum('amount'),
+                (string) EmployeeTransaction::where('type', 'advance_return')->sum('amount'),
+                2
+            ),
+        ];
+
+        return view('employees.index', compact('employees', 'search', 'stats'));
     }
 
     public function show(Employee $employee): View

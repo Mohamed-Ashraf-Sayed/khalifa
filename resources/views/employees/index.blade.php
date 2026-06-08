@@ -3,6 +3,23 @@
 @section('title', 'الموظفون')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['عدد الموظفين', number_format($stats['count']), 'fa-id-badge', 'text-primary'],
+            ['الموظفون النشطون', number_format($stats['active']), 'fa-user-check', 'text-success'],
+            ['إجمالي الرواتب الشهرية', number_format((float) $stats['salaries'], 2).' ج', 'fa-money-check-dollar', 'text-info'],
+            ['السلف المستحقة', number_format((float) $stats['advances'], 2).' ج', 'fa-hand-holding-dollar', 'text-warning'],
+        ] as [$label, $val, $icon, $color])
+            <div class="col-md-3 col-6">
+                <div class="card h-100"><div class="card-body py-3">
+                    <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+                    <div class="fs-4 fw-bold">{{ $val }}</div>
+                    <div class="small text-muted">{{ $label }}</div>
+                </div></div>
+            </div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
