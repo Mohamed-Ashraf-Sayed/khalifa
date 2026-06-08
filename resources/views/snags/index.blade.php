@@ -92,7 +92,7 @@
                                     @can('projects.edit')
                                         @if ($snag->status !== 'closed')
                                             <form method="POST" action="{{ route('snags.close', $snag) }}" class="d-inline"
-                                                  onsubmit="return confirm('تأكيد إغلاق الملاحظة؟')">
+                                                  data-confirm="تأكيد إغلاق الملاحظة؟">
                                                 @csrf
                                                 <button class="btn btn-sm btn-outline-success" title="إغلاق"><i class="fa-solid fa-circle-check"></i></button>
                                             </form>
@@ -101,7 +101,7 @@
                                     @endcan
                                     @can('projects.delete')
                                         <form method="POST" action="{{ route('snags.destroy', $snag) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف الملاحظة؟')">
+                                              data-confirm="متأكد من حذف الملاحظة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

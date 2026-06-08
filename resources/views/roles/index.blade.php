@@ -38,7 +38,7 @@
                                     @endcan
                                     @can('users.delete')
                                         @if ($role->name !== 'admin')
-                                            <form method="POST" action="{{ route('roles.destroy', $role) }}" class="d-inline" onsubmit="return confirm('حذف الدور؟')">
+                                            <form method="POST" action="{{ route('roles.destroy', $role) }}" class="d-inline" data-confirm="حذف الدور؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

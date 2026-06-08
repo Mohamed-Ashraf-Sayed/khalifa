@@ -58,7 +58,7 @@
 
                     @if (in_array($cheque->status, ['pending', 'deposited'], true))
                         <form method="POST" action="{{ route('cheques.cleared', $cheque) }}" class="d-inline"
-                              onsubmit="return confirm('تأكيد تحصيل الشيك؟ سيتم تسجيل قيد بنكي إن وُجد حساب.')">
+                              data-confirm="تأكيد تحصيل الشيك؟ سيتم تسجيل قيد بنكي إن وُجد حساب.">
                             @csrf
                             <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-circle-check ms-1"></i> تحصيل</button>
                         </form>
@@ -66,7 +66,7 @@
 
                     @if (in_array($cheque->status, ['pending', 'deposited', 'cleared'], true))
                         <form method="POST" action="{{ route('cheques.bounced', $cheque) }}" class="d-inline"
-                              onsubmit="return confirm('تأكيد ارتداد الشيك؟ سيتم حذف القيد البنكي المرتبط إن وُجد.')">
+                              data-confirm="تأكيد ارتداد الشيك؟ سيتم حذف القيد البنكي المرتبط إن وُجد.">
                             @csrf
                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-circle-xmark ms-1"></i> ارتداد</button>
                         </form>

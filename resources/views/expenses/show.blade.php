@@ -129,7 +129,7 @@
                                     <td>{{ $payment->notes ?? '—' }}</td>
                                     <td class="text-end">
                                         @can('expenses.edit')
-                                            <form method="POST" action="{{ route('expense_payments.destroy', $payment) }}" class="d-inline" onsubmit="return confirm('حذف القسط؟')">
+                                            <form method="POST" action="{{ route('expense_payments.destroy', $payment) }}" class="d-inline" data-confirm="حذف القسط؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

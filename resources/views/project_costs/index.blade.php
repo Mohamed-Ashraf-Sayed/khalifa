@@ -52,7 +52,7 @@
                                         <a href="{{ route('project_costs.edit', $c) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('projects.delete')
-                                        <form method="POST" action="{{ route('project_costs.destroy', $c) }}" class="d-inline" onsubmit="return confirm('حذف التكلفة؟')">
+                                        <form method="POST" action="{{ route('project_costs.destroy', $c) }}" class="d-inline" data-confirm="حذف التكلفة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

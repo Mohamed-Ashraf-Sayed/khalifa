@@ -11,13 +11,13 @@
         <div class="d-flex gap-2">
             @can('purchase_orders.edit')
                 @if (in_array($purchaseOrder->status, ['draft', 'pending']))
-                    <form method="POST" action="{{ route('purchase_orders.approve', $purchaseOrder) }}" class="d-inline" onsubmit="return confirm('اعتماد أمر الشراء؟')">
+                    <form method="POST" action="{{ route('purchase_orders.approve', $purchaseOrder) }}" class="d-inline" data-confirm="اعتماد أمر الشراء؟">
                         @csrf
                         <button class="btn btn-sm btn-success"><i class="fa-solid fa-check ms-1"></i> اعتماد</button>
                     </form>
                 @endif
                 @if (! in_array($purchaseOrder->status, ['received', 'cancelled']))
-                    <form method="POST" action="{{ route('purchase_orders.receive', $purchaseOrder) }}" class="d-inline" onsubmit="return confirm('تأكيد استلام الأصناف{{ $purchaseOrder->add_to_inventory ? ' وإضافتها للمخزون' : '' }}؟')">
+                    <form method="POST" action="{{ route('purchase_orders.receive', $purchaseOrder) }}" class="d-inline" data-confirm="تأكيد استلام الأصناف{{ $purchaseOrder->add_to_inventory ? ' وإضافتها للمخزون' : '' }}؟">
                         @csrf
                         <button class="btn btn-sm" style="background:#0f7a4f;color:#fff"><i class="fa-solid fa-truck-ramp-box ms-1"></i> استلام</button>
                     </form>
@@ -87,7 +87,7 @@
                                 <td class="fw-semibold">{{ number_format($item->total_price, 2) }}</td>
                                 <td class="text-end">
                                     @can('purchase_orders.edit')
-                                        <form method="POST" action="{{ route('purchase_order_items.destroy', $item) }}" class="d-inline" onsubmit="return confirm('حذف الصنف؟')">
+                                        <form method="POST" action="{{ route('purchase_order_items.destroy', $item) }}" class="d-inline" data-confirm="حذف الصنف؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

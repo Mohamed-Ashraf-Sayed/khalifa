@@ -43,7 +43,7 @@
                                 <td>{{ $t->description ?: '—' }}</td>
                                 <td class="text-end">
                                     @can('bank_accounts.edit')
-                                        <form method="POST" action="{{ route('bank_transfers.destroy', $t) }}" class="d-inline" onsubmit="return confirm('التراجع عن التحويل؟')">
+                                        <form method="POST" action="{{ route('bank_transfers.destroy', $t) }}" class="d-inline" data-confirm="التراجع عن التحويل؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-rotate-left"></i></button>
                                         </form>

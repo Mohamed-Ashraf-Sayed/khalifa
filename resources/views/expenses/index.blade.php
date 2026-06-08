@@ -29,7 +29,7 @@
             </div>
 
             @can('expenses.delete')
-                <form id="bulk-form" method="POST" action="{{ route('expenses.bulk_destroy') }}" onsubmit="return confirm('حذف المصروفات المحددة؟')">
+                <form id="bulk-form" method="POST" action="{{ route('expenses.bulk_destroy') }}" data-confirm="حذف المصروفات المحددة؟">
                     @csrf
                     <div id="bulk-toolbar" class="d-none mb-3">
                         <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash ms-1"></i> حذف المحدد (<span id="bulk-count">0</span>)</button>
@@ -80,7 +80,7 @@
                                         <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('expenses.delete')
-                                        <form method="POST" action="{{ route('expenses.destroy', $expense) }}" class="d-inline" onsubmit="return confirm('حذف المصروف؟')">
+                                        <form method="POST" action="{{ route('expenses.destroy', $expense) }}" class="d-inline" data-confirm="حذف المصروف؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

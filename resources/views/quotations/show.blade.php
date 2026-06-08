@@ -56,7 +56,7 @@
                                 <td class="fw-semibold">{{ number_format($item->total_price, 2) }}</td>
                                 <td class="text-end">
                                     @can('quotations.edit')
-                                        <form method="POST" action="{{ route('quotation_items.destroy', $item) }}" class="d-inline" onsubmit="return confirm('حذف البند؟')">
+                                        <form method="POST" action="{{ route('quotation_items.destroy', $item) }}" class="d-inline" data-confirm="حذف البند؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>
@@ -76,7 +76,7 @@
                 <a href="{{ route('invoices.show', $quotation->converted_invoice_id) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-file-invoice ms-1"></i> الفاتورة المرتبطة</a>
             @elseif($quotation->status === 'accepted')
                 @can('quotations.edit')
-                    <form method="POST" action="{{ route('quotations.convert', $quotation) }}" class="d-inline" onsubmit="return confirm('تحويل عرض السعر إلى فاتورة؟')">
+                    <form method="POST" action="{{ route('quotations.convert', $quotation) }}" class="d-inline" data-confirm="تحويل عرض السعر إلى فاتورة؟">
                         @csrf
                         <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> تحويل إلى فاتورة</button>
                     </form>

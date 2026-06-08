@@ -82,7 +82,7 @@
         @if (! in_array($asset->status, ['sold', 'disposed']))
             <div class="card"><div class="card-body">
                 <h6 class="mb-3"><i class="fa-solid fa-box-archive ms-1" style="color:#8b7355"></i> استبعاد / بيع الأصل</h6>
-                <form method="POST" action="{{ route('assets.dispose', $asset) }}" class="row g-2 align-items-end" onsubmit="return confirm('تأكيد استبعاد/بيع الأصل؟')">
+                <form method="POST" action="{{ route('assets.dispose', $asset) }}" class="row g-2 align-items-end" data-confirm="تأكيد استبعاد/بيع الأصل؟">
                     @csrf
                     <div class="col-md-3"><label class="form-label small">النوع</label>
                         <select name="status" class="form-select"><option value="sold">بيع</option><option value="disposed">استبعاد</option></select>
@@ -114,7 +114,7 @@
                             <td class="text-muted small">{{ $log->description ?: '—' }}</td>
                             <td class="text-end">
                                 @can('assets.edit')
-                                    <form method="POST" action="{{ route('equipment_logs.destroy', $log) }}" class="d-inline" onsubmit="return confirm('متأكد من حذف السجل؟')">
+                                    <form method="POST" action="{{ route('equipment_logs.destroy', $log) }}" class="d-inline" data-confirm="متأكد من حذف السجل؟">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                     </form>

@@ -21,7 +21,7 @@
         @endcan
         @can('accounting.delete')
             <form method="POST" action="{{ route('accounts.destroy', $account) }}" class="d-inline"
-                  onsubmit="return confirm('متأكد من حذف الحساب؟')">
+                  data-confirm="متأكد من حذف الحساب؟">
                 @csrf @method('DELETE')
                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
             </form>

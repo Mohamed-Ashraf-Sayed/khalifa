@@ -90,7 +90,7 @@
                                     @endcan
                                     @can('projects.delete')
                                         <form method="POST" action="{{ route('inspection_requests.destroy', $inspectionRequest) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف طلب الفحص؟')">
+                                              data-confirm="متأكد من حذف طلب الفحص؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

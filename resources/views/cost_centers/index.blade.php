@@ -50,7 +50,7 @@
                                     @can('settings.edit')
                                         <a href="{{ route('cost_centers.edit', $center) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                         <form method="POST" action="{{ route('cost_centers.destroy', $center) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف مركز التكلفة؟')">
+                                              data-confirm="متأكد من حذف مركز التكلفة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

@@ -27,7 +27,7 @@
                                 <a href="{{ route('fiscal_years.show', $fy) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
                                 @can('accounting.delete')
                                     @if ($fy->status === 'open')
-                                        <form method="POST" action="{{ route('fiscal_years.destroy', $fy) }}" class="d-inline" onsubmit="return confirm('حذف السنة المالية؟')">
+                                        <form method="POST" action="{{ route('fiscal_years.destroy', $fy) }}" class="d-inline" data-confirm="حذف السنة المالية؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

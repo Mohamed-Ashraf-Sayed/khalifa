@@ -53,7 +53,7 @@
                                 <td class="text-end">
                                     <a href="{{ route('project_files.download', $f) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-download"></i></a>
                                     @can('projects.edit')
-                                        <form method="POST" action="{{ route('project_files.destroy', $f) }}" class="d-inline" onsubmit="return confirm('حذف الملف؟')">
+                                        <form method="POST" action="{{ route('project_files.destroy', $f) }}" class="d-inline" data-confirm="حذف الملف؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

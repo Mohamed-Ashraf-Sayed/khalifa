@@ -58,7 +58,7 @@
                                     @can('employees.delete')
                                         @if ($run->status === 'draft')
                                             <form method="POST" action="{{ route('payroll.destroy', $run) }}" class="d-inline"
-                                                  onsubmit="return confirm('متأكد من حذف المسيّر؟')">
+                                                  data-confirm="متأكد من حذف المسيّر؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

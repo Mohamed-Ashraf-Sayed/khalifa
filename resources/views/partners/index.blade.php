@@ -49,7 +49,7 @@
                                     @endcan
                                     @can('partners.delete')
                                         <form method="POST" action="{{ route('partners.destroy', $partner) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف الشريك؟')">
+                                              data-confirm="متأكد من حذف الشريك؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

@@ -48,7 +48,7 @@
                                         <a href="{{ route('bank_accounts.edit', $account) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('bank_accounts.delete')
-                                        <form method="POST" action="{{ route('bank_accounts.destroy', $account) }}" class="d-inline" onsubmit="return confirm('متأكد من حذف الحساب؟')">
+                                        <form method="POST" action="{{ route('bank_accounts.destroy', $account) }}" class="d-inline" data-confirm="متأكد من حذف الحساب؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

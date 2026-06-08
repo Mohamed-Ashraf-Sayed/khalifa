@@ -71,7 +71,7 @@
                                     @endcan
                                     @can('materials.delete')
                                         <form method="POST" action="{{ route('material_requisitions.destroy', $requisition) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف إذن الصرف؟')">
+                                              data-confirm="متأكد من حذف إذن الصرف؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

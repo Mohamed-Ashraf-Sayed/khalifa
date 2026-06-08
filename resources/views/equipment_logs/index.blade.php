@@ -64,7 +64,7 @@
                                 <td class="text-end">
                                     @can('assets.edit')
                                         <form method="POST" action="{{ route('equipment_logs.destroy', $log) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف السجل؟')">
+                                              data-confirm="متأكد من حذف السجل؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

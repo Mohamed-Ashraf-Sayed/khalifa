@@ -8,7 +8,7 @@
         <div class="d-flex gap-2">
             @if ($deposit->status === 'active')
                 @can('partners.create')
-                    <form method="POST" action="{{ route('partner_deposits.settle', $deposit) }}" class="d-inline d-flex gap-2 align-items-center" onsubmit="return confirm('تسوية الإيداع وإرجاع رأس المال؟')">
+                    <form method="POST" action="{{ route('partner_deposits.settle', $deposit) }}" class="d-inline d-flex gap-2 align-items-center" data-confirm="تسوية الإيداع وإرجاع رأس المال؟">
                         @csrf
                         <select name="bank_account_id" class="form-select form-select-sm" style="max-width:200px">
                             <option value="">— بدون حساب —</option>
@@ -73,7 +73,7 @@
                                 <td class="text-end">
                                     @if (! $schedule->is_paid)
                                         @can('partners.create')
-                                            <form method="POST" action="{{ route('partner_deposits.pay_profit', [$deposit, $schedule]) }}" class="d-inline-flex gap-2 align-items-center" onsubmit="return confirm('صرف هذه الدفعة؟')">
+                                            <form method="POST" action="{{ route('partner_deposits.pay_profit', [$deposit, $schedule]) }}" class="d-inline-flex gap-2 align-items-center" data-confirm="صرف هذه الدفعة؟">
                                                 @csrf
                                                 <select name="bank_account_id" class="form-select form-select-sm" style="max-width:170px">
                                                     <option value="">— بدون حساب —</option>

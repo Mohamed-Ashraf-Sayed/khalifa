@@ -71,7 +71,7 @@
                                     @endcan
                                     @can('projects.delete')
                                         <form method="POST" action="{{ route('meetings.destroy', $meeting) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف محضر الاجتماع؟')">
+                                              data-confirm="متأكد من حذف محضر الاجتماع؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

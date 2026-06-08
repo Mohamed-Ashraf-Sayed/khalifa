@@ -50,7 +50,7 @@
                                 <td>{{ $m->reason ?: '—' }}</td>
                                 <td class="text-end">
                                     @can('materials.edit')
-                                        <form method="POST" action="{{ route('inventory_movements.destroy', $m) }}" class="d-inline" onsubmit="return confirm('حذف الحركة وعكس أثرها؟')">
+                                        <form method="POST" action="{{ route('inventory_movements.destroy', $m) }}" class="d-inline" data-confirm="حذف الحركة وعكس أثرها؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

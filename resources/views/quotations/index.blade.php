@@ -58,7 +58,7 @@
                                         <a href="{{ route('quotations.edit', $quotation) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('quotations.delete')
-                                        <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" class="d-inline" onsubmit="return confirm('حذف عرض السعر؟')">
+                                        <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" class="d-inline" data-confirm="حذف عرض السعر؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

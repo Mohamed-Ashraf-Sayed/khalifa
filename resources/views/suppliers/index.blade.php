@@ -18,7 +18,7 @@
             </div>
 
             @can('suppliers.delete')
-                <form id="bulk-form" method="POST" action="{{ route('suppliers.bulk_destroy') }}" onsubmit="return confirm('حذف الموردين المحددين؟')">
+                <form id="bulk-form" method="POST" action="{{ route('suppliers.bulk_destroy') }}" data-confirm="حذف الموردين المحددين؟">
                     @csrf
                     <div id="bulk-toolbar" class="d-none mb-3">
                         <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash ms-1"></i> حذف المحدد (<span id="bulk-count">0</span>)</button>
@@ -64,7 +64,7 @@
                                     @endcan
                                     @can('suppliers.delete')
                                         <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف المورد؟')">
+                                              data-confirm="متأكد من حذف المورد؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

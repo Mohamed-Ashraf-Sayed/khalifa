@@ -80,7 +80,7 @@
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <span class="text-truncate small" style="max-width:70%" title="{{ $att->original_name }}">{{ $att->original_name }}</span>
                             @can('contracts.edit')
-                                <form method="POST" action="{{ route('attachments.destroy', $att) }}" onsubmit="return confirm('حذف الملف؟')">
+                                <form method="POST" action="{{ route('attachments.destroy', $att) }}" data-confirm="حذف الملف؟">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm p-0 text-danger border-0 bg-transparent"><i class="fa-solid fa-trash"></i></button>
                                 </form>

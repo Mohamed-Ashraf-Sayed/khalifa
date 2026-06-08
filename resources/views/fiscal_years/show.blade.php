@@ -11,12 +11,12 @@
         <div class="d-flex gap-2">
             @can('accounting.edit')
                 @if ($fy->status === 'open')
-                    <form method="POST" action="{{ route('fiscal_years.close', $fy) }}" onsubmit="return confirm('إقفال السنة سيولّد قيد إقفال (تصفير الإيرادات/المصروفات للأرباح المرحّلة) ويقفل كل الفترات. متابعة؟')">
+                    <form method="POST" action="{{ route('fiscal_years.close', $fy) }}" data-confirm="إقفال السنة سيولّد قيد إقفال (تصفير الإيرادات/المصروفات للأرباح المرحّلة) ويقفل كل الفترات. متابعة؟">
                         @csrf
                         <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-lock ms-1"></i> إقفال السنة</button>
                     </form>
                 @else
-                    <form method="POST" action="{{ route('fiscal_years.reopen', $fy) }}" onsubmit="return confirm('إعادة الفتح ستحذف قيد الإقفال وتفتح كل الفترات. متابعة؟')">
+                    <form method="POST" action="{{ route('fiscal_years.reopen', $fy) }}" data-confirm="إعادة الفتح ستحذف قيد الإقفال وتفتح كل الفترات. متابعة؟">
                         @csrf
                         <button class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-lock-open ms-1"></i> إعادة فتح السنة</button>
                     </form>

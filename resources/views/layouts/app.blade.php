@@ -206,6 +206,12 @@
         .dropdown-item:hover { background: var(--beige); }
         .dropdown-header { font-weight: 700; color: var(--muted); }
 
+        /* مودال التأكيد المخصّص */
+        .ac-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--warning-bg); color: var(--warning);
+            display: flex; align-items: center; justify-content: center; font-size: 1.7rem; margin: 0 auto 1rem; }
+        #appConfirm .modal-content { border: none; border-radius: 16px; box-shadow: var(--shadow-lg); }
+        #appConfirm .btn-light { background: var(--bg); border-color: var(--line); }
+
         /* ===== Misc ===== */
         .text-muted { color: var(--muted) !important; }
         body::-webkit-scrollbar { width: 11px; } body::-webkit-scrollbar-thumb { background: #d9cfbd; border-radius: 6px; border: 3px solid var(--beige); }
@@ -471,6 +477,23 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- مودال التأكيد المخصّص (بديل confirm) --}}
+    <div class="modal fade" id="appConfirm" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="ac-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <h6 class="fw-bold mb-2">تأكيد العملية</h6>
+                    <p class="text-muted mb-4" id="appConfirmMsg">متأكد من تنفيذ العملية؟</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="button" class="btn px-4" id="appConfirmOk" style="background:var(--danger);color:#fff">تأكيد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function () {
             const sb = document.querySelector('.sidebar');
@@ -499,6 +522,29 @@
             // تمرير القسم النشط للعرض
             const activeLink = document.querySelector('.sidebar .nav-link.active');
             if (activeLink) activeLink.scrollIntoView({ block: 'center' });
+
+            // مودال التأكيد المخصّص — بديل confirm() لكل النماذج/الروابط ذات data-confirm
+            const cm = document.getElementById('appConfirm');
+            if (cm && window.bootstrap) {
+                const bsModal = new bootstrap.Modal(cm);
+                const msgEl = document.getElementById('appConfirmMsg');
+                const okBtn = document.getElementById('appConfirmOk');
+                let pending = null;
+                const openConfirm = (message, action) => { msgEl.textContent = message || 'متأكد من تنفيذ العملية؟'; pending = action; bsModal.show(); };
+                okBtn.addEventListener('click', () => { const a = pending; pending = null; bsModal.hide(); if (a) a(); });
+                cm.addEventListener('hidden.bs.modal', () => { pending = null; });
+                document.addEventListener('submit', (e) => {
+                    const f = e.target;
+                    if (f instanceof HTMLFormElement && f.hasAttribute('data-confirm')) {
+                        e.preventDefault();
+                        openConfirm(f.getAttribute('data-confirm'), () => f.submit());
+                    }
+                }, true);
+                document.addEventListener('click', (e) => {
+                    const a = e.target.closest('a[data-confirm]');
+                    if (a) { e.preventDefault(); openConfirm(a.getAttribute('data-confirm'), () => { window.location = a.href; }); }
+                }, true);
+            }
 
             // إخفاء تنبيهات النجاح تلقائياً بعد 4 ثوانٍ
             document.querySelectorAll('.alert-success').forEach(a => setTimeout(() => { try { bootstrap.Alert.getOrCreateInstance(a).close(); } catch (e) {} }, 4000));

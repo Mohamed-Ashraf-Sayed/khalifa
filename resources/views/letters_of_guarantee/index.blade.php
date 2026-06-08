@@ -81,7 +81,7 @@
                                     @endcan
                                     @can('guarantees.delete')
                                         <form method="POST" action="{{ route('guarantees.destroy', $guarantee) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف خطاب الضمان؟')">
+                                              data-confirm="متأكد من حذف خطاب الضمان؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

@@ -88,7 +88,7 @@
                                     @endcan
                                     @can('contracts.delete')
                                         <form method="POST" action="{{ route('change_orders.destroy', $order) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف أمر التغيير؟')">
+                                              data-confirm="متأكد من حذف أمر التغيير؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

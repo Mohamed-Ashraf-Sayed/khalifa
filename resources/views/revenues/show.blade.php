@@ -144,7 +144,7 @@
                                     <td>{{ $collection->notes ?: '—' }}</td>
                                     <td class="text-end">
                                         @can('revenues.edit')
-                                            <form method="POST" action="{{ route('revenue_collections.destroy', $collection) }}" class="d-inline" onsubmit="return confirm('حذف التحصيل؟')">
+                                            <form method="POST" action="{{ route('revenue_collections.destroy', $collection) }}" class="d-inline" data-confirm="حذف التحصيل؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

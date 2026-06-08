@@ -8,11 +8,11 @@
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
         @can('contracts.edit')
             @if ($changeOrder->status === 'pending')
-                <form method="POST" action="{{ route('change_orders.approve', $changeOrder) }}" class="d-inline" onsubmit="return confirm('تأكيد اعتماد أمر التغيير؟')">
+                <form method="POST" action="{{ route('change_orders.approve', $changeOrder) }}" class="d-inline" data-confirm="تأكيد اعتماد أمر التغيير؟">
                     @csrf
                     <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-check ms-1"></i> اعتماد</button>
                 </form>
-                <form method="POST" action="{{ route('change_orders.reject', $changeOrder) }}" class="d-inline" onsubmit="return confirm('تأكيد رفض أمر التغيير؟')">
+                <form method="POST" action="{{ route('change_orders.reject', $changeOrder) }}" class="d-inline" data-confirm="تأكيد رفض أمر التغيير؟">
                     @csrf
                     <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-xmark ms-1"></i> رفض</button>
                 </form>

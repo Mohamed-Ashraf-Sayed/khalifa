@@ -57,7 +57,7 @@
                                     @endcan
                                     @can('users.delete')
                                         @if ($user->id !== auth()->id())
-                                            <form method="POST" action="{{ route('users.destroy', $user) }}" class="d-inline" onsubmit="return confirm('حذف المستخدم؟')">
+                                            <form method="POST" action="{{ route('users.destroy', $user) }}" class="d-inline" data-confirm="حذف المستخدم؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

@@ -8,7 +8,7 @@
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
         @can('projects.edit')
             @if ($rfi->status !== 'closed')
-                <form method="POST" action="{{ route('rfis.close', $rfi) }}" class="d-inline" onsubmit="return confirm('تأكيد إغلاق طلب الاستفسار؟')">
+                <form method="POST" action="{{ route('rfis.close', $rfi) }}" class="d-inline" data-confirm="تأكيد إغلاق طلب الاستفسار؟">
                     @csrf
                     <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-lock ms-1"></i> إغلاق</button>
                 </form>

@@ -47,7 +47,7 @@
                                         <a href="{{ route('employee_transactions.edit', $transaction) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('employees.delete')
-                                        <form method="POST" action="{{ route('employee_transactions.destroy', $transaction) }}" class="d-inline" onsubmit="return confirm('حذف المعاملة؟')">
+                                        <form method="POST" action="{{ route('employee_transactions.destroy', $transaction) }}" class="d-inline" data-confirm="حذف المعاملة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

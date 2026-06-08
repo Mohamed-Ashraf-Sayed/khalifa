@@ -44,7 +44,7 @@
                                         <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('invoices.delete')
-                                        <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" class="d-inline" onsubmit="return confirm('حذف الفاتورة؟')">
+                                        <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" class="d-inline" data-confirm="حذف الفاتورة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

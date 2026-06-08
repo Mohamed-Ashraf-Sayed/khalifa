@@ -52,7 +52,7 @@
                                     @endcan
                                     @can('taxes.delete')
                                         <form method="POST" action="{{ route('taxes.destroy', $tax) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف الضريبة؟')">
+                                              data-confirm="متأكد من حذف الضريبة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

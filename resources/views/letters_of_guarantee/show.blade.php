@@ -8,7 +8,7 @@
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
         @can('guarantees.edit')
             @if ($guarantee->status === 'active')
-                <form method="POST" action="{{ route('guarantees.release', $guarantee) }}" class="d-inline" onsubmit="return confirm('تأكيد الإفراج عن خطاب الضمان؟')">
+                <form method="POST" action="{{ route('guarantees.release', $guarantee) }}" class="d-inline" data-confirm="تأكيد الإفراج عن خطاب الضمان؟">
                     @csrf
                     <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-unlock ms-1"></i> إفراج</button>
                 </form>

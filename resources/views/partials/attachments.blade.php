@@ -51,7 +51,7 @@
                             <td class="text-end">
                                 <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-download"></i></a>
                                 @if ($canManageAttachments)
-                                    <form method="POST" action="{{ route('attachments.destroy', $attachment) }}" class="d-inline" onsubmit="return confirm('حذف المرفق؟')">
+                                    <form method="POST" action="{{ route('attachments.destroy', $attachment) }}" class="d-inline" data-confirm="حذف المرفق؟">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                     </form>

@@ -68,7 +68,7 @@
                             <i class="fa-solid fa-user-circle" style="font-size:80px;color:#8b7355"></i>
                         @endif
                         @if ($user->avatar)
-                            <form method="POST" action="{{ route('profile.avatar.delete') }}" onsubmit="return confirm('حذف الصورة الشخصية؟')">
+                            <form method="POST" action="{{ route('profile.avatar.delete') }}" data-confirm="حذف الصورة الشخصية؟">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف الصورة</button>

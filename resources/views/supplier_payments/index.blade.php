@@ -69,7 +69,7 @@
                                         <a href="{{ route('supplier_payments.edit', $payment) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
                                     @can('suppliers.delete')
-                                        <form method="POST" action="{{ route('supplier_payments.destroy', $payment) }}" class="d-inline" onsubmit="return confirm('حذف الدفعة؟')">
+                                        <form method="POST" action="{{ route('supplier_payments.destroy', $payment) }}" class="d-inline" data-confirm="حذف الدفعة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

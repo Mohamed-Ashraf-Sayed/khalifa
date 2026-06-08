@@ -77,7 +77,7 @@
                                     @can('accounting.delete')
                                         @if ($entry->status === 'draft')
                                             <form method="POST" action="{{ route('journal_entries.destroy', $entry) }}" class="d-inline"
-                                                  onsubmit="return confirm('متأكد من حذف القيد؟')">
+                                                  data-confirm="متأكد من حذف القيد؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

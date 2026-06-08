@@ -78,7 +78,7 @@
                                 <td class="text-end">
                                     <a href="{{ route('partner_deposits.show', $deposit) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
                                     @can('partners.delete')
-                                        <form method="POST" action="{{ route('partner_deposits.destroy', $deposit) }}" class="d-inline" onsubmit="return confirm('حذف الإيداع؟')">
+                                        <form method="POST" action="{{ route('partner_deposits.destroy', $deposit) }}" class="d-inline" data-confirm="حذف الإيداع؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

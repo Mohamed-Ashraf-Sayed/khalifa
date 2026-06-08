@@ -53,7 +53,7 @@
                                     @endcan
                                     @can('contracts.delete')
                                         <form method="POST" action="{{ route('contracts.destroy', $contract) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف العقد؟')">
+                                              data-confirm="متأكد من حذف العقد؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

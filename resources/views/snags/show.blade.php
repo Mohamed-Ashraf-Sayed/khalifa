@@ -9,7 +9,7 @@
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
         @can('projects.edit')
             @if ($snag->status !== 'closed')
-                <form method="POST" action="{{ route('snags.close', $snag) }}" class="d-inline" onsubmit="return confirm('تأكيد إغلاق الملاحظة؟')">
+                <form method="POST" action="{{ route('snags.close', $snag) }}" class="d-inline" data-confirm="تأكيد إغلاق الملاحظة؟">
                     @csrf
                     <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-circle-check ms-1"></i> إغلاق</button>
                 </form>

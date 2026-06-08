@@ -129,7 +129,7 @@
                                 </td>
                                 <td class="text-end">
                                     @can('projects.edit')
-                                        <form method="POST" action="{{ route('project_milestones.destroy', $milestone) }}" class="d-inline" onsubmit="return confirm('حذف المرحلة؟')">
+                                        <form method="POST" action="{{ route('project_milestones.destroy', $milestone) }}" class="d-inline" data-confirm="حذف المرحلة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>
@@ -609,7 +609,7 @@
                                 <td>{{ $employee->pivot->end_date ? \Illuminate\Support\Carbon::parse($employee->pivot->end_date)->format('Y-m-d') : '—' }}</td>
                                 <td class="text-end">
                                     @can('projects.edit')
-                                        <form method="POST" action="{{ route('projectEmployees.destroy', $employee->pivot->id) }}" class="d-inline" onsubmit="return confirm('حذف الموظف من المشروع؟')">
+                                        <form method="POST" action="{{ route('projectEmployees.destroy', $employee->pivot->id) }}" class="d-inline" data-confirm="حذف الموظف من المشروع؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>
@@ -675,7 +675,7 @@
                                 <td>{{ $consumption->consumption_date?->format('Y-m-d') ?? '—' }}</td>
                                 <td class="text-end">
                                     @can('projects.edit')
-                                        <form method="POST" action="{{ route('projectMaterialConsumptions.destroy', $consumption) }}" class="d-inline" onsubmit="return confirm('حذف سجل الاستهلاك؟')">
+                                        <form method="POST" action="{{ route('projectMaterialConsumptions.destroy', $consumption) }}" class="d-inline" data-confirm="حذف سجل الاستهلاك؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

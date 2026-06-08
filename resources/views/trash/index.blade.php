@@ -60,11 +60,11 @@
                                 <td class="small text-muted">{{ $record->deleted_at?->format('Y-m-d H:i') }}</td>
                                 <td class="text-end">
                                     @can('users.delete')
-                                        <form method="POST" action="{{ route('trash.restore', ['type' => $type, 'id' => $record->getKey()]) }}" class="d-inline" onsubmit="return confirm('استعادة هذا العنصر؟')">
+                                        <form method="POST" action="{{ route('trash.restore', ['type' => $type, 'id' => $record->getKey()]) }}" class="d-inline" data-confirm="استعادة هذا العنصر؟">
                                             @csrf
                                             <button class="btn btn-sm btn-outline-success" title="استعادة"><i class="fa-solid fa-trash-arrow-up"></i> استعادة</button>
                                         </form>
-                                        <form method="POST" action="{{ route('trash.force_delete', ['type' => $type, 'id' => $record->getKey()]) }}" class="d-inline" onsubmit="return confirm('حذف نهائي لا يمكن التراجع عنه. متأكد؟')">
+                                        <form method="POST" action="{{ route('trash.force_delete', ['type' => $type, 'id' => $record->getKey()]) }}" class="d-inline" data-confirm="حذف نهائي لا يمكن التراجع عنه. متأكد؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger" title="حذف نهائي"><i class="fa-solid fa-xmark"></i> حذف نهائي</button>
                                         </form>

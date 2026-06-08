@@ -84,7 +84,7 @@
                                     @endcan
                                     @can('projects.delete')
                                         <form method="POST" action="{{ route('rfis.destroy', $rfi) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف طلب الاستفسار؟')">
+                                              data-confirm="متأكد من حذف طلب الاستفسار؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

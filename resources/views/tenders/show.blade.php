@@ -8,7 +8,7 @@
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
         @can('tenders.edit')
             @if ($tender->status === 'won' && ! $tender->project_id)
-                <form method="POST" action="{{ route('tenders.convert', $tender) }}" onsubmit="return confirm('تحويل المناقصة إلى مشروع جديد؟')">
+                <form method="POST" action="{{ route('tenders.convert', $tender) }}" data-confirm="تحويل المناقصة إلى مشروع جديد؟">
                     @csrf
                     <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-diagram-project ms-1"></i> تحويل إلى مشروع</button>
                 </form>

@@ -12,7 +12,7 @@
         <div class="d-flex gap-2">
             @can('contractors.edit')
                 @if ($extract->status === 'pending')
-                    <form method="POST" action="{{ route('contractor_extracts.approve', $extract) }}" class="d-inline" onsubmit="return confirm('اعتماد المستخلص؟')">
+                    <form method="POST" action="{{ route('contractor_extracts.approve', $extract) }}" class="d-inline" data-confirm="اعتماد المستخلص؟">
                         @csrf
                         <button class="btn btn-sm btn-success"><i class="fa-solid fa-check ms-1"></i> اعتماد</button>
                     </form>
@@ -59,7 +59,7 @@
                 </table>
                 @can('contractors.edit')
                     @if (bccomp((string) $extract->retention_amount, '0', 2) > 0 && ! $extract->retention_released)
-                        <form method="POST" action="{{ route('contractor_extracts.release_retention', $extract) }}" onsubmit="return confirm('تحرير المبلغ المحتجز؟')">
+                        <form method="POST" action="{{ route('contractor_extracts.release_retention', $extract) }}" data-confirm="تحرير المبلغ المحتجز؟">
                             @csrf
                             <button class="btn btn-sm w-100 mt-2" style="background:#8b7355;color:#fff"><i class="fa-solid fa-unlock ms-1"></i> تحرير المحتجز</button>
                         </form>
@@ -98,7 +98,7 @@
                                 <td class="fw-semibold">{{ number_format($item->total_price, 2) }}</td>
                                 <td class="text-end">
                                     @can('contractors.edit')
-                                        <form method="POST" action="{{ route('contractor_extract_items.destroy', $item) }}" class="d-inline" onsubmit="return confirm('حذف البند؟')">
+                                        <form method="POST" action="{{ route('contractor_extract_items.destroy', $item) }}" class="d-inline" data-confirm="حذف البند؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

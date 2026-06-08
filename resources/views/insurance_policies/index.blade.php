@@ -75,7 +75,7 @@
                                     @endcan
                                     @can('guarantees.delete')
                                         <form method="POST" action="{{ route('insurance.destroy', $policy) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف الوثيقة؟')">
+                                              data-confirm="متأكد من حذف الوثيقة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

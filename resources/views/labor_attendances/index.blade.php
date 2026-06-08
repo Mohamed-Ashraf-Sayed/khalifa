@@ -78,7 +78,7 @@
                                     </a>
                                     @can('projects.delete')
                                         <form method="POST" action="{{ route('labor_attendances.destroy', $att) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف سجل الحضور؟')">
+                                              data-confirm="متأكد من حذف سجل الحضور؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

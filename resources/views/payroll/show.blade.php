@@ -8,7 +8,7 @@
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
         @can('employees.edit')
             @if ($run->status === 'draft')
-                <form method="POST" action="{{ route('payroll.approve', $run) }}" class="d-inline" onsubmit="return confirm('تأكيد اعتماد المسيّر؟')">
+                <form method="POST" action="{{ route('payroll.approve', $run) }}" class="d-inline" data-confirm="تأكيد اعتماد المسيّر؟">
                     @csrf
                     <button class="btn btn-sm btn-outline-info"><i class="fa-solid fa-circle-check ms-1"></i> اعتماد</button>
                 </form>
@@ -16,7 +16,7 @@
         @endcan
         @can('employees.delete')
             @if ($run->status === 'draft')
-                <form method="POST" action="{{ route('payroll.destroy', $run) }}" class="d-inline" onsubmit="return confirm('متأكد من حذف المسيّر؟')">
+                <form method="POST" action="{{ route('payroll.destroy', $run) }}" class="d-inline" data-confirm="متأكد من حذف المسيّر؟">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف</button>
                 </form>
@@ -63,7 +63,7 @@
         @if ($run->status === 'approved')
             <div class="card mb-3"><div class="card-body">
                 <h6 class="mb-3"><i class="fa-solid fa-sack-dollar ms-1" style="color:#8b7355"></i> صرف الرواتب</h6>
-                <form method="POST" action="{{ route('payroll.pay', $run) }}" class="row g-3 align-items-end" onsubmit="return confirm('تأكيد صرف الرواتب من الحساب المختار؟')">
+                <form method="POST" action="{{ route('payroll.pay', $run) }}" class="row g-3 align-items-end" data-confirm="تأكيد صرف الرواتب من الحساب المختار؟">
                     @csrf
                     <div class="col-md-6">
                         <label class="form-label">الحساب البنكي <span class="text-danger">*</span></label>

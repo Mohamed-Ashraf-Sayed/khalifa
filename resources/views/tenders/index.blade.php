@@ -80,7 +80,7 @@
                                     @endcan
                                     @can('tenders.delete')
                                         <form method="POST" action="{{ route('tenders.destroy', $tender) }}" class="d-inline"
-                                              onsubmit="return confirm('متأكد من حذف المناقصة؟')">
+                                              data-confirm="متأكد من حذف المناقصة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

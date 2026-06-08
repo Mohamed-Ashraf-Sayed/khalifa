@@ -168,7 +168,7 @@
                                                 <i class="fa-solid fa-{{ $t->is_reconciled ? 'rotate-left' : 'check' }}"></i>
                                             </button>
                                         </form>
-                                        <form method="POST" action="{{ route('bank_transactions.destroy', $t) }}" class="d-inline" onsubmit="return confirm('حذف الحركة؟')">
+                                        <form method="POST" action="{{ route('bank_transactions.destroy', $t) }}" class="d-inline" data-confirm="حذف الحركة؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>

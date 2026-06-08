@@ -12,17 +12,17 @@
         <div class="d-flex gap-2">
             @can('materials.edit')
                 @if ($requisition->status === 'pending')
-                    <form method="POST" action="{{ route('material_requisitions.approve', $requisition) }}" class="d-inline" onsubmit="return confirm('اعتماد إذن الصرف؟')">
+                    <form method="POST" action="{{ route('material_requisitions.approve', $requisition) }}" class="d-inline" data-confirm="اعتماد إذن الصرف؟">
                         @csrf
                         <button class="btn btn-sm btn-success"><i class="fa-solid fa-check ms-1"></i> اعتماد</button>
                     </form>
-                    <form method="POST" action="{{ route('material_requisitions.reject', $requisition) }}" class="d-inline" onsubmit="return confirm('رفض إذن الصرف؟')">
+                    <form method="POST" action="{{ route('material_requisitions.reject', $requisition) }}" class="d-inline" data-confirm="رفض إذن الصرف؟">
                         @csrf
                         <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-xmark ms-1"></i> رفض</button>
                     </form>
                 @endif
                 @if ($requisition->status === 'approved')
-                    <form method="POST" action="{{ route('material_requisitions.issue', $requisition) }}" class="d-inline" onsubmit="return confirm('صرف الأصناف وخصمها من المخزون؟')">
+                    <form method="POST" action="{{ route('material_requisitions.issue', $requisition) }}" class="d-inline" data-confirm="صرف الأصناف وخصمها من المخزون؟">
                         @csrf
                         <button class="btn btn-sm" style="background:#0f7a4f;color:#fff"><i class="fa-solid fa-truck-ramp-box ms-1"></i> صرف من المخزون</button>
                     </form>
@@ -87,7 +87,7 @@
                                 <td class="text-end">
                                     @can('materials.edit')
                                         @if ($requisition->status === 'pending')
-                                            <form method="POST" action="{{ route('material_requisition_items.destroy', $item) }}" class="d-inline" onsubmit="return confirm('حذف الصنف؟')">
+                                            <form method="POST" action="{{ route('material_requisition_items.destroy', $item) }}" class="d-inline" data-confirm="حذف الصنف؟">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                             </form>

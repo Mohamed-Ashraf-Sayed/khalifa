@@ -51,7 +51,7 @@
                                 <td class="fw-semibold">{{ number_format($item->total_price, 2) }}</td>
                                 <td class="text-end">
                                     @can('invoices.edit')
-                                        <form method="POST" action="{{ route('invoice_items.destroy', $item) }}" class="d-inline" onsubmit="return confirm('حذف البند؟')">
+                                        <form method="POST" action="{{ route('invoice_items.destroy', $item) }}" class="d-inline" data-confirm="حذف البند؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>
@@ -69,7 +69,7 @@
 
             @can('invoices.view')
                 @if($invoice->client?->email)
-                    <form method="POST" action="{{ route('invoices.email', $invoice) }}" class="d-inline" onsubmit="return confirm('إرسال الفاتورة إلى بريد العميل؟')">
+                    <form method="POST" action="{{ route('invoices.email', $invoice) }}" class="d-inline" data-confirm="إرسال الفاتورة إلى بريد العميل؟">
                         @csrf
                         <button class="btn btn-sm btn-primary"><i class="fa-solid fa-envelope ms-1"></i> إرسال بالبريد</button>
                     </form>
@@ -149,7 +149,7 @@
                             <td>{{ $payment->notes ?? '—' }}</td>
                             <td class="text-end">
                                 @can('invoices.edit')
-                                    <form method="POST" action="{{ route('invoice_payments.destroy', $payment) }}" class="d-inline" onsubmit="return confirm('حذف الدفعة؟')">
+                                    <form method="POST" action="{{ route('invoice_payments.destroy', $payment) }}" class="d-inline" data-confirm="حذف الدفعة؟">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                     </form>

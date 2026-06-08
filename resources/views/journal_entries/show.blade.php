@@ -97,12 +97,12 @@
                 @can('accounting.edit')
                     @if ($entry->status === 'draft')
                         <a href="{{ route('journal_entries.edit', $entry) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
-                        <form method="POST" action="{{ route('journal_entries.post', $entry) }}" class="d-inline" onsubmit="return confirm('ترحيل القيد؟')">
+                        <form method="POST" action="{{ route('journal_entries.post', $entry) }}" class="d-inline" data-confirm="ترحيل القيد؟">
                             @csrf
                             <button class="btn btn-sm" style="background:#8b7355;color:#fff" @disabled(! $entry->isBalanced())><i class="fa-solid fa-circle-check ms-1"></i> ترحيل</button>
                         </form>
                     @else
-                        <form method="POST" action="{{ route('journal_entries.unpost', $entry) }}" class="d-inline" onsubmit="return confirm('إلغاء ترحيل القيد؟')">
+                        <form method="POST" action="{{ route('journal_entries.unpost', $entry) }}" class="d-inline" data-confirm="إلغاء ترحيل القيد؟">
                             @csrf
                             <button class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-rotate-left ms-1"></i> إلغاء الترحيل</button>
                         </form>
@@ -111,7 +111,7 @@
 
                 @can('accounting.delete')
                     @if ($entry->status === 'draft')
-                        <form method="POST" action="{{ route('journal_entries.destroy', $entry) }}" class="d-inline" onsubmit="return confirm('حذف القيد؟')">
+                        <form method="POST" action="{{ route('journal_entries.destroy', $entry) }}" class="d-inline" data-confirm="حذف القيد؟">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف</button>
                         </form>

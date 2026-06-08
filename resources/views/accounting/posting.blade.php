@@ -10,7 +10,7 @@
                 <p class="text-muted small mb-0">يولّد قيود يومية متوازنة من المستندات التشغيلية (لا يتكرّر — كل مستند يُرحَّل مرّة واحدة). يلزم وجود دليل الحسابات.</p>
             </div>
             @can('accounting.edit')
-                <form method="POST" action="{{ route('accounting.posting.generate') }}" onsubmit="return confirm('توليد القيود لكل المستندات غير المُرحّلة؟')">
+                <form method="POST" action="{{ route('accounting.posting.generate') }}" data-confirm="توليد القيود لكل المستندات غير المُرحّلة؟">
                     @csrf
                     <input type="hidden" name="type" value="all">
                     <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-bolt ms-1"></i> توليد قيود الكل</button>
