@@ -52,10 +52,11 @@
         .sidebar-backdrop { position: fixed; inset: 0; background: rgba(40,30,20,.45); backdrop-filter: blur(2px); z-index: 1040; display: none; }
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.22); border-radius: 3px; }
-        .sidebar .brand { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .6rem;
-            background: rgba(0,0,0,.12); backdrop-filter: blur(6px); color: #fff; font-weight: 800; padding: 1.1rem 1.25rem; font-size: 1.12rem;
-            border-bottom: 1px solid rgba(255,255,255,.12); letter-spacing: -.01em; }
-        .sidebar .brand .brand-logo { background: rgba(255,255,255,.14); width: 40px; height: 40px; min-width: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 11px; padding: 5px; color: #fff; }
+        .sidebar .brand { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: .5rem; flex-wrap: nowrap;
+            background: rgba(0,0,0,.12); backdrop-filter: blur(6px); color: #fff; font-weight: 800; padding: 1rem .85rem; font-size: .82rem;
+            border-bottom: 1px solid rgba(255,255,255,.12); letter-spacing: -.01em; white-space: nowrap; }
+        .sidebar .brand .brand-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
+        .sidebar .brand .brand-logo { background: rgba(255,255,255,.14); width: 36px; height: 36px; min-width: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; padding: 5px; color: #fff; }
         .sidebar .brand .app-logo { width: 100%; height: 100%; object-fit: contain; }
         .sidebar .brand img.app-logo { filter: brightness(0) invert(1); }   /* لوجو أسود → أبيض على الخلفية البنية */
         .sidebar .nav-link { position: relative; color: rgba(255,255,255,.82); border-radius: .65rem; margin: .12rem .65rem; padding: .58rem .9rem; font-size: .9rem; font-weight: 500; transition: background .15s, color .15s, padding .15s; display: flex; align-items: center; }
@@ -234,7 +235,7 @@
 <body>
     @php($u = auth()->user())
     <aside class="sidebar text-white">
-        <div class="brand"><span class="brand-logo">@include('partials.logo')</span>{{ config('app.name') }}</div>
+        <div class="brand"><span class="brand-logo">@include('partials.logo')</span><span class="brand-name">{{ config('app.name') }}</span></div>
         <nav class="nav flex-column py-2">
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="fa-solid fa-gauge-high"></i> لوحة التحكم
