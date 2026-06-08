@@ -44,7 +44,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات الطلب</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات الطلب</h6>
         <div class="info-list">
             <div class="il"><span class="k">موجَّه إلى</span><span class="v">{{ $rfi->raised_to ?: '—' }}</span></div>
             <div class="il"><span class="k">الحالة</span><span class="v">{{ \App\Models\Rfi::STATUSES[$rfi->status] ?? $rfi->status }}</span></div>
@@ -54,7 +54,7 @@
     </div></div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-2"><i class="fa-solid fa-question ms-1" style="color:#8b7355"></i> الاستفسار</h6>
+        <h6 class="mb-2"><i class="fa-solid fa-question ms-1" style="color:#2b4c80"></i> الاستفسار</h6>
         <p class="mb-0" style="white-space:pre-line">{{ $rfi->question }}</p>
     </div></div>
 
@@ -68,11 +68,11 @@
     @can('projects.edit')
         @if ($rfi->status === 'open')
             <div class="card mb-3"><div class="card-body">
-                <h6 class="mb-3"><i class="fa-solid fa-reply ms-1" style="color:#8b7355"></i> تسجيل الإجابة</h6>
+                <h6 class="mb-3"><i class="fa-solid fa-reply ms-1" style="color:#2b4c80"></i> تسجيل الإجابة</h6>
                 <form method="POST" action="{{ route('rfis.answer', $rfi) }}">
                     @csrf
                     <textarea name="answer" rows="4" class="form-control mb-3" placeholder="اكتب الإجابة هنا..." required>{{ old('answer') }}</textarea>
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ الإجابة</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ الإجابة</button>
                 </form>
             </div></div>
         @endif

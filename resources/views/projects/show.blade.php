@@ -6,7 +6,7 @@
     @php($badge = match($project->status) {
         'completed' => 'success', 'in_progress' => 'primary',
         'on_hold' => 'warning', 'cancelled' => 'danger', default => 'secondary' })
-    @php($accent = '#8b7355')
+    @php($accent = '#2b4c80')
 
     {{-- 1. الهيدر --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -156,7 +156,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1"><button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus"></i></button></div>
+                    <div class="col-md-1"><button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus"></i></button></div>
                 </form>
             @endcan
         </div>
@@ -169,13 +169,13 @@
         @php($gEnd = \Illuminate\Support\Carbon::parse($ms->max('planned_end')))
         @php($gSpan = max(1, $gStart->diffInDays($gEnd)))
         <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-3"><i class="fa-solid fa-bars-staggered ms-1" style="color:#8b7355"></i> المخطط الزمني (Gantt)</h6>
+            <h6 class="mb-3"><i class="fa-solid fa-bars-staggered ms-1" style="color:#2b4c80"></i> المخطط الزمني (Gantt)</h6>
             @foreach ($ms as $m)
                 @php($s = \Illuminate\Support\Carbon::parse($m->planned_start))
                 @php($e = \Illuminate\Support\Carbon::parse($m->planned_end))
                 @php($offset = ($gStart->diffInDays($s) / $gSpan) * 100)
                 @php($width = max(2, ($s->diffInDays($e) / $gSpan) * 100))
-                @php($color = match($m->status) { 'done' => '#4f8a6b', 'in_progress' => '#8b7355', 'delayed' => '#b65f5b', default => '#a3895f' })
+                @php($color = match($m->status) { 'done' => '#4f8a6b', 'in_progress' => '#2b4c80', 'delayed' => '#b65f5b', default => '#5b7bab' })
                 <div class="d-flex align-items-center mb-2" style="gap:.5rem">
                     <div style="width:140px;min-width:140px;font-size:.82rem" class="text-truncate" title="{{ $m->name }}">{{ $m->name }}</div>
                     <div style="position:relative;flex:1;height:22px;background:var(--bg-2);border-radius:6px">
@@ -196,8 +196,8 @@
         @php($revisedContractValue = bcadd((string) ($project->contract_value ?? '0'), $coNetSigned, 2))
         <div class="card mb-3"><div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0"><i class="fa-solid fa-file-pen ms-1" style="color:#8b7355"></i> أوامر التغيير <span class="badge text-bg-secondary">{{ $project->changeOrders->count() }}</span></h6>
-                @can('contracts.create')<a href="{{ route('change_orders.create') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> أمر تغيير</a>@endcan
+                <h6 class="mb-0"><i class="fa-solid fa-file-pen ms-1" style="color:#2b4c80"></i> أوامر التغيير <span class="badge text-bg-secondary">{{ $project->changeOrders->count() }}</span></h6>
+                @can('contracts.create')<a href="{{ route('change_orders.create') }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> أمر تغيير</a>@endcan
             </div>
             @forelse ($project->changeOrders as $order)
                 @php($coBadge = match($order->status) { 'approved'=>'success','pending'=>'warning','rejected'=>'danger', default=>'secondary' })
@@ -212,7 +212,7 @@
             @empty
                 <div class="text-muted small py-2">لا توجد أوامر تغيير لهذا المشروع.</div>
             @endforelse
-            <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-scale-balanced ms-1" style="color:#8b7355"></i> قيمة العقد المعدّلة = الأصلي ({{ number_format((float) ($project->contract_value ?? 0), 2) }}) + صافي أوامر التغيير المعتمدة ({{ number_format((float) $coNetSigned, 2) }}) = <strong>{{ number_format((float) $revisedContractValue, 2) }} ج</strong></div>
+            <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-scale-balanced ms-1" style="color:#2b4c80"></i> قيمة العقد المعدّلة = الأصلي ({{ number_format((float) ($project->contract_value ?? 0), 2) }}) + صافي أوامر التغيير المعتمدة ({{ number_format((float) $coNetSigned, 2) }}) = <strong>{{ number_format((float) $revisedContractValue, 2) }} ج</strong></div>
         </div></div>
     @endcan
 
@@ -220,7 +220,7 @@
     @can('projects.view')
         <div class="card mb-3"><div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0"><i class="fa-solid fa-clipboard-check ms-1" style="color:#8b7355"></i> قائمة العيوب</h6>
+                <h6 class="mb-0"><i class="fa-solid fa-clipboard-check ms-1" style="color:#2b4c80"></i> قائمة العيوب</h6>
                 <div class="small text-muted">مفتوحة: {{ $project->snags->where('status', '!=', 'closed')->count() }} · مغلقة: {{ $project->snags->where('status', 'closed')->count() }}</div>
             </div>
             @forelse ($project->snags->take(8) as $snag)
@@ -243,7 +243,7 @@
     @if ($project->rfis->isNotEmpty())
         <div class="card mb-3"><div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="m-0"><i class="fa-solid fa-circle-question ms-1" style="color:#8b7355"></i> طلبات الاستفسار (RFI) <span class="badge text-bg-secondary">{{ $project->rfis->count() }}</span></h6>
+                <h6 class="m-0"><i class="fa-solid fa-circle-question ms-1" style="color:#2b4c80"></i> طلبات الاستفسار (RFI) <span class="badge text-bg-secondary">{{ $project->rfis->count() }}</span></h6>
                 <a href="{{ route('rfis.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
             </div>
             <div class="table-responsive">
@@ -269,7 +269,7 @@
     @if ($project->submittals->isNotEmpty())
         <div class="card mb-3"><div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="m-0"><i class="fa-solid fa-stamp ms-1" style="color:#8b7355"></i> الاعتمادات الفنية <span class="badge text-bg-secondary">{{ $project->submittals->count() }}</span></h6>
+                <h6 class="m-0"><i class="fa-solid fa-stamp ms-1" style="color:#2b4c80"></i> الاعتمادات الفنية <span class="badge text-bg-secondary">{{ $project->submittals->count() }}</span></h6>
                 <a href="{{ route('submittals.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
             </div>
             <div class="table-responsive">
@@ -296,7 +296,7 @@
     @if ($project->inspectionRequests->isNotEmpty())
         <div class="card mb-3"><div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="m-0"><i class="fa-solid fa-clipboard-list ms-1" style="color:#8b7355"></i> طلبات الفحص والمعاينة <span class="badge text-bg-secondary">{{ $project->inspectionRequests->count() }}</span></h6>
+                <h6 class="m-0"><i class="fa-solid fa-clipboard-list ms-1" style="color:#2b4c80"></i> طلبات الفحص والمعاينة <span class="badge text-bg-secondary">{{ $project->inspectionRequests->count() }}</span></h6>
                 <a href="{{ route('inspection_requests.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
             </div>
             <div class="table-responsive">
@@ -323,7 +323,7 @@
     @if ($project->meetings->isNotEmpty())
         <div class="card mb-3"><div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="m-0"><i class="fa-solid fa-users-rectangle ms-1" style="color:#8b7355"></i> محاضر الاجتماعات <span class="badge text-bg-secondary">{{ $project->meetings->count() }}</span></h6>
+                <h6 class="m-0"><i class="fa-solid fa-users-rectangle ms-1" style="color:#2b4c80"></i> محاضر الاجتماعات <span class="badge text-bg-secondary">{{ $project->meetings->count() }}</span></h6>
                 <a href="{{ route('meetings.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
             </div>
             <div class="table-responsive">
@@ -648,7 +648,7 @@
                         <input type="date" name="end_date" value="{{ old('end_date') }}" class="form-control">
                     </div>
                     <div class="col-md-1">
-                        <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus"></i></button>
+                        <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </form>
             @endcan
@@ -718,7 +718,7 @@
                         <input type="date" name="consumption_date" value="{{ old('consumption_date', now()->toDateString()) }}" class="form-control" required>
                     </div>
                     <div class="col-md-1">
-                        <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus"></i></button>
+                        <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </form>
             @endcan

@@ -99,7 +99,7 @@
                         <a href="{{ route('journal_entries.edit', $entry) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
                         <form method="POST" action="{{ route('journal_entries.post', $entry) }}" class="d-inline" data-confirm="ترحيل القيد؟">
                             @csrf
-                            <button class="btn btn-sm" style="background:#8b7355;color:#fff" @disabled(! $entry->isBalanced())><i class="fa-solid fa-circle-check ms-1"></i> ترحيل</button>
+                            <button class="btn btn-sm" style="background:#2b4c80;color:#fff" @disabled(! $entry->isBalanced())><i class="fa-solid fa-circle-check ms-1"></i> ترحيل</button>
                         </form>
                     @else
                         <form method="POST" action="{{ route('journal_entries.unpost', $entry) }}" class="d-inline" data-confirm="إلغاء ترحيل القيد؟">

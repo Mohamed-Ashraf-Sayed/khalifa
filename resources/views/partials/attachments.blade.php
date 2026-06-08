@@ -34,7 +34,7 @@
                     <input type="file" name="file" class="form-control" required>
                 </div>
                 <div class="col-md-3">
-                    <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع المرفق</button>
+                    <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع المرفق</button>
                 </div>
             </form>
         @endif

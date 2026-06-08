@@ -12,13 +12,13 @@
         }
         .is-head { background: #f3efe9; color: #5c4a32; font-weight: 700; }
         .is-subtotal { background: #faf7f2; font-weight: 700; }
-        .is-grand { background: #8b7355; color: #fff; font-weight: 700; }
+        .is-grand { background: #2b4c80; color: #fff; font-weight: 700; }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print flex-wrap gap-2">
         <h5 class="m-0">قائمة دخل المشروع</h5>
         <div class="d-flex gap-2 flex-wrap align-items-center">
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             @if ($project)
                 <a href="{{ route('reports.project_income', ['project_id' => $project->id, 'format' => 'pdf']) }}" class="btn btn-sm btn-danger"><i class="fa-solid fa-file-pdf ms-1"></i> PDF</a>
                 <a href="{{ route('reports.project_income', ['project_id' => $project->id, 'format' => 'xlsx']) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
@@ -42,7 +42,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                 </div>
             </form>
         </div>

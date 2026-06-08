@@ -10,7 +10,7 @@
             @if ($tender->status === 'won' && ! $tender->project_id)
                 <form method="POST" action="{{ route('tenders.convert', $tender) }}" data-confirm="تحويل المناقصة إلى مشروع جديد؟">
                     @csrf
-                    <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-diagram-project ms-1"></i> تحويل إلى مشروع</button>
+                    <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-diagram-project ms-1"></i> تحويل إلى مشروع</button>
                 </form>
             @endif
             <a href="{{ route('tenders.edit', $tender) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
@@ -45,7 +45,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات المناقصة</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات المناقصة</h6>
         <div class="info-list">
             <div class="il"><span class="k">رقم المناقصة</span><span class="v">{{ $tender->tender_number }}</span></div>
             <div class="il"><span class="k">الحالة</span><span class="v"><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Tender::STATUSES[$tender->status] ?? $tender->status }}</span></span></div>

@@ -27,7 +27,7 @@
                     </select>
                 </form>
                 @can('suppliers.create')
-                    <a href="{{ route('supplier_transactions.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عملية شراء جديدة</a>
+                    <a href="{{ route('supplier_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عملية شراء جديدة</a>
                 @endcan
             </div>
 

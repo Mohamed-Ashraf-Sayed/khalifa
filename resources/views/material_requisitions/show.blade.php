@@ -63,7 +63,7 @@
                     </div>
                     <div class="col-md-3"><label class="form-label small">الكمية</label><input type="number" step="0.01" min="0.01" name="quantity" value="1" class="form-control" required></div>
                     <div class="col-md-2"><label class="form-label small">ملاحظات</label><input type="text" name="notes" class="form-control"></div>
-                    <div class="col-md-2"><button class="btn w-100" style="background:#8b7355;color:#fff">إضافة صنف</button></div>
+                    <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة صنف</button></div>
                 </form>
             </div></div>
         @endif

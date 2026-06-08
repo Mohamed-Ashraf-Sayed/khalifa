@@ -34,7 +34,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات السجل</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات السجل</h6>
         <div class="info-list">
             <div class="il"><span class="k">المشروع</span><span class="v">{{ $attendance->project?->name ?? '—' }}</span></div>
             <div class="il"><span class="k">التاريخ</span><span class="v">{{ $attendance->attendance_date?->format('Y-m-d') }}</span></div>

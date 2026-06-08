@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3 no-print">
         <a href="{{ request()->fullUrlWithQuery(['format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
-        <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+        <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
         <a href="{{ route('reports.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 
@@ -17,7 +17,7 @@
     </div>
 
     <div class="card"><div class="card-body">
-        <h6 class="mb-1"><i class="fa-solid fa-diagram-project ms-1" style="color:#8b7355"></i> الموقف التنفيذي والمالي للمشاريع</h6>
+        <h6 class="mb-1"><i class="fa-solid fa-diagram-project ms-1" style="color:#2b4c80"></i> الموقف التنفيذي والمالي للمشاريع</h6>
         <p class="text-muted small mb-3">القيمة المكتسبة = العقد المعدّل × نسبة الإنجاز · فائض الفوترة = المُفوتر − القيمة المكتسبة · الربح المقدّر = القيمة المكتسبة − التكلفة الفعلية.</p>
         <div class="table-responsive">
             <table class="table table-sm table-hover align-middle">
@@ -32,7 +32,7 @@
                             <td>{{ number_format((float) $r['revised'], 2) }}</td>
                             <td style="min-width:120px">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="progress flex-grow-1" style="height:7px"><div class="progress-bar" style="width:{{ $r['percent'] }}%;background:#8b7355"></div></div>
+                                    <div class="progress flex-grow-1" style="height:7px"><div class="progress-bar" style="width:{{ $r['percent'] }}%;background:#2b4c80"></div></div>
                                     <span class="small text-muted">{{ $r['percent'] }}%</span>
                                 </div>
                             </td>

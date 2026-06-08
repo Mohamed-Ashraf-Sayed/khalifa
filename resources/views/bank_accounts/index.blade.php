@@ -16,7 +16,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-end mb-3">
                 @can('bank_accounts.create')
-                    <a href="{{ route('bank_accounts.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                    <a href="{{ route('bank_accounts.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> حساب جديد
                     </a>
                 @endcan

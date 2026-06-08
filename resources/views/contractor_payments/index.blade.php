@@ -33,7 +33,7 @@
                     <a href="{{ route('contractor_payments.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
                 </form>
                 @can('contractors.create')
-                    <a href="{{ route('contractor_payments.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> دفعة جديدة</a>
+                    <a href="{{ route('contractor_payments.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> دفعة جديدة</a>
                 @endcan
             </div>
 

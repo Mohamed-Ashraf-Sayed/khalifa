@@ -38,7 +38,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات الوثيقة</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات الوثيقة</h6>
         <div class="info-list">
             <div class="il"><span class="k">تاريخ البدء</span><span class="v">{{ $policy->start_date?->format('Y-m-d') ?? '—' }}</span></div>
             <div class="il"><span class="k">تاريخ الانتهاء</span><span class="v">{{ $policy->expiry_date?->format('Y-m-d') ?? '—' }}</span></div>

@@ -24,7 +24,7 @@
                 <label class="form-label small">وصف</label>
                 <input type="text" name="description" class="form-control">
             </div>
-            <div class="col-md-2"><button class="btn w-100" style="background:#8b7355;color:#fff">رفع</button></div>
+            <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">رفع</button></div>
         </form>
     </div></div>
     @endcan

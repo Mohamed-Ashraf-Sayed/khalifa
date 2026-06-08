@@ -69,7 +69,7 @@
                 <div class="alert alert-light border mt-3 mb-0"><i class="fa-solid fa-circle-info ms-1"></i> البنود والإجماليات تُضاف من صفحة الفاتورة بعد الحفظ.</div>
 
                 <div class="mt-3 d-flex gap-2">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
                     <a href="{{ route('invoices.index') }}" class="btn btn-light">إلغاء</a>
                 </div>
             </form>

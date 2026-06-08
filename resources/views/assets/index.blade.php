@@ -34,7 +34,7 @@
                 <div class="d-flex gap-2">
                     <a href="{{ route('assets.report') }}" class="btn btn-light"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير الإهلاك</a>
                     @can('assets.create')
-                        <a href="{{ route('assets.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                        <a href="{{ route('assets.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                             <i class="fa-solid fa-plus ms-1"></i> أصل جديد
                         </a>
                     @endcan

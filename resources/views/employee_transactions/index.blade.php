@@ -17,7 +17,7 @@
                     <button class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
                 @can('employees.create')
-                    <a href="{{ route('employee_transactions.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> معاملة جديدة</a>
+                    <a href="{{ route('employee_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> معاملة جديدة</a>
                 @endcan
             </div>
 

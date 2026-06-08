@@ -14,7 +14,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
         <h5 class="m-0">تقرير الضرائب</h5>
         <div class="d-flex gap-2">
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             <a href="{{ route('reports.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للتقارير</a>
         </div>
     </div>
@@ -32,7 +32,7 @@
                     <input type="date" name="to" value="{{ $to }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                     <a href="{{ route('reports.taxes') }}" class="btn btn-light">الكل</a>
                 </div>
             </form>
@@ -67,9 +67,9 @@
             </div></div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100" style="border-color:#8b7355"><div class="card-body">
+            <div class="card h-100" style="border-color:#2b4c80"><div class="card-body">
                 <div class="text-muted small">صافي الضريبة المستحقّة</div>
-                <div class="fs-4 fw-bold {{ (float) $netVat < 0 ? 'text-danger' : '' }}" style="color:#8b7355">{{ number_format((float) $netVat, 2) }} ج</div>
+                <div class="fs-4 fw-bold {{ (float) $netVat < 0 ? 'text-danger' : '' }}" style="color:#2b4c80">{{ number_format((float) $netVat, 2) }} ج</div>
             </div></div>
         </div>
     </div>
@@ -95,7 +95,7 @@
                     </tbody>
                     @if (count($taxesByType))
                         <tfoot>
-                            <tr style="background:#8b7355;color:#fff;font-weight:700">
+                            <tr style="background:#2b4c80;color:#fff;font-weight:700">
                                 <td>الإجمالي</td>
                                 <td class="text-start">{{ number_format((float) $grand, 2) }} ج</td>
                             </tr>

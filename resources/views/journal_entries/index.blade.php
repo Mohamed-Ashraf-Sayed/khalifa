@@ -34,7 +34,7 @@
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
                 @can('accounting.create')
-                    <a href="{{ route('journal_entries.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                    <a href="{{ route('journal_entries.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> قيد جديد
                     </a>
                 @endcan

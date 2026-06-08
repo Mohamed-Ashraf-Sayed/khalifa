@@ -44,7 +44,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات الأمر</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات الأمر</h6>
         <div class="info-list">
             <div class="il"><span class="k">النوع</span><span class="v">{{ \App\Models\ChangeOrder::TYPES[$changeOrder->change_type] ?? $changeOrder->change_type }}</span></div>
             <div class="il"><span class="k">المشروع</span><span class="v">{{ $changeOrder->project?->name ?? '—' }}</span></div>

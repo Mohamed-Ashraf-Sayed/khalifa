@@ -19,7 +19,7 @@
         .row span { display: inline-block; min-width: 48%; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px; }
         th, td { border: 1px solid #cbb79a; padding: 6px 8px; }
-        th { background: #8b7355; color: #fff; text-align: center; }
+        th { background: #2b4c80; color: #fff; text-align: center; }
         td.amount { text-align: left; direction: ltr; }
         tfoot td { font-weight: bold; }
         .totals td { background: #faf7f2; }
@@ -83,15 +83,15 @@
             .no-print { display: none !important; }
             .sidebar, .topbar, nav.navbar, aside { display: none !important; }
             .card { border: none !important; box-shadow: none !important; }
-            .wht-head { background: #8b7355 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .wht-head { background: #2b4c80 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
-        .wht-head th { background: #8b7355; color: #fff; }
+        .wht-head th { background: #2b4c80; color: #fff; }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
         <h5 class="m-0">شهادة خصم وإضافة (نموذج 41)</h5>
         <div class="d-flex gap-2">
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             <a href="{{ route('supplier_payments.certificate', ['supplier_payment' => $payment, 'format' => 'pdf']) }}" class="btn btn-sm btn-danger"><i class="fa-solid fa-file-pdf ms-1"></i> PDF</a>
             <a href="{{ route('supplier_payments.show', $payment) }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
         </div>

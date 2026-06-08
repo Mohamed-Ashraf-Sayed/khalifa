@@ -24,7 +24,7 @@
             <div class="d-flex justify-content-end gap-2 mb-3">
                 <a href="{{ route('materials.report') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير المخزون</a>
                 @can('materials.create')
-                    <a href="{{ route('materials.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مادة جديدة</a>
+                    <a href="{{ route('materials.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مادة جديدة</a>
                 @endcan
             </div>
             <form class="row g-2 align-items-end mb-3" method="GET">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="col-lg-1 col-md-6">
-                    <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </form>
 

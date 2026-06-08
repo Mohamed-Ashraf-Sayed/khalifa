@@ -11,7 +11,7 @@
     <div class="card mb-3"><div class="card-body">
         <form method="GET" action="{{ route('search') }}" class="d-flex gap-2">
             <input type="text" name="q" value="{{ $q }}" class="form-control" placeholder="ابحث في المشاريع، العملاء، الفواتير، المستخلصات..." autofocus>
-            <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
     </div></div>
 

@@ -12,39 +12,39 @@
     <style>
         :root {
             /* محايدات دافئة هادئة */
-            --bg: #f6f5f2; --bg-2: #efede8; --card: #fff;
-            --line: #e9e6e0; --line-2: #f1efea;
-            --ink: #2b2722; --ink-2: #5c564c; --muted: #8d877b;
+            --bg: #f5f7fa; --bg-2: #e9edf3; --card: #fff;
+            --line: #e3e8ef; --line-2: #eef1f6;
+            --ink: #1f2733; --ink-2: #54606f; --muted: #8794a6;
             /* البني (هوية + الأزرار المضمّنة) */
-            --brown: #8b7355; --brown-dark: #6f5b43; --brown-darker: #564633; --brown-light: #a3895f;
-            --brown-50: #f3efe8; --brown-100: #e7dfd2;
+            --brown: #2b4c80; --brown-dark: #1f3a63; --brown-darker: #14264a; --brown-light: #5b7bab;
+            --brown-50: #eef2f9; --brown-100: #d8e2f2;
             /* ألوان دلالية مكتومة (تُستخدم بهدوء) */
             --success: #4f8a6b; --success-bg: #eaf2ec;
             --danger: #b65f5b; --danger-bg: #f6ebea;
             --warning: #b8893f; --warning-bg: #f6efe2;
             --info: #5b7e96; --info-bg: #ebf0f3;
             --radius: 12px; --radius-sm: 9px;
-            --shadow-sm: 0 1px 2px rgba(80,64,46,.05);
-            --shadow: 0 2px 10px rgba(80,64,46,.06);
-            --shadow-lg: 0 10px 28px rgba(80,64,46,.10);
+            --shadow-sm: 0 1px 2px rgba(30,45,70,.05);
+            --shadow: 0 2px 10px rgba(30,45,70,.06);
+            --shadow-lg: 0 10px 28px rgba(30,45,70,.10);
             /* aliases للتوافق مع القواعد الحالية */
             --beige: var(--bg); --beige-dark: var(--bg-2);
             /* تجاوز ألوان Bootstrap لتهدئتها عالمياً */
-            --bs-primary: #8b7355; --bs-primary-rgb: 139,115,85;
+            --bs-primary: #2b4c80; --bs-primary-rgb: 43,76,128;
             --bs-success-rgb: 79,138,107; --bs-danger-rgb: 182,95,91;
             --bs-warning-rgb: 184,137,63; --bs-info-rgb: 91,126,150;
             --bs-secondary-rgb: 141,135,123;
-            --bs-link-color: #6f5b43; --bs-link-hover-color: #564633;
+            --bs-link-color: #1f3a63; --bs-link-hover-color: #14264a;
         }
         * { font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: .92rem; letter-spacing: .003em; }
-        ::selection { background: rgba(139,115,85,.22); }
+        ::selection { background: rgba(43,76,128,.22); }
         h1,h2,h3,h4,h5,h6 { font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
         a { text-decoration: none; }
 
         /* ===== Sidebar ===== */
         .sidebar {
-            background: linear-gradient(180deg, #6f5b43 0%, #5f4d3a 100%);
+            background: linear-gradient(180deg, #1f3a63 0%, #162e4f 100%);
             height: 100vh; width: 264px; position: fixed; inset-inline-start: 0; top: 0; z-index: 1045;
             overflow-y: auto; overflow-x: hidden; transition: inset-inline-start .25s ease;
             box-shadow: 1px 0 0 rgba(0,0,0,.05);
@@ -92,8 +92,8 @@
         /* البحث */
         .topbar-search { flex: 1 1 280px; max-width: 460px; position: relative; align-items: center; }
         .topbar-search i { position: absolute; inset-inline-start: 14px; color: var(--muted); font-size: .85rem; pointer-events: none; }
-        .topbar-search input { width: 100%; border: 1px solid var(--line); background: #faf7f0; border-radius: 50rem; padding: .5rem 2.4rem .5rem 1rem; font-size: .85rem; transition: all .15s; }
-        .topbar-search input:focus { outline: none; background: #fff; border-color: var(--brown-light); box-shadow: 0 0 0 .2rem rgba(139,115,85,.13); }
+        .topbar-search input { width: 100%; border: 1px solid var(--line); background: #f2f5fa; border-radius: 50rem; padding: .5rem 2.4rem .5rem 1rem; font-size: .85rem; transition: all .15s; }
+        .topbar-search input:focus { outline: none; background: #fff; border-color: var(--brown-light); box-shadow: 0 0 0 .2rem rgba(43,76,128,.13); }
         /* أزرار أيقونية */
         .icon-btn { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--brown-dark);
             display: inline-flex; align-items: center; justify-content: center; position: relative; transition: all .15s; font-size: 1rem; }
@@ -105,7 +105,7 @@
             padding: .25rem .85rem .25rem .3rem; cursor: pointer; transition: all .15s; }
         .user-chip:hover { background: var(--beige); border-color: var(--beige-dark); }
         .user-chip .avatar { width: 34px; height: 34px; min-width: 34px; border-radius: 50%; overflow: hidden;
-            background: linear-gradient(145deg, #93795a, #6f5b43); color: #fff; font-weight: 700; font-size: .95rem;
+            background: linear-gradient(145deg, #3a5c91, #1f3a63); color: #fff; font-weight: 700; font-size: .95rem;
             display: inline-flex; align-items: center; justify-content: center; }
         .user-chip .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-chip .uinfo { flex-direction: column; align-items: flex-start; line-height: 1.1; }
@@ -121,7 +121,7 @@
         .card h6 { font-weight: 700; font-size: .95rem; letter-spacing: -.005em; }
 
         /* ===== مكوّنات صفحات العرض (entity show) ===== */
-        .entity-avatar { width: 60px; height: 60px; min-width: 60px; border-radius: 16px; background: linear-gradient(145deg,#8b7355,#6f5b43); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(139,115,85,.18); }
+        .entity-avatar { width: 60px; height: 60px; min-width: 60px; border-radius: 16px; background: linear-gradient(145deg,#2b4c80,#1f3a63); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(43,76,128,.18); }
         .stat-box { border: 1px solid var(--line); border-radius: 13px; padding: .75rem .9rem; height: 100%; background: #fff; }
         .stat-box .sl { font-size: .72rem; color: var(--muted); font-weight: 600; }
         .stat-box .sv { font-size: 1.2rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; }
@@ -139,8 +139,8 @@
         .btn-light:hover { background: var(--beige); border-color: var(--beige-dark); }
         .btn-sm { border-radius: .5rem; }
         /* الأزرار البنية (style مضمّن) — تحسين شامل (مقصور على الأزرار والروابط) */
-        .btn[style*="8b7355"], button[style*="8b7355"], a.btn[style*="8b7355"] { border: none !important; border-radius: .55rem; box-shadow: 0 1px 3px rgba(139,115,85,.22); transition: all .15s ease; font-weight: 600; }
-        .btn[style*="8b7355"]:hover, button[style*="8b7355"]:hover, a.btn[style*="8b7355"]:hover { filter: brightness(1.05); box-shadow: 0 3px 10px rgba(139,115,85,.26); transform: translateY(-1px); }
+        .btn[style*="2b4c80"], button[style*="2b4c80"], a.btn[style*="2b4c80"] { border: none !important; border-radius: .55rem; box-shadow: 0 1px 3px rgba(43,76,128,.22); transition: all .15s ease; font-weight: 600; }
+        .btn[style*="2b4c80"]:hover, button[style*="2b4c80"]:hover, a.btn[style*="2b4c80"]:hover { filter: brightness(1.05); box-shadow: 0 3px 10px rgba(43,76,128,.26); transform: translateY(-1px); }
         .btn-success { box-shadow: 0 1px 3px rgba(79,138,107,.2); }
         .btn-outline-primary, .btn-outline-secondary, .btn-outline-danger { border-radius: .5rem; }
 
@@ -182,10 +182,10 @@
         .text-secondary { color: var(--muted) !important; }
 
         /* ===== Forms ===== */
-        .form-label { font-weight: 600; font-size: .85rem; color: #5b5443; margin-bottom: .3rem; }
-        .form-control, .form-select { border-radius: .6rem; border-color: var(--line); background: #fdfcfa; font-size: .9rem; padding: .5rem .8rem; transition: border-color .15s, box-shadow .15s; }
-        .form-control:focus, .form-select:focus { border-color: var(--brown-light); box-shadow: 0 0 0 .2rem rgba(139,115,85,.15); background: #fff; }
-        .input-group-text { background: #faf7f0; border-color: var(--line); border-radius: .6rem; color: var(--muted); }
+        .form-label { font-weight: 600; font-size: .85rem; color: #3a4452; margin-bottom: .3rem; }
+        .form-control, .form-select { border-radius: .6rem; border-color: var(--line); background: #fbfcfe; font-size: .9rem; padding: .5rem .8rem; transition: border-color .15s, box-shadow .15s; }
+        .form-control:focus, .form-select:focus { border-color: var(--brown-light); box-shadow: 0 0 0 .2rem rgba(43,76,128,.15); background: #fff; }
+        .input-group-text { background: #f2f5fa; border-color: var(--line); border-radius: .6rem; color: var(--muted); }
 
         /* ===== Pagination ===== */
         .pagination { --bs-pagination-color: var(--brown-dark); --bs-pagination-hover-color: var(--brown-darker);
@@ -214,7 +214,7 @@
 
         /* ===== Misc ===== */
         .text-muted { color: var(--muted) !important; }
-        body::-webkit-scrollbar { width: 11px; } body::-webkit-scrollbar-thumb { background: #d9cfbd; border-radius: 6px; border: 3px solid var(--beige); }
+        body::-webkit-scrollbar { width: 11px; } body::-webkit-scrollbar-thumb { background: #c2cede; border-radius: 6px; border: 3px solid var(--beige); }
 
         @media (max-width: 768px) {
             .sidebar { inset-inline-start: -274px; }
@@ -410,7 +410,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" style="min-width:320px">
                         <li class="px-2 pb-1 d-flex justify-content-between align-items-center">
                             <h6 class="dropdown-header px-1 mb-0">التنبيهات التشغيلية</h6>
-                            <a href="{{ route('notifications.index') }}" class="small text-decoration-none" style="color:#8b7355">عرض الكل</a>
+                            <a href="{{ route('notifications.index') }}" class="small text-decoration-none" style="color:#2b4c80">عرض الكل</a>
                         </li>
                         @forelse ($alertItems as $a)
                             <li>

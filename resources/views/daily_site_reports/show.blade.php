@@ -33,7 +33,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> تفاصيل اليومية</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> تفاصيل اليومية</h6>
         <div class="info-list">
             <div class="il"><span class="k">المشروع</span><span class="v">{{ $report->project?->name ?? '—' }}</span></div>
             <div class="il"><span class="k">التاريخ</span><span class="v">{{ $report->report_date?->format('Y-m-d') }}</span></div>
@@ -49,7 +49,7 @@
 
     {{-- صور وملفات الموقع --}}
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-images ms-1" style="color:#8b7355"></i> صور وملفات الموقع <span class="badge text-bg-secondary">{{ $report->attachments->count() }}</span></h6>
+        <h6 class="mb-3"><i class="fa-solid fa-images ms-1" style="color:#2b4c80"></i> صور وملفات الموقع <span class="badge text-bg-secondary">{{ $report->attachments->count() }}</span></h6>
         <div class="row g-2 mb-2">
             @forelse ($report->attachments as $att)
                 <div class="col-6 col-md-3 col-lg-2">
@@ -59,7 +59,7 @@
                                 <img src="{{ route('attachments.download', $att) }}" alt="{{ $att->original_name }}" style="width:100%;height:90px;object-fit:cover;border-radius:6px">
                             </a>
                         @else
-                            <a href="{{ route('attachments.download', $att) }}" class="d-flex align-items-center justify-content-center text-decoration-none" style="height:90px"><i class="fa-solid fa-file fa-2x" style="color:#8b7355"></i></a>
+                            <a href="{{ route('attachments.download', $att) }}" class="d-flex align-items-center justify-content-center text-decoration-none" style="height:90px"><i class="fa-solid fa-file fa-2x" style="color:#2b4c80"></i></a>
                         @endif
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <span class="text-truncate small" style="max-width:70%" title="{{ $att->original_name }}">{{ $att->original_name }}</span>
@@ -82,7 +82,7 @@
                 <input type="hidden" name="attachable_type" value="App\Models\DailySiteReport">
                 <input type="hidden" name="attachable_id" value="{{ $report->id }}">
                 <input type="file" name="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.xlsx" class="form-control form-control-sm" style="max-width:320px" required>
-                <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع</button>
+                <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع</button>
                 <span class="text-muted small">الحد الأقصى 8MB · صور/PDF/مستندات</span>
             </form>
         @endcan

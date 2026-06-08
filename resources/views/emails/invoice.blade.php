@@ -7,7 +7,7 @@
 </head>
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:right;">
     <div style="max-width:600px;margin:24px auto;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e5e5e5;">
-        <div style="background:#8b7355;color:#fff;padding:20px 24px;">
+        <div style="background:#2b4c80;color:#fff;padding:20px 24px;">
             <h2 style="margin:0;font-size:20px;">{{ $company }}</h2>
         </div>
 

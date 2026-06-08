@@ -39,7 +39,7 @@
 
     {{-- بيانات الأصل --}}
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات الأصل</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات الأصل</h6>
         <div class="info-list">
             <div class="il"><span class="k">تاريخ الشراء</span><span class="v">{{ $asset->purchase_date?->format('Y-m-d') ?? '—' }}</span></div>
             <div class="il"><span class="k">قيمة الخردة</span><span class="v">{{ number_format((float) ($asset->salvage_value ?? 0), 2) }}</span></div>
@@ -58,7 +58,7 @@
 
     {{-- جدول الإهلاك السنوي --}}
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-table-list ms-1" style="color:#8b7355"></i> جدول الإهلاك السنوي</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-table-list ms-1" style="color:#2b4c80"></i> جدول الإهلاك السنوي</h6>
         <div class="table-responsive">
             <table class="table table-sm table-hover align-middle mb-0">
                 <thead class="table-light"><tr><th>السنة</th><th>رصيد أول المدة</th><th>قسط الإهلاك</th><th>مجمّع الإهلاك</th><th>رصيد آخر المدة (الدفتري)</th></tr></thead>
@@ -81,7 +81,7 @@
     @can('assets.edit')
         @if (! in_array($asset->status, ['sold', 'disposed']))
             <div class="card"><div class="card-body">
-                <h6 class="mb-3"><i class="fa-solid fa-box-archive ms-1" style="color:#8b7355"></i> استبعاد / بيع الأصل</h6>
+                <h6 class="mb-3"><i class="fa-solid fa-box-archive ms-1" style="color:#2b4c80"></i> استبعاد / بيع الأصل</h6>
                 <form method="POST" action="{{ route('assets.dispose', $asset) }}" class="row g-2 align-items-end" data-confirm="تأكيد استبعاد/بيع الأصل؟">
                     @csrf
                     <div class="col-md-3"><label class="form-label small">النوع</label>
@@ -89,7 +89,7 @@
                     </div>
                     <div class="col-md-3"><label class="form-label small">التاريخ</label><input type="date" name="disposal_date" value="{{ now()->toDateString() }}" class="form-control" required></div>
                     <div class="col-md-3"><label class="form-label small">قيمة البيع/الاستبعاد</label><input type="number" step="0.01" min="0" name="disposal_value" value="0" class="form-control" required></div>
-                    <div class="col-md-3"><button class="btn w-100" style="background:#8b7355;color:#fff">تسجيل الاستبعاد</button></div>
+                    <div class="col-md-3"><button class="btn w-100" style="background:#2b4c80;color:#fff">تسجيل الاستبعاد</button></div>
                 </form>
                 <div class="text-muted small mt-2">القيمة الدفترية الحالية {{ number_format((float) $asset->bookValue(), 2) }} — الفرق عن قيمة البيع يُحسب كربح/خسارة استبعاد.</div>
             </div></div>
@@ -98,7 +98,7 @@
 
     {{-- سجل تشغيل / صيانة المعدة --}}
     <div class="card mt-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-screwdriver-wrench ms-1" style="color:#8b7355"></i> سجل التشغيل والصيانة</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-screwdriver-wrench ms-1" style="color:#2b4c80"></i> سجل التشغيل والصيانة</h6>
         <div class="table-responsive">
             <table class="table table-sm table-hover align-middle mb-0">
                 <thead class="table-light"><tr><th>النوع</th><th>التاريخ</th><th>ساعات التشغيل</th><th>التكلفة</th><th>الصيانة القادمة</th><th>الوصف</th><th></th></tr></thead>
@@ -143,7 +143,7 @@
                 <div class="col-md-2"><label class="form-label small">التكلفة</label><input type="number" step="0.01" min="0" name="cost" class="form-control"></div>
                 <div class="col-md-2"><label class="form-label small">الصيانة القادمة</label><input type="date" name="next_service_date" class="form-control"></div>
                 <div class="col-md-2"><label class="form-label small">الوصف</label><input type="text" name="description" class="form-control"></div>
-                <div class="col-12"><button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة سجل</button></div>
+                <div class="col-12"><button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة سجل</button></div>
             </form>
         @endcan
     </div></div>

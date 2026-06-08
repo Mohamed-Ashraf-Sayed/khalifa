@@ -5,12 +5,12 @@
 @section('content')
     <div class="d-flex justify-content-end mb-3">
         @can('accounting.create')
-            <a href="{{ route('fiscal_years.create') }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> سنة مالية جديدة</a>
+            <a href="{{ route('fiscal_years.create') }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> سنة مالية جديدة</a>
         @endcan
     </div>
 
     <div class="card"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-calendar-days ms-1" style="color:#8b7355"></i> السنوات والفترات المالية</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-calendar-days ms-1" style="color:#2b4c80"></i> السنوات والفترات المالية</h6>
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-light"><tr><th>السنة</th><th>من</th><th>إلى</th><th>الفترات المقفلة</th><th>الحالة</th><th class="text-end">إجراءات</th></tr></thead>

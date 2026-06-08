@@ -30,7 +30,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-magnifying-glass ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-magnifying-glass ms-1"></i> عرض</button>
                 </div>
             </form>
         </div>
@@ -38,7 +38,7 @@
 
     <div class="card">
         <div class="card-header bg-white">
-            <i class="fa-solid fa-trash-can-arrow-up ms-1" style="color:#8b7355"></i>
+            <i class="fa-solid fa-trash-can-arrow-up ms-1" style="color:#2b4c80"></i>
             <strong>{{ $labels[$type] ?? $type }}</strong> المحذوفة
         </div>
         <div class="card-body">

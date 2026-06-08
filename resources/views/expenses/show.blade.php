@@ -95,7 +95,7 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> إضافة القسط</button>
+                            <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> إضافة القسط</button>
                         </div>
                     </form>
                 </div>

@@ -59,7 +59,7 @@
                 <input type="date" name="to" value="{{ $to }}" class="form-control">
             </div>
             <div class="col-md-3 d-flex gap-2">
-                <button class="btn flex-fill" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> تصفية</button>
+                <button class="btn flex-fill" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> تصفية</button>
                 <a href="{{ route('revenues.index') }}" class="btn btn-light"><i class="fa-solid fa-rotate-right"></i></a>
             </div>
         </form>
@@ -70,7 +70,7 @@
             <div class="d-flex justify-content-end gap-2 mb-3">
                 <a href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}" class="btn btn-outline-success"><i class="fa-solid fa-file-csv ms-1"></i> تصدير CSV</a>
                 @can('revenues.create')
-                    <a href="{{ route('revenues.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إيراد جديد</a>
+                    <a href="{{ route('revenues.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إيراد جديد</a>
                 @endcan
             </div>
 

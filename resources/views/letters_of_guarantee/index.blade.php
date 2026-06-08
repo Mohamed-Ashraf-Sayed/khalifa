@@ -33,7 +33,7 @@
                 </form>
                 <div class="d-flex gap-2">
                     @can('guarantees.create')
-                        <a href="{{ route('guarantees.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                        <a href="{{ route('guarantees.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                             <i class="fa-solid fa-plus ms-1"></i> خطاب ضمان جديد
                         </a>
                     @endcan

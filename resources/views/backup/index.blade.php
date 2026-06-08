@@ -13,7 +13,7 @@
                 @can('settings.edit')
                     <form method="POST" action="{{ route('backups.run') }}" class="m-0">
                         @csrf
-                        <button type="submit" class="btn" style="background:#8b7355;color:#fff">
+                        <button type="submit" class="btn" style="background:#2b4c80;color:#fff">
                             <i class="fa-solid fa-plus ms-1"></i> إنشاء نسخة احتياطية الآن
                         </button>
                     </form>
@@ -44,7 +44,7 @@
                                 <td class="text-end">
                                     @can('settings.edit')
                                         <a href="{{ route('backups.download', ['file' => $backup['name']]) }}"
-                                           class="btn btn-sm" style="background:#8b7355;color:#fff">
+                                           class="btn btn-sm" style="background:#2b4c80;color:#fff">
                                             <i class="fa-solid fa-download ms-1"></i> تحميل
                                         </a>
                                     @endcan

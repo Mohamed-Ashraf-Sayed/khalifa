@@ -80,7 +80,7 @@
             <input type="date" name="to" value="{{ $to }}" class="form-control form-control-sm">
         </div>
         <div class="col-md-3 col-12">
-            <button type="submit" class="btn btn-sm" style="background:#8b7355;color:#fff">
+            <button type="submit" class="btn btn-sm" style="background:#2b4c80;color:#fff">
                 <i class="fa-solid fa-filter ms-1"></i> تطبيق
             </button>
             @if ($from || $to)
@@ -238,10 +238,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
     Chart.defaults.font.family = 'Cairo, sans-serif';
-    Chart.defaults.color = '#8d877b';
-    Chart.defaults.borderColor = '#e9e6e0';
+    Chart.defaults.color = '#8794a6';
+    Chart.defaults.borderColor = '#e3e8ef';
     const egp = v => new Intl.NumberFormat('ar-EG').format(v);
-    const PALETTE = ['#8b7355','#a3895f','#c0ad8e','#6f5b43','#b8893f','#5b7e96','#4f8a6b'];
+    const PALETTE = ['#2b4c80','#5b7bab','#8aa0c4','#1f3a63','#b8893f','#5b7e96','#4f8a6b'];
 
     new Chart(document.getElementById('trendChart'), {
         type: 'bar',
@@ -268,7 +268,7 @@
         type: 'doughnut',
         data: { labels: @json($statusLabels),
             datasets: [{ data: @json($statusValues),
-                backgroundColor: ['#c0ad8e','#5b7e96','#4f8a6b','#b8893f','#b65f5b'], borderWidth: 0 }] },
+                backgroundColor: ['#8aa0c4','#5b7e96','#4f8a6b','#b8893f','#b65f5b'], borderWidth: 0 }] },
         options: { plugins: { legend: { position: 'bottom' } } }
     });
 </script>

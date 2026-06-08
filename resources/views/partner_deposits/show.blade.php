@@ -81,7 +81,7 @@
                                                         <option value="{{ $a->id }}">{{ $a->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-money-bill-wave ms-1"></i> صرف</button>
+                                                <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-money-bill-wave ms-1"></i> صرف</button>
                                             </form>
                                         @endcan
                                     @else

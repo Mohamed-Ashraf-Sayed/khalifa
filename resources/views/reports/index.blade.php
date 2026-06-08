@@ -22,7 +22,7 @@
 @section('content')
     {{-- مكتبة التقارير --}}
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-folder-open ms-1" style="color:#8b7355"></i> مكتبة التقارير المالية</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-folder-open ms-1" style="color:#2b4c80"></i> مكتبة التقارير المالية</h6>
 
         <div class="rt-group-title">القوائم المالية</div>
         <div class="row g-3 mb-3">
@@ -99,7 +99,7 @@
                     <input type="date" name="to" value="{{ $to }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                     <a href="{{ route('reports.index') }}" class="btn btn-light">الكل</a>
                 </div>
             </form>

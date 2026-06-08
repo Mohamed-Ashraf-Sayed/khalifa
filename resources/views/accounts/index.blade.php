@@ -23,7 +23,7 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <h5 class="mb-0"><i class="fa-solid fa-sitemap ms-1"></i> شجرة الحسابات</h5>
                 @can('accounting.create')
-                    <a href="{{ route('accounts.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                    <a href="{{ route('accounts.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> حساب جديد
                     </a>
                 @endcan

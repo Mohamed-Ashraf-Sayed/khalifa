@@ -5,7 +5,7 @@
 @section('content')
     {{-- شريط الإجراءات --}}
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
-        <a href="{{ route('contractors.statement', $contractor) }}" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
+        <a href="{{ route('contractors.statement', $contractor) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
         @can('contractors.edit')
             <a href="{{ route('contractors.edit', $contractor) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
         @endcan
@@ -43,7 +43,7 @@
 
     {{-- بيانات المقاول --}}
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-address-card ms-1" style="color:#8b7355"></i> بيانات المقاول</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-address-card ms-1" style="color:#2b4c80"></i> بيانات المقاول</h6>
         <div class="info-list">
             <div class="il"><span class="k">الشركة</span><span class="v">{{ $contractor->company_name ?: '—' }}</span></div>
             <div class="il"><span class="k">الهاتف</span><span class="v" dir="ltr">{{ $contractor->phone ?: '—' }}</span></div>

@@ -36,7 +36,7 @@
             <div class="col-md-5"><label class="form-label small">البند</label><input type="text" name="description" class="form-control" required></div>
             <div class="col-md-2"><label class="form-label small">الكمية</label><input type="number" step="0.01" min="0.01" name="quantity" value="1" class="form-control" required></div>
             <div class="col-md-3"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" class="form-control" required></div>
-            <div class="col-md-2"><button class="btn w-100" style="background:#8b7355;color:#fff">إضافة بند</button></div>
+            <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة بند</button></div>
         </form>
     </div></div>
     @endcan
@@ -78,7 +78,7 @@
                 @can('quotations.edit')
                     <form method="POST" action="{{ route('quotations.convert', $quotation) }}" class="d-inline" data-confirm="تحويل عرض السعر إلى فاتورة؟">
                         @csrf
-                        <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> تحويل إلى فاتورة</button>
+                        <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> تحويل إلى فاتورة</button>
                     </form>
                 @endcan
             @endif

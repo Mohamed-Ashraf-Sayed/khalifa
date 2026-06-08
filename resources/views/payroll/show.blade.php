@@ -47,7 +47,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات المسيّر</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات المسيّر</h6>
         <div class="info-list">
             <div class="il"><span class="k">الحالة</span><span class="v">{{ \App\Models\PayrollRun::STATUSES[$run->status] ?? $run->status }}</span></div>
             <div class="il"><span class="k">الحساب البنكي</span><span class="v">{{ $run->bankAccount?->name ?? '—' }}</span></div>
@@ -62,7 +62,7 @@
     @can('employees.edit')
         @if ($run->status === 'approved')
             <div class="card mb-3"><div class="card-body">
-                <h6 class="mb-3"><i class="fa-solid fa-sack-dollar ms-1" style="color:#8b7355"></i> صرف الرواتب</h6>
+                <h6 class="mb-3"><i class="fa-solid fa-sack-dollar ms-1" style="color:#2b4c80"></i> صرف الرواتب</h6>
                 <form method="POST" action="{{ route('payroll.pay', $run) }}" class="row g-3 align-items-end" data-confirm="تأكيد صرف الرواتب من الحساب المختار؟">
                     @csrf
                     <div class="col-md-6">
@@ -75,7 +75,7 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-money-bill-transfer ms-1"></i> صرف الرواتب</button>
+                        <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-money-bill-transfer ms-1"></i> صرف الرواتب</button>
                     </div>
                 </form>
             </div></div>
@@ -83,7 +83,7 @@
     @endcan
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-users ms-1" style="color:#8b7355"></i> بنود الرواتب</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-users ms-1" style="color:#2b4c80"></i> بنود الرواتب</h6>
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-light">

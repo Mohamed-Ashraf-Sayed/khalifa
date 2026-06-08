@@ -34,7 +34,7 @@
         {{-- العمالة المرتبطة بالمشروع --}}
         <div class="card mb-3">
             <div class="card-body">
-                <h6 class="mb-3"><i class="fa-solid fa-users ms-1" style="color:#8b7355"></i> العمالة المخصّصة للمشروع</h6>
+                <h6 class="mb-3"><i class="fa-solid fa-users ms-1" style="color:#2b4c80"></i> العمالة المخصّصة للمشروع</h6>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
@@ -73,7 +73,7 @@
         {{-- عامل يدوي إضافي (ad-hoc) --}}
         <div class="card mb-3">
             <div class="card-body">
-                <h6 class="mb-3"><i class="fa-solid fa-user-plus ms-1" style="color:#8b7355"></i> إضافة عامل يدوي (اختياري)</h6>
+                <h6 class="mb-3"><i class="fa-solid fa-user-plus ms-1" style="color:#2b4c80"></i> إضافة عامل يدوي (اختياري)</h6>
                 <div class="row g-2 align-items-end">
                     <div class="col-md-4">
                         <label class="form-label small">اسم العامل</label>
@@ -98,7 +98,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ الكشف</button>
+            <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ الكشف</button>
             <a href="{{ route('labor_attendances.index') }}" class="btn btn-light">إلغاء</a>
         </div>
     </form>

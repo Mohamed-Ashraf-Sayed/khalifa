@@ -26,7 +26,7 @@
                 <div class="d-flex gap-2">
                     <a href="{{ route('project_costs.report', ['project_id' => $projectId]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-pie ms-1"></i> تقرير التكاليف</a>
                     @can('projects.create')
-                        <a href="{{ route('project_costs.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> تكلفة جديدة</a>
+                        <a href="{{ route('project_costs.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> تكلفة جديدة</a>
                     @endcan
                 </div>
             </div>

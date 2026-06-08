@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="mt-3 d-flex gap-2">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
                     <a href="{{ route('journal_entries.index') }}" class="btn btn-light">إلغاء</a>
                 </div>
             </form>

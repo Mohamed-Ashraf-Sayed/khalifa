@@ -10,7 +10,7 @@
             .card { border: none !important; box-shadow: none !important; }
             .ar-head { background: #f3efe9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
-        .ar-grand { background: #8b7355; color: #fff; font-weight: 700; }
+        .ar-grand { background: #2b4c80; color: #fff; font-weight: 700; }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
@@ -18,7 +18,7 @@
         <div class="d-flex gap-2">
             <a href="{{ request()->fullUrlWithQuery(['format' => 'pdf']) }}" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-file-pdf ms-1"></i> PDF</a>
             <a href="{{ request()->fullUrlWithQuery(['format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             <a href="{{ route('reports.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للتقارير</a>
         </div>
     </div>

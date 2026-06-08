@@ -46,7 +46,7 @@
                         <input type="password" name="password_confirmation" class="form-control" minlength="8" required>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
+                        <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ</button>
                     </div>
                 </form>
             </div>

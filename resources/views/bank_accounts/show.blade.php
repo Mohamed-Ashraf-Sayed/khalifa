@@ -81,7 +81,7 @@
                     <input type="text" name="reference_number" class="form-control">
                 </div>
                 <div class="col-md-2">
-                    <button class="btn w-100" style="background:#8b7355;color:#fff">إضافة</button>
+                    <button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة</button>
                 </div>
             </form>
         </div>

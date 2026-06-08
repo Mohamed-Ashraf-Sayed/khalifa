@@ -20,9 +20,9 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <h6 class="mb-0"><i class="fa-solid fa-money-check-dollar ms-1" style="color:#8b7355"></i> مسيّرات الرواتب</h6>
+                <h6 class="mb-0"><i class="fa-solid fa-money-check-dollar ms-1" style="color:#2b4c80"></i> مسيّرات الرواتب</h6>
                 @can('employees.create')
-                    <a href="{{ route('payroll.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                    <a href="{{ route('payroll.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> مسيّر جديد
                     </a>
                 @endcan

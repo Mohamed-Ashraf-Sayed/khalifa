@@ -6,14 +6,14 @@
     <div class="card mb-3"><div class="card-body">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
             <div>
-                <h6 class="mb-1"><i class="fa-solid fa-wand-magic-sparkles ms-1" style="color:#8b7355"></i> الترحيل المحاسبي التلقائي</h6>
+                <h6 class="mb-1"><i class="fa-solid fa-wand-magic-sparkles ms-1" style="color:#2b4c80"></i> الترحيل المحاسبي التلقائي</h6>
                 <p class="text-muted small mb-0">يولّد قيود يومية متوازنة من المستندات التشغيلية (لا يتكرّر — كل مستند يُرحَّل مرّة واحدة). يلزم وجود دليل الحسابات.</p>
             </div>
             @can('accounting.edit')
                 <form method="POST" action="{{ route('accounting.posting.generate') }}" data-confirm="توليد القيود لكل المستندات غير المُرحّلة؟">
                     @csrf
                     <input type="hidden" name="type" value="all">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-bolt ms-1"></i> توليد قيود الكل</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-bolt ms-1"></i> توليد قيود الكل</button>
                 </form>
             @endcan
         </div>

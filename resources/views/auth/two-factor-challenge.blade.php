@@ -10,14 +10,14 @@
     <style>
         * { font-family: 'Cairo', sans-serif; }
         body {
-            background: linear-gradient(160deg, #6f5b43 0%, #564633 100%);
+            background: linear-gradient(160deg, #1f3a63 0%, #14264a 100%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
         }
         .login-card { width: 100%; max-width: 420px; border: none; border-radius: 18px; box-shadow: 0 18px 50px rgba(40,30,20,.32); }
-        .login-head { background: #faf8f4; border-radius: 18px 18px 0 0; padding: 2rem; text-align: center; }
-        .login-head i { font-size: 2.5rem; color: #8b7355; }
-        .btn-brown { background: #8b7355; color: #fff; }
-        .btn-brown:hover { background: #6f5b43; color: #fff; }
+        .login-head { background: #f3f6fb; border-radius: 18px 18px 0 0; padding: 2rem; text-align: center; }
+        .login-head i { font-size: 2.5rem; color: #2b4c80; }
+        .btn-brown { background: #2b4c80; color: #fff; }
+        .btn-brown:hover { background: #1f3a63; color: #fff; }
         .code-input { letter-spacing: .5rem; text-align: center; font-size: 1.4rem; }
     </style>
 </head>

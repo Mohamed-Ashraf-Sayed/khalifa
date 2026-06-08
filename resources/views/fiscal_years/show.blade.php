@@ -13,7 +13,7 @@
                 @if ($fy->status === 'open')
                     <form method="POST" action="{{ route('fiscal_years.close', $fy) }}" data-confirm="إقفال السنة سيولّد قيد إقفال (تصفير الإيرادات/المصروفات للأرباح المرحّلة) ويقفل كل الفترات. متابعة؟">
                         @csrf
-                        <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-lock ms-1"></i> إقفال السنة</button>
+                        <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-lock ms-1"></i> إقفال السنة</button>
                     </form>
                 @else
                     <form method="POST" action="{{ route('fiscal_years.reopen', $fy) }}" data-confirm="إعادة الفتح ستحذف قيد الإقفال وتفتح كل الفترات. متابعة؟">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="card"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-calendar-days ms-1" style="color:#8b7355"></i> الفترات الشهرية</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-calendar-days ms-1" style="color:#2b4c80"></i> الفترات الشهرية</h6>
         <div class="table-responsive">
             <table class="table table-sm table-hover align-middle mb-0">
                 <thead class="table-light"><tr><th>الفترة</th><th>من</th><th>إلى</th><th>الحالة</th><th class="text-end">إجراء</th></tr></thead>

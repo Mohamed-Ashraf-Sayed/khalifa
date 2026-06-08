@@ -33,7 +33,7 @@
                 </form>
                 <div class="d-flex gap-2">
                     @can('projects.create')
-                        <a href="{{ route('meetings.create') }}" class="btn" style="background:#8b7355;color:#fff">
+                        <a href="{{ route('meetings.create') }}" class="btn" style="background:#2b4c80;color:#fff">
                             <i class="fa-solid fa-plus ms-1"></i> محضر اجتماع جديد
                         </a>
                     @endcan

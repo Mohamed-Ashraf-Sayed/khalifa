@@ -16,7 +16,7 @@
                     @if ($revenue->is_confirmed)
                         <button class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-rotate-left ms-1"></i> إلغاء التأكيد</button>
                     @else
-                        <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-circle-check ms-1"></i> تأكيد الإيراد</button>
+                        <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-circle-check ms-1"></i> تأكيد الإيراد</button>
                     @endif
                 </form>
                 <a href="{{ route('revenues.edit', $revenue) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
@@ -118,7 +118,7 @@
                     <input type="text" name="check_number" value="{{ old('check_number') }}" class="form-control">
                 </div>
                 <div class="col-md-2">
-                    <button class="btn w-100" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> تحصيل</button>
+                    <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> تحصيل</button>
                 </div>
                 <div class="col-12">
                     <input type="text" name="notes" value="{{ old('notes') }}" class="form-control form-control-sm" placeholder="ملاحظات (اختياري)">

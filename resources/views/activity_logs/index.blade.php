@@ -37,7 +37,7 @@
                     <input type="date" name="to" value="{{ request('to') }}" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-1 d-flex gap-1">
-                    <button class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-magnifying-glass"></i></button>
                     <a href="{{ route('activity_logs.index') }}" class="btn btn-sm btn-light" title="مسح"><i class="fa-solid fa-rotate-left"></i></a>
                 </div>
             </form>

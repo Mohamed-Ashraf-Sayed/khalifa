@@ -15,7 +15,7 @@
                     </select>
                 </form>
                 @can('partners.create')
-                    <a href="{{ route('partner_transactions.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> حركة جديدة</a>
+                    <a href="{{ route('partner_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> حركة جديدة</a>
                 @endcan
             </div>
 

@@ -21,7 +21,7 @@
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
                             <a id="exportLink" href="{{ route('data_port.export', ['entity' => $entities->keys()->first()]) }}"
-                               class="btn" style="background:#8b7355;color:#fff">
+                               class="btn" style="background:#2b4c80;color:#fff">
                                 <i class="fa-solid fa-download ms-1"></i> تصدير CSV
                             </a>
                             <a id="templateLink" href="{{ route('data_port.template', ['entity' => $entities->keys()->first()]) }}"
@@ -55,7 +55,7 @@
                             <label class="form-label">ملف CSV</label>
                             <input type="file" name="file" class="form-control" accept=".csv,.txt" required>
                         </div>
-                        <button type="submit" class="btn" style="background:#8b7355;color:#fff">
+                        <button type="submit" class="btn" style="background:#2b4c80;color:#fff">
                             <i class="fa-solid fa-upload ms-1"></i> رفع واستيراد
                         </button>
                     </form>

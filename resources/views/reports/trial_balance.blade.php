@@ -15,7 +15,7 @@
         <h5 class="m-0">ميزان المراجعة</h5>
         <div class="d-flex gap-2">
             <a href="{{ request()->fullUrlWithQuery(['export' => 'xlsx']) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
         </div>
     </div>
 
@@ -27,7 +27,7 @@
                     <input type="date" name="to" value="{{ $to }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                     <a href="{{ route('accounting.trial_balance') }}" class="btn btn-light">الكل</a>
                 </div>
             </form>

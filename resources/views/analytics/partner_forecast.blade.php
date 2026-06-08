@@ -8,11 +8,11 @@
             .no-print { display: none !important; }
             .sidebar, .topbar, nav.navbar, aside { display: none !important; }
             .card { border: none !important; box-shadow: none !important; }
-            .an-grand { background: #8b7355 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .an-grand { background: #2b4c80 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .an-partner { background: #f3efe9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .an-over { background: #fdecec !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
-        .an-grand { background: #8b7355; color: #fff; font-weight: 700; }
+        .an-grand { background: #2b4c80; color: #fff; font-weight: 700; }
         .an-partner { background: #f3efe9; color: #5c4a32; font-weight: 700; }
         .an-over { background: #fdecec; }
     </style>
@@ -21,7 +21,7 @@
         <h5 class="m-0">توقّعات أرباح الشركاء</h5>
         <div class="d-flex gap-2">
             <a href="{{ route('analytics.partner_forecast', ['format' => 'xlsx']) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> تصدير Excel</a>
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
         <div class="col-md-6">
             <div class="card"><div class="card-body">
                 <div class="text-muted small">إجمالي الالتزامات القادمة</div>
-                <div class="fs-4 fw-bold" style="color:#8b7355">{{ number_format((float) $totals['upcoming'], 2) }} ج</div>
+                <div class="fs-4 fw-bold" style="color:#2b4c80">{{ number_format((float) $totals['upcoming'], 2) }} ج</div>
             </div></div>
         </div>
         <div class="col-md-6">

@@ -12,13 +12,13 @@
         }
         .is-head { background: #f3efe9; color: #5c4a32; font-weight: 700; }
         .is-subtotal { background: #faf7f2; font-weight: 700; }
-        .is-grand { background: #8b7355; color: #fff; font-weight: 700; }
+        .is-grand { background: #2b4c80; color: #fff; font-weight: 700; }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
         <h5 class="m-0">قائمة الدخل</h5>
         <div class="d-flex gap-2">
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             <a href="{{ route('reports.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للتقارير</a>
         </div>
     </div>
@@ -36,7 +36,7 @@
                     <input type="date" name="to" value="{{ $to }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                     <a href="{{ route('reports.income_statement') }}" class="btn btn-light">الكل</a>
                 </div>
             </form>

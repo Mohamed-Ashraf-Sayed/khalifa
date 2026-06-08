@@ -61,7 +61,7 @@
                     @if (bccomp((string) $extract->retention_amount, '0', 2) > 0 && ! $extract->retention_released)
                         <form method="POST" action="{{ route('contractor_extracts.release_retention', $extract) }}" data-confirm="تحرير المبلغ المحتجز؟">
                             @csrf
-                            <button class="btn btn-sm w-100 mt-2" style="background:#8b7355;color:#fff"><i class="fa-solid fa-unlock ms-1"></i> تحرير المحتجز</button>
+                            <button class="btn btn-sm w-100 mt-2" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-unlock ms-1"></i> تحرير المحتجز</button>
                         </form>
                     @endif
                 @endcan
@@ -77,7 +77,7 @@
             <div class="col-md-2"><label class="form-label small">الوحدة</label><input type="text" name="unit" class="form-control" placeholder="م2/م3/طن.."></div>
             <div class="col-md-2"><label class="form-label small">الكمية</label><input type="number" step="0.001" min="0.001" name="quantity" value="1" class="form-control" required></div>
             <div class="col-md-2"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" class="form-control" required></div>
-            <div class="col-md-2"><button class="btn w-100" style="background:#8b7355;color:#fff">إضافة بند</button></div>
+            <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة بند</button></div>
         </form>
     </div></div>
     @endcan

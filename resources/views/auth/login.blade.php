@@ -10,7 +10,7 @@
     <style>
         * { font-family: 'Cairo', sans-serif; }
         body {
-            background: linear-gradient(160deg, #6f5b43 0%, #564633 100%);
+            background: linear-gradient(160deg, #1f3a63 0%, #14264a 100%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;
             position: relative; overflow: hidden;
         }
@@ -20,20 +20,20 @@
             background: rgba(255,255,255,.03); bottom: -140px; inset-inline-end: -100px; }
         .login-card { width: 100%; max-width: 410px; border: none; border-radius: 18px; position: relative; z-index: 2;
             box-shadow: 0 18px 50px rgba(40,30,20,.32); overflow: hidden; }
-        .login-head { background: #faf8f4; padding: 2.4rem 2rem 1.4rem; text-align: center; }
+        .login-head { background: #f3f6fb; padding: 2.4rem 2rem 1.4rem; text-align: center; }
         .brand-badge { width: 84px; height: 84px; border-radius: 20px; margin: 0 auto .9rem;
             background: #fff; color: #2f2a22; display: flex; align-items: center; justify-content: center; padding: 12px;
-            box-shadow: 0 10px 24px rgba(139,115,85,.28); border: 1px solid #ece5d8; }
+            box-shadow: 0 10px 24px rgba(43,76,128,.28); border: 1px solid #ece5d8; }
         .brand-badge .app-logo { width: 100%; height: 100%; object-fit: contain; }
         .login-head h4 { font-weight: 800; color: #2f2a22; margin: 0; letter-spacing: -.01em; }
         .login-head small { color: #938974; }
-        .form-label { font-weight: 600; font-size: .85rem; color: #5b5443; }
-        .form-control { border-radius: .7rem; border-color: #ece5d8; padding: .62rem .9rem; background: #fdfcfa; }
-        .form-control:focus { border-color: #a3895f; box-shadow: 0 0 0 .2rem rgba(139,115,85,.15); background: #fff; }
-        .input-group-text { background: #faf7f0; border-color: #ece5d8; color: #938974; border-radius: .7rem; }
-        .btn-brown { background: #8b7355; color: #fff; border: none; border-radius: .7rem; font-weight: 700;
-            box-shadow: 0 2px 8px rgba(139,115,85,.25); transition: all .15s; }
-        .btn-brown:hover { color: #fff; filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139,115,85,.3); }
+        .form-label { font-weight: 600; font-size: .85rem; color: #3a4452; }
+        .form-control { border-radius: .7rem; border-color: #ece5d8; padding: .62rem .9rem; background: #fbfcfe; }
+        .form-control:focus { border-color: #5b7bab; box-shadow: 0 0 0 .2rem rgba(43,76,128,.15); background: #fff; }
+        .input-group-text { background: #f2f5fa; border-color: #ece5d8; color: #938974; border-radius: .7rem; }
+        .btn-brown { background: #2b4c80; color: #fff; border: none; border-radius: .7rem; font-weight: 700;
+            box-shadow: 0 2px 8px rgba(43,76,128,.25); transition: all .15s; }
+        .btn-brown:hover { color: #fff; filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(43,76,128,.3); }
         .login-foot { color: rgba(255,255,255,.65); font-size: .8rem; text-align: center; margin-top: 1.1rem; position: relative; z-index: 2; }
     </style>
 </head>

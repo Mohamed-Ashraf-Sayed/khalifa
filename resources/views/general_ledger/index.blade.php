@@ -81,7 +81,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h6 class="mb-3"><i class="fa-solid {{ $card['icon'] }} ms-1" style="color:#8b7355"></i> {{ $card['title'] }}</h6>
+                        <h6 class="mb-3"><i class="fa-solid {{ $card['icon'] }} ms-1" style="color:#2b4c80"></i> {{ $card['title'] }}</h6>
                         @if ($card['items']->isEmpty())
                             <div class="text-muted small py-2">{{ $card['empty'] }}</div>
                         @else
@@ -92,7 +92,7 @@
                                         <option value="{{ $item->id }}">{{ $card['label']($item) }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="btn btn-sm flex-shrink-0" style="background:#8b7355;color:#fff"><i class="fa-solid fa-arrow-left ms-1"></i> فتح الكشف</button>
+                                <button type="submit" class="btn btn-sm flex-shrink-0" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-arrow-left ms-1"></i> فتح الكشف</button>
                             </form>
                         @endif
                     </div>

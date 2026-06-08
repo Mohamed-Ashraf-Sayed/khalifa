@@ -11,7 +11,7 @@
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
                 @can('suppliers.create')
-                    <a href="{{ route('suppliers.create') }}" class="btn btn-brown" style="background:#8b7355;color:#fff">
+                    <a href="{{ route('suppliers.create') }}" class="btn btn-brown" style="background:#2b4c80;color:#fff">
                         <i class="fa-solid fa-plus ms-1"></i> مورد جديد
                     </a>
                 @endcan

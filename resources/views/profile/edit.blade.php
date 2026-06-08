@@ -8,7 +8,7 @@
         <div class="col-lg-6">
             <div class="card h-100">
                 <div class="card-body p-4">
-                    <h5 class="mb-3"><i class="fa-solid fa-user ms-1" style="color:#8b7355"></i> البيانات الشخصية</h5>
+                    <h5 class="mb-3"><i class="fa-solid fa-user ms-1" style="color:#2b4c80"></i> البيانات الشخصية</h5>
                     <form method="POST" action="{{ route('profile.update') }}">
                         @csrf
                         @method('PUT')
@@ -24,7 +24,7 @@
                             <label class="form-label">الهاتف</label>
                             <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" class="form-control">
                         </div>
-                        <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ البيانات</button>
+                        <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> حفظ البيانات</button>
                     </form>
                 </div>
             </div>
@@ -34,7 +34,7 @@
         <div class="col-lg-6">
             <div class="card h-100">
                 <div class="card-body p-4">
-                    <h5 class="mb-3"><i class="fa-solid fa-key ms-1" style="color:#8b7355"></i> تغيير كلمة المرور</h5>
+                    <h5 class="mb-3"><i class="fa-solid fa-key ms-1" style="color:#2b4c80"></i> تغيير كلمة المرور</h5>
                     <form method="POST" action="{{ route('profile.password') }}">
                         @csrf
                         @method('PUT')
@@ -50,7 +50,7 @@
                             <label class="form-label">تأكيد كلمة المرور <span class="text-danger">*</span></label>
                             <input type="password" name="password_confirmation" class="form-control" required>
                         </div>
-                        <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> تحديث كلمة المرور</button>
+                        <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-floppy-disk ms-1"></i> تحديث كلمة المرور</button>
                     </form>
                 </div>
             </div>
@@ -60,12 +60,12 @@
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-body p-4">
-                    <h5 class="mb-3"><i class="fa-solid fa-image ms-1" style="color:#8b7355"></i> الصورة الشخصية</h5>
+                    <h5 class="mb-3"><i class="fa-solid fa-image ms-1" style="color:#2b4c80"></i> الصورة الشخصية</h5>
                     <div class="d-flex align-items-center gap-3 mb-3">
                         @if ($user->avatar)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($user->avatar) }}" alt="الصورة الشخصية" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;border:2px solid #8b7355">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($user->avatar) }}" alt="الصورة الشخصية" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;border:2px solid #2b4c80">
                         @else
-                            <i class="fa-solid fa-user-circle" style="font-size:80px;color:#8b7355"></i>
+                            <i class="fa-solid fa-user-circle" style="font-size:80px;color:#2b4c80"></i>
                         @endif
                         @if ($user->avatar)
                             <form method="POST" action="{{ route('profile.avatar.delete') }}" data-confirm="حذف الصورة الشخصية؟">
@@ -82,7 +82,7 @@
                             <input type="file" name="avatar" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif" required>
                             <div class="form-text">JPG, PNG, WEBP, GIF — بحد أقصى 2 ميجابايت.</div>
                         </div>
-                        <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع الصورة</button>
+                        <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع الصورة</button>
                     </form>
                 </div>
             </div>
@@ -92,7 +92,7 @@
         <div class="col-lg-6">
             <div class="card h-100">
                 <div class="card-body p-4">
-                    <h5 class="mb-3"><i class="fa-solid fa-shield-halved ms-1" style="color:#8b7355"></i> المصادقة الثنائية (2FA)</h5>
+                    <h5 class="mb-3"><i class="fa-solid fa-shield-halved ms-1" style="color:#2b4c80"></i> المصادقة الثنائية (2FA)</h5>
 
                     @if (session('error'))
                         <div class="alert alert-danger py-2">{{ session('error') }}</div>
@@ -120,13 +120,13 @@
                                 <label class="form-label">رمز التحقق <span class="text-danger">*</span></label>
                                 <input type="text" name="code" dir="ltr" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="form-control" autocomplete="one-time-code" required>
                             </div>
-                            <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-circle-check ms-1"></i> تأكيد وتفعيل</button>
+                            <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-circle-check ms-1"></i> تأكيد وتفعيل</button>
                         </form>
                     @else
                         <p class="text-muted small mb-3">أضِف طبقة حماية إضافية لحسابك عبر رمز يتغيّر كل 30 ثانية من تطبيق المصادقة.</p>
                         <form method="POST" action="{{ route('profile.2fa.enable') }}">
                             @csrf
-                            <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-shield-halved ms-1"></i> تفعيل المصادقة الثنائية</button>
+                            <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-shield-halved ms-1"></i> تفعيل المصادقة الثنائية</button>
                         </form>
                     @endif
                 </div>

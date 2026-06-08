@@ -10,7 +10,7 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <h5 class="m-0"><i class="fa-solid fa-user-shield ms-1"></i> الأدوار والصلاحيات</h5>
                 @can('users.create')
-                    <a href="{{ route('roles.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> دور جديد</a>
+                    <a href="{{ route('roles.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> دور جديد</a>
                 @endcan
             </div>
 

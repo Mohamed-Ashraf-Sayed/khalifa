@@ -40,7 +40,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات الاعتماد</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات الاعتماد</h6>
         <div class="info-list">
             <div class="il"><span class="k">النوع</span><span class="v">{{ \App\Models\Submittal::TYPES[$submittal->type] ?? $submittal->type }}</span></div>
             <div class="il"><span class="k">بند المواصفات</span><span class="v">{{ $submittal->spec_section ?: '—' }}</span></div>
@@ -53,7 +53,7 @@
 
     @if ($submittal->description)
         <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-2"><i class="fa-solid fa-align-left ms-1" style="color:#8b7355"></i> الوصف</h6>
+            <h6 class="mb-2"><i class="fa-solid fa-align-left ms-1" style="color:#2b4c80"></i> الوصف</h6>
             <p class="mb-0" style="white-space:pre-line">{{ $submittal->description }}</p>
         </div></div>
     @endif
@@ -67,7 +67,7 @@
 
     @can('projects.edit')
         <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-3"><i class="fa-solid fa-stamp ms-1" style="color:#8b7355"></i> تسجيل نتيجة المراجعة</h6>
+            <h6 class="mb-3"><i class="fa-solid fa-stamp ms-1" style="color:#2b4c80"></i> تسجيل نتيجة المراجعة</h6>
             <form method="POST" action="{{ route('submittals.review', $submittal) }}">
                 @csrf
                 <div class="row g-3">
@@ -84,7 +84,7 @@
                         <textarea name="review_notes" rows="3" class="form-control" placeholder="اكتب ملاحظات الاستشاري...">{{ old('review_notes', $submittal->review_notes) }}</textarea>
                     </div>
                 </div>
-                <button class="btn mt-3" style="background:#8b7355;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ النتيجة</button>
+                <button class="btn mt-3" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ النتيجة</button>
             </form>
         </div></div>
     @endcan

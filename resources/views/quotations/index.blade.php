@@ -31,7 +31,7 @@
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
                 @can('quotations.create')
-                    <a href="{{ route('quotations.create') }}" class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عرض سعر جديد</a>
+                    <a href="{{ route('quotations.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> عرض سعر جديد</a>
                 @endcan
             </div>
 

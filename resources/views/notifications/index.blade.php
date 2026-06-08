@@ -8,7 +8,7 @@
         @if ($unreadCount > 0)
             <form method="POST" action="{{ route('notifications.read_all') }}">
                 @csrf
-                <button class="btn btn-sm" style="background:#8b7355;color:#fff">
+                <button class="btn btn-sm" style="background:#2b4c80;color:#fff">
                     <i class="fa-solid fa-check-double"></i> تعليم الكل كمقروء
                     <span class="badge text-bg-light ms-1">{{ $unreadCount }}</span>
                 </button>

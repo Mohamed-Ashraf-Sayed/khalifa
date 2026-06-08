@@ -38,7 +38,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات الطلب</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات الطلب</h6>
         <div class="info-list">
             <div class="il"><span class="k">النوع</span><span class="v">{{ \App\Models\InspectionRequest::TYPES[$inspectionRequest->type] ?? $inspectionRequest->type }}</span></div>
             <div class="il"><span class="k">الموقع / المكان</span><span class="v">{{ $inspectionRequest->location ?: '—' }}</span></div>
@@ -60,7 +60,7 @@
     @can('projects.edit')
         @if ($inspectionRequest->status === 'pending')
             <div class="card mb-3"><div class="card-body">
-                <h6 class="mb-3"><i class="fa-solid fa-clipboard-check ms-1" style="color:#8b7355"></i> تسجيل نتيجة الفحص</h6>
+                <h6 class="mb-3"><i class="fa-solid fa-clipboard-check ms-1" style="color:#2b4c80"></i> تسجيل نتيجة الفحص</h6>
                 <form method="POST" action="{{ route('inspection_requests.inspect', $inspectionRequest) }}">
                     @csrf
                     <div class="row g-3">
@@ -81,7 +81,7 @@
                             <textarea name="result" rows="4" class="form-control" placeholder="اكتب ملاحظات الفحص هنا...">{{ old('result') }}</textarea>
                         </div>
                     </div>
-                    <button class="btn mt-3" style="background:#8b7355;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ النتيجة</button>
+                    <button class="btn mt-3" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ النتيجة</button>
                 </form>
             </div></div>
         @endif

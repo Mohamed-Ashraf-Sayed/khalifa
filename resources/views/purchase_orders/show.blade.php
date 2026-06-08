@@ -66,7 +66,7 @@
             <div class="col-md-2"><label class="form-label small">الوحدة</label><input type="text" name="unit" class="form-control" placeholder="قطعة/طن.."></div>
             <div class="col-md-2"><label class="form-label small">الكمية</label><input type="number" step="0.001" min="0.001" name="quantity" value="1" class="form-control" required></div>
             <div class="col-md-2"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" class="form-control" required></div>
-            <div class="col-md-2"><button class="btn w-100" style="background:#8b7355;color:#fff">إضافة صنف</button></div>
+            <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة صنف</button></div>
         </form>
     </div></div>
     @endcan

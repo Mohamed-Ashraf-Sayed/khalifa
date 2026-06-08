@@ -8,16 +8,16 @@
             .no-print { display: none !important; }
             .sidebar, .topbar, nav.navbar, aside { display: none !important; }
             .card { border: none !important; box-shadow: none !important; }
-            .an-grand { background: #8b7355 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .an-grand { background: #2b4c80 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
-        .an-grand { background: #8b7355; color: #fff; font-weight: 700; }
+        .an-grand { background: #2b4c80; color: #fff; font-weight: 700; }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
         <h5 class="m-0">كشف الرواتب — {{ $monthLabel }}</h5>
         <div class="d-flex gap-2">
             <a href="{{ route('analytics.payroll', ['format' => 'xlsx', 'month' => $monthLabel]) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> تصدير Excel</a>
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
                     <input type="month" name="month" value="{{ $monthLabel }}" class="form-control">
                 </div>
                 <div class="col-md-3">
-                    <button class="btn" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                     <a href="{{ route('analytics.payroll') }}" class="btn btn-light">الشهر الحالي</a>
                 </div>
             </form>

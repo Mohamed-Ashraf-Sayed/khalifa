@@ -29,7 +29,7 @@
     </div>
 
     <div class="card mb-3"><div class="card-body">
-        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#8b7355"></i> بيانات المحضر</h6>
+        <h6 class="mb-3"><i class="fa-solid fa-circle-info ms-1" style="color:#2b4c80"></i> بيانات المحضر</h6>
         <div class="info-list">
             <div class="il"><span class="k">المشروع</span><span class="v">{{ $meeting->project?->name ?? '—' }}</span></div>
             <div class="il"><span class="k">المكان</span><span class="v">{{ $meeting->location ?: '—' }}</span></div>
@@ -40,14 +40,14 @@
 
     @if ($meeting->attendees)
         <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-2"><i class="fa-solid fa-user-group ms-1" style="color:#8b7355"></i> الحضور</h6>
+            <h6 class="mb-2"><i class="fa-solid fa-user-group ms-1" style="color:#2b4c80"></i> الحضور</h6>
             <p class="mb-0">{!! nl2br(e($meeting->attendees)) !!}</p>
         </div></div>
     @endif
 
     @if ($meeting->agenda)
         <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-2"><i class="fa-solid fa-list-check ms-1" style="color:#8b7355"></i> جدول الأعمال</h6>
+            <h6 class="mb-2"><i class="fa-solid fa-list-check ms-1" style="color:#2b4c80"></i> جدول الأعمال</h6>
             <p class="mb-0">{!! nl2br(e($meeting->agenda)) !!}</p>
         </div></div>
     @endif
@@ -61,7 +61,7 @@
 
     @if ($meeting->action_items)
         <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-2"><i class="fa-solid fa-clipboard-list ms-1" style="color:#8b7355"></i> بنود المتابعة</h6>
+            <h6 class="mb-2"><i class="fa-solid fa-clipboard-list ms-1" style="color:#2b4c80"></i> بنود المتابعة</h6>
             <p class="mb-0">{!! nl2br(e($meeting->action_items)) !!}</p>
         </div></div>
     @endif

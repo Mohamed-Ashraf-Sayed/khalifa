@@ -11,7 +11,7 @@
             .bs-section-head { background: #f3efe9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         .bs-section-head { background: #f3efe9; color: #5c4a32; font-weight: 700; }
-        .bs-grand { background: #8b7355; color: #fff; font-weight: 700; }
+        .bs-grand { background: #2b4c80; color: #fff; font-weight: 700; }
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print flex-wrap gap-2">
@@ -20,12 +20,12 @@
             <form method="GET" action="{{ route('reports.balance_sheet') }}" class="d-flex gap-2 align-items-center">
                 <label class="text-muted small m-0">كما في تاريخ</label>
                 <input type="date" name="as_of" value="{{ request('as_of') }}" class="form-control form-control-sm" style="width:auto">
-                <button type="submit" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
+                <button type="submit" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
                 @if (request('as_of'))
                     <a href="{{ route('reports.balance_sheet') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-xmark"></i></a>
                 @endif
             </form>
-            <button onclick="window.print()" class="btn btn-sm" style="background:#8b7355;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
             <a href="{{ route('reports.balance_sheet', array_filter(['format' => 'pdf', 'as_of' => request('as_of')])) }}" class="btn btn-sm btn-danger"><i class="fa-solid fa-file-pdf ms-1"></i> PDF</a>
             <a href="{{ route('reports.balance_sheet', array_filter(['format' => 'xlsx', 'as_of' => request('as_of')])) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> Excel</a>
             <a href="{{ route('reports.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للتقارير</a>
