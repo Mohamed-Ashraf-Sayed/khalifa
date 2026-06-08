@@ -66,6 +66,10 @@ class PayrollController extends Controller implements HasMiddleware
             'notes' => ['nullable', 'string'],
         ]);
 
+        if (PayrollRun::where('period_year', $data['period_year'])->where('period_month', $data['period_month'])->exists()) {
+            return back()->withInput()->with('error', 'يوجد مسيّر رواتب لهذا الشهر بالفعل — افتحه من القائمة بدل إنشاء واحد جديد.');
+        }
+
         $run = PayrollRun::create([
             'run_number' => sprintf('PR-%d-%02d', $data['period_year'], $data['period_month']),
             'period_year' => $data['period_year'],
