@@ -72,7 +72,7 @@
                                 'submitted' => 'primary', 'under_review' => 'warning',
                                 'approved' => 'success', 'approved_as_noted' => 'info',
                                 'rejected' => 'danger', default => 'secondary' })
-                            <tr @class(['table-warning' => $submittal->isOverdue()])>
+                            <tr>
                                 <td class="fw-semibold">{{ $submittal->submittal_number }}</td>
                                 <td>{{ $submittal->title }}</td>
                                 <td>{{ \App\Models\Submittal::TYPES[$submittal->type] ?? $submittal->type }}</td>

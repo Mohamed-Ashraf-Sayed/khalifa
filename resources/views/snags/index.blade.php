@@ -72,7 +72,7 @@
                                 'open' => 'warning', 'in_progress' => 'info', 'closed' => 'success', default => 'secondary' })
                             @php($priorityBadge = match($snag->priority) {
                                 'high' => 'danger', 'medium' => 'warning', 'low' => 'secondary', default => 'secondary' })
-                            <tr @class(['table-warning' => $snag->isOverdue()])>
+                            <tr>
                                 <td class="fw-semibold">{{ $snag->title }}</td>
                                 <td>{{ $snag->project?->name ?? '—' }}</td>
                                 <td>{{ $snag->location ?: '—' }}</td>

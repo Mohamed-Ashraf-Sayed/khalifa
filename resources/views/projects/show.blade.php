@@ -252,7 +252,7 @@
                     <tbody>
                         @foreach ($project->rfis as $rfi)
                             @php($badge = match($rfi->status) { 'open'=>'warning','answered'=>'success','closed'=>'secondary', default=>'secondary' })
-                            <tr @class(['table-warning' => $rfi->isOverdue()])>
+                            <tr>
                                 <td class="fw-semibold"><a href="{{ route('rfis.show', $rfi) }}">{{ $rfi->rfi_number }}</a></td>
                                 <td>{{ $rfi->subject }}</td>
                                 <td>{{ $rfi->due_date?->format('Y-m-d') ?? '—' }}</td>
@@ -305,7 +305,7 @@
                     <tbody>
                         @foreach ($project->inspectionRequests as $ir)
                             @php($irBadge = match($ir->status) { 'pending'=>'warning','approved'=>'success','rejected'=>'danger','closed'=>'secondary', default=>'secondary' })
-                            <tr @class(['table-warning' => $ir->isOverdue()])>
+                            <tr>
                                 <td class="fw-semibold"><a href="{{ route('inspection_requests.show', $ir) }}">{{ $ir->ir_number }}</a></td>
                                 <td>{{ $ir->title }}</td>
                                 <td>{{ \App\Models\InspectionRequest::TYPES[$ir->type] ?? $ir->type }}</td>

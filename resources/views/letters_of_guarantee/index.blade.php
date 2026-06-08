@@ -59,7 +59,7 @@
                             @php($badge = match($guarantee->status) {
                                 'active' => 'success', 'released' => 'primary',
                                 'expired' => 'danger', 'cancelled' => 'secondary', default => 'secondary' })
-                            <tr @class(['table-warning' => $guarantee->isExpiringSoon()])>
+                            <tr>
                                 <td class="fw-semibold">{{ $guarantee->lg_number }}</td>
                                 <td>{{ \App\Models\LetterOfGuarantee::TYPES[$guarantee->type] ?? $guarantee->type }}</td>
                                 <td>{{ $guarantee->beneficiary }}</td>

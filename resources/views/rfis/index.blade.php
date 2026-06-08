@@ -63,7 +63,7 @@
                             @php($badge = match($rfi->status) {
                                 'open' => 'warning', 'answered' => 'success',
                                 'closed' => 'secondary', default => 'secondary' })
-                            <tr @class(['table-warning' => $rfi->isOverdue()])>
+                            <tr>
                                 <td class="fw-semibold">{{ $rfi->rfi_number }}</td>
                                 <td>{{ $rfi->subject }}</td>
                                 <td>{{ $rfi->project?->name ?? '—' }}</td>

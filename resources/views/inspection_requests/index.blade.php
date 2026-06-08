@@ -69,7 +69,7 @@
                             @php($badge = match($inspectionRequest->status) {
                                 'pending' => 'warning', 'approved' => 'success',
                                 'rejected' => 'danger', 'closed' => 'secondary', default => 'secondary' })
-                            <tr @class(['table-warning' => $inspectionRequest->isOverdue()])>
+                            <tr>
                                 <td class="fw-semibold">{{ $inspectionRequest->ir_number }}</td>
                                 <td>{{ $inspectionRequest->title }}</td>
                                 <td>{{ $inspectionRequest->project?->name ?? '—' }}</td>

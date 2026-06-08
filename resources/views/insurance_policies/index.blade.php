@@ -54,7 +54,7 @@
                         @forelse ($policies as $policy)
                             @php($badge = match($policy->status) {
                                 'active' => 'success', 'expired' => 'danger', 'cancelled' => 'secondary', default => 'secondary' })
-                            <tr @class(['table-warning' => $policy->isExpiringSoon(30)])>
+                            <tr>
                                 <td class="fw-semibold">{{ $policy->policy_number }}</td>
                                 <td>{{ \App\Models\InsurancePolicy::TYPES[$policy->type] ?? $policy->type }}</td>
                                 <td>{{ $policy->provider }}</td>
