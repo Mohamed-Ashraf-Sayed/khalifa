@@ -80,6 +80,7 @@
                     <div id="bulk-toolbar" class="d-none mb-3">
                         <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash ms-1"></i> حذف المحدد (<span id="bulk-count">0</span>)</button>
                     </div>
+                </form>
             @endcan
 
             <div class="table-responsive">
@@ -138,7 +139,6 @@
                     </tbody>
                 </table>
             </div>
-            @can('revenues.delete')</form>@endcan
 
             {{ $revenues->links() }}
         </div>
