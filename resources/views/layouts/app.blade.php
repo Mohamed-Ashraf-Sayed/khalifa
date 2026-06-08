@@ -145,6 +145,19 @@
         .btn-success { box-shadow: 0 1px 3px rgba(79,138,107,.2); }
         .btn-outline-primary, .btn-outline-secondary, .btn-outline-danger { border-radius: .5rem; }
 
+        /* أزرار إجراءات الصفوف داخل الجداول — شكل موحّد محايد، ولون الإجراء يظهر عند المرور */
+        .table td .btn.btn-sm.btn-outline-secondary,
+        .table td .btn.btn-sm.btn-outline-primary,
+        .table td .btn.btn-sm.btn-outline-danger {
+            border: 1px solid var(--line); background: #fff; color: var(--muted);
+            border-radius: 9px; padding: .32rem .52rem; line-height: 1; transition: all .15s ease; box-shadow: none;
+        }
+        .table td .btn.btn-sm.btn-outline-secondary:hover { background: var(--brown-50); border-color: var(--brown-100); color: var(--brown-dark); }
+        .table td .btn.btn-sm.btn-outline-primary:hover   { background: var(--brown);    border-color: var(--brown);     color: #fff; }
+        .table td .btn.btn-sm.btn-outline-danger:hover    { background: var(--danger);   border-color: var(--danger);    color: #fff; }
+        .table td .btn.btn-sm.btn-outline-secondary:hover, .table td .btn.btn-sm.btn-outline-primary:hover, .table td .btn.btn-sm.btn-outline-danger:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .table td .d-inline + .btn, .table td .btn + .btn, .table td .btn + .d-inline { margin-inline-start: 3px; }
+
         /* ===== Tables ===== */
         .table { --bs-table-bg: transparent; color: var(--ink); margin-bottom: 0; }
         .table > thead { background: var(--bg); }
