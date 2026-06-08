@@ -40,7 +40,7 @@
         @foreach ([
             ['revenue','إجمالي الإيرادات','kpi-green','fa-sack-dollar','revenues.index'],
             ['expense','إجمالي المصروفات','kpi-red','fa-money-bill-trend-up','expenses.index'],
-            ['net','صافي الربح','kpi-blue','fa-scale-balanced','reports.index'],
+            ['net','صافي الربح','kpi-blue','fa-arrow-trend-up','reports.index'],
             ['bank_balance','السيولة بالبنوك','kpi-brown','fa-building-columns','bank_accounts.index'],
         ] as [$key,$label,$cls,$icon,$route])
         <div class="col-md-3 col-6">
