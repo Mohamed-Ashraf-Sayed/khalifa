@@ -27,8 +27,12 @@ class NotificationController extends Controller
         $notification = $request->user()->notifications()->findOrFail($id);
         $notification->markAsRead();
 
-        // توجيه المستخدم لرابط الإشعار إن وُجد
-        $url = $notification->data['items'][0]['url'] ?? null;
+        // توجيه المستخدم لعنصر محدّد داخل الإشعار إن طُلب (عند الضغط على عنصر بعينه)
+        // وإلا فأول عنصر له رابط — حتى لا يفوت المستخدم الوصول للسجل المستهدف.
+        $items = $notification->data['items'] ?? [];
+        $index = (int) $request->input('item', 0);
+        $url = $items[$index]['url'] ?? ($items[0]['url'] ?? null);
+
         if ($url) {
             return redirect()->to($url);
         }

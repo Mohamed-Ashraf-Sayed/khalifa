@@ -13,7 +13,7 @@
                         <select name="material_id" class="form-select" required>
                             <option value="">— اختر —</option>
                             @foreach ($materials as $mat)
-                                <option value="{{ $mat->id }}" @selected((int) old('material_id') === $mat->id)>{{ $mat->name }} (متاح: {{ number_format($mat->current_stock, 2) }} {{ $mat->unit }})</option>
+                                <option value="{{ $mat->id }}" @selected((int) old('material_id', request('material_id')) === $mat->id)>{{ $mat->name }} (متاح: {{ number_format($mat->current_stock, 2) }} {{ $mat->unit }})</option>
                             @endforeach
                         </select>
                     </div>

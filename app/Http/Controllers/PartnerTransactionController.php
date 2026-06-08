@@ -52,10 +52,13 @@ class PartnerTransactionController extends Controller implements HasMiddleware
         return view('partner_transactions.show', ['transaction' => $partner_transaction]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('partner_transactions.form', [
-            'transaction' => new PartnerTransaction(['type' => 'deposit']),
+            'transaction' => new PartnerTransaction([
+                'type' => 'deposit',
+                'partner_id' => $request->integer('partner_id') ?: null,
+            ]),
             'partners' => Partner::orderBy('name')->get(),
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
         ]);
@@ -82,16 +85,16 @@ class PartnerTransactionController extends Controller implements HasMiddleware
         return redirect()->route('partner_transactions.index')->with('success', 'تمت إضافة الحركة بنجاح.');
     }
 
-    public function edit(PartnerTransaction $partnerTransaction): View
+    public function edit(PartnerTransaction $partner_transaction): View
     {
         return view('partner_transactions.form', [
-            'transaction' => $partnerTransaction,
+            'transaction' => $partner_transaction,
             'partners' => Partner::orderBy('name')->get(),
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
-    public function update(Request $request, PartnerTransaction $partnerTransaction): RedirectResponse
+    public function update(Request $request, PartnerTransaction $partner_transaction): RedirectResponse
     {
         $data = $this->validateData($request);
 
@@ -99,27 +102,27 @@ class PartnerTransactionController extends Controller implements HasMiddleware
             $partner = Partner::findOrFail($data['partner_id']);
             // نحسب الرصيد باستبعاد قيمة الحركة الحالية القديمة لو كانت سحباً.
             $balance = $partner->currentBalance();
-            if ($partnerTransaction->type === 'withdrawal') {
-                $balance = bcadd($balance, (string) $partnerTransaction->amount, 2);
+            if ($partner_transaction->type === 'withdrawal') {
+                $balance = bcadd($balance, (string) $partner_transaction->amount, 2);
             }
             if (bccomp((string) $data['amount'], $balance, 2) > 0) {
                 throw ValidationException::withMessages(['amount' => 'السحب يتجاوز رصيد الشريك']);
             }
         }
 
-        DB::transaction(function () use ($partnerTransaction, $data) {
-            $partnerTransaction->update($data);
-            $this->syncBankTransaction($partnerTransaction);
+        DB::transaction(function () use ($partner_transaction, $data) {
+            $partner_transaction->update($data);
+            $this->syncBankTransaction($partner_transaction);
         });
 
         return redirect()->route('partner_transactions.index')->with('success', 'تم تحديث الحركة.');
     }
 
-    public function destroy(PartnerTransaction $partnerTransaction): RedirectResponse
+    public function destroy(PartnerTransaction $partner_transaction): RedirectResponse
     {
-        DB::transaction(function () use ($partnerTransaction) {
-            $this->removeLinkedBankTransaction($partnerTransaction);
-            $partnerTransaction->delete();
+        DB::transaction(function () use ($partner_transaction) {
+            $this->removeLinkedBankTransaction($partner_transaction);
+            $partner_transaction->delete();
         });
 
         return back()->with('success', 'تم حذف الحركة.');

@@ -3,6 +3,22 @@
 @section('title', 'الموردون')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['عدد الموردين', number_format($stats['count']), 'fa-truck-field', 'text-primary'],
+            ['الموردون النشطون', number_format($stats['active']), 'fa-circle-check', 'text-success'],
+            ['إجمالي المستحقّ', number_format((float) $stats['outstanding'], 2), 'fa-money-bill-trend-up', 'text-warning'],
+        ] as [$label, $val, $icon, $color])
+        <div class="col-md-4 col-6">
+            <div class="card h-100"><div class="card-body py-3">
+                <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+                <div class="fs-4 fw-bold">{{ $val }}</div>
+                <div class="small text-muted">{{ $label }}</div>
+            </div></div>
+        </div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -35,6 +51,7 @@
                             <th>الشركة</th>
                             <th>النوع</th>
                             <th>الهاتف</th>
+                            <th>الرصيد المستحقّ</th>
                             <th>الحالة</th>
                             <th class="text-end">إجراءات</th>
                         </tr>
@@ -47,6 +64,12 @@
                                 <td>{{ $supplier->company_name ?: '—' }}</td>
                                 <td><span class="badge text-bg-light">{{ \App\Models\Supplier::TYPES[$supplier->type] ?? $supplier->type }}</span></td>
                                 <td>{{ $supplier->phone }}</td>
+                                <td>
+                                    <span class="fw-semibold text-warning">{{ number_format((float) $supplier->balanceDue(), 2) }}</span>
+                                    @if ($supplier->overCreditLimit())
+                                        <span class="badge text-bg-danger ms-1" title="تجاوز الحد الائتماني">تجاوز الحد</span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if ($supplier->is_active)
                                         <span class="badge text-bg-success">نشط</span>
@@ -73,7 +96,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center text-muted py-4">لا يوجد موردون بعد.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">لا يوجد موردون بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

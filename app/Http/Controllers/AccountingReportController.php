@@ -298,11 +298,25 @@ class AccountingReportController extends Controller implements HasMiddleware
         $activityRevenue = $this->periodAmount(fn ($q) => $q->where('type', 'revenue')->where('code', '4101'), 'credit', $from, $to);
         $otherIncome = $this->periodAmount(fn ($q) => $q->where('type', 'revenue')->where('code', '!=', '4101'), 'credit', $from, $to);
         $activityCost = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '51%'), 'debit', $from, $to);
-        $adminGeneral = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'not like', '51%'), 'debit', $from, $to);
+
+        // كل المصروفات عدا تكاليف النشاط المباشرة (51x) — تُوزَّع على بنود القائمة بحسب نطاق الكود.
+        $operatingTotal = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'not like', '51%'), 'debit', $from, $to);
+
+        // اشتقاق البنود الفرعية من نطاقات أكواد دليل الحسابات بدلاً من تثبيتها على صفر.
+        // 53x مصروفات بيعية · 54x المساهمة التكافلية · 55x خسائر ائتمانية متوقعة · 56x مصروفات تمويلية · 57x فروق عملة.
+        $selling = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '53%'), 'debit', $from, $to);
+        $takaful = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '54%'), 'debit', $from, $to);
+        $ecl = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '55%'), 'debit', $from, $to);
+        $financing = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '56%'), 'debit', $from, $to);
+        $fx = $this->periodAmount(fn ($q) => $q->where('type', 'expense')->where('code', 'like', '57%'), 'debit', $from, $to);
+
+        // الباقي (52x وما لا ينتمي لنطاق معروف) يُعرض كمصروفات إدارية وعمومية — بحيث يبقى إجمالي المصروفات التشغيلية ثابتاً.
+        $adminGeneral = bcsub($operatingTotal, bcadd(bcadd(bcadd(bcadd($selling, $takaful, 2), $ecl, 2), $financing, 2), $fx, 2), 2);
 
         $gross = bcsub($activityRevenue, $activityCost, 2);
-        $deductions = ['selling' => '0', 'takaful' => '0', 'financing' => '0', 'ecl' => '0', 'fx' => '0'];
-        $netBeforeTax = bcadd(bcsub($gross, $adminGeneral, 2), $otherIncome, 2);
+        $deductions = ['selling' => $selling, 'takaful' => $takaful, 'financing' => $financing, 'ecl' => $ecl, 'fx' => $fx];
+        // صافي قبل الضرائب = مجمل الربح − إجمالي المصروفات التشغيلية + الإيرادات الأخرى (لا يتغيّر بإعادة التوزيع أعلاه).
+        $netBeforeTax = bcadd(bcsub($gross, $operatingTotal, 2), $otherIncome, 2);
         $incomeTax = '0';
         $deferredTax = '0';
         $netAfterTax = bcsub(bcsub($netBeforeTax, $incomeTax, 2), $deferredTax, 2);

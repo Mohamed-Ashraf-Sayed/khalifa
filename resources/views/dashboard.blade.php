@@ -16,10 +16,22 @@
     .kpi-red   { border-top-color: var(--danger);  } .kpi-red   .ic { color: var(--danger);  }
     .kpi-blue  { border-top-color: var(--info);    } .kpi-blue  .ic { color: var(--info);    }
     .kpi-brown { border-top-color: var(--brown);   } .kpi-brown .ic { color: var(--brown);   }
-    .mini-stat { background:#fff; border:1px solid var(--line); border-radius:14px; padding:1rem 1.1rem; box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .15s, border-color .15s; height:100%; }
+    .mini-stat { display:flex; align-items:center; gap:.85rem; background:#fff; border:1px solid var(--line); border-radius:14px;
+        padding:.85rem .95rem; box-shadow: var(--shadow-sm); position:relative; overflow:hidden; height:100%;
+        transition: transform .15s, box-shadow .15s, border-color .15s; }
     a:hover > .mini-stat { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--bg-2); }
-    .mini-stat i { font-size: 1.05rem; }
-    .mini-stat .n { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; }
+    .mini-stat::before { content:''; position:absolute; inset-block:0; inset-inline-start:0; width:4px; background:var(--c, var(--brown)); }
+    .mini-stat .mini-ic { flex:0 0 auto; width:46px; height:46px; border-radius:12px; display:grid; place-items:center;
+        background:var(--c-bg, var(--brown-50)); color:var(--c, var(--brown)); font-size:1.15rem; }
+    .mini-stat .mini-tx { min-width:0; }
+    .mini-stat .n { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; line-height:1.15; color:var(--ink); }
+    .mini-stat .l { font-size:.78rem; color:var(--muted); font-weight:600; margin-top:1px; }
+    .ms-primary   { --c: var(--brown);   --c-bg: var(--brown-50); }
+    .ms-info      { --c: var(--info);    --c-bg: var(--info-bg); }
+    .ms-warning   { --c: var(--warning); --c-bg: var(--warning-bg); }
+    .ms-secondary { --c: var(--muted);   --c-bg: var(--bg-2); }
+    .ms-success   { --c: var(--success); --c-bg: var(--success-bg); }
+    .ms-danger    { --c: var(--danger);  --c-bg: var(--danger-bg); }
     /* شرائح التنبيهات — واضحة ومريحة: أبيض + حدّ ملوّن خفيف + عدّاد بلون صريح */
     .alert-chip { display:inline-flex; align-items:center; gap:.5rem; background:#fff; border:1px solid var(--line); border-radius:50rem; padding:.45rem .9rem; font-size:.84rem; font-weight:700; color:var(--ink); box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s, border-color .15s; }
     .alert-chip:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
@@ -94,19 +106,21 @@
     {{-- mini stats --}}
     <div class="row g-3 mb-3">
         @foreach ([
-            ['fa-diagram-project','المشاريع',$stats['projects'].' ('.$stats['projects_active'].' نشط)','projects.index','text-primary'],
-            ['fa-users','العملاء',$stats['clients'],'clients.index','text-info'],
-            ['fa-hard-hat','المقاولون',$stats['contractors'],'contractors.index','text-warning'],
-            ['fa-truck','الموردون',$stats['suppliers'],'suppliers.index','text-secondary'],
-            ['fa-id-badge','الموظفون',$stats['employees'],'employees.index','text-success'],
-            ['fa-file-lines','فواتير غير مدفوعة',$stats['invoices_unpaid'],'invoices.index','text-danger'],
-        ] as [$icon,$label,$val,$route,$color])
-        <div class="col-md-2 col-6">
+            ['fa-diagram-project','المشاريع',$stats['projects'].' ('.$stats['projects_active'].' نشط)','projects.index','primary'],
+            ['fa-users','العملاء',$stats['clients'],'clients.index','info'],
+            ['fa-hard-hat','المقاولون',$stats['contractors'],'contractors.index','warning'],
+            ['fa-truck','الموردون',$stats['suppliers'],'suppliers.index','secondary'],
+            ['fa-id-badge','الموظفون',$stats['employees'],'employees.index','success'],
+            ['fa-file-lines','فواتير غير مدفوعة',$stats['invoices_unpaid'],'invoices.index','danger'],
+        ] as [$icon,$label,$val,$route,$c])
+        <div class="col-md-4 col-xl-2 col-6">
             <a href="{{ route($route) }}" class="text-decoration-none text-reset">
-                <div class="mini-stat h-100">
-                    <i class="fa-solid {{ $icon }} {{ $color }}"></i>
-                    <div class="n">{{ $val }}</div>
-                    <div class="small text-muted">{{ $label }}</div>
+                <div class="mini-stat ms-{{ $c }} h-100">
+                    <span class="mini-ic"><i class="fa-solid {{ $icon }}"></i></span>
+                    <span class="mini-tx">
+                        <span class="n d-block">{{ $val }}</span>
+                        <span class="l d-block">{{ $label }}</span>
+                    </span>
                 </div>
             </a>
         </div>

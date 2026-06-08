@@ -19,7 +19,7 @@ class MaterialRequisitionController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:materials.view', only: ['index', 'show']),
+            new Middleware('can:materials.view', only: ['index', 'show', 'print']),
             new Middleware('can:materials.create', only: ['create', 'store']),
             new Middleware('can:materials.edit', only: ['edit', 'update', 'approve', 'issue', 'reject']),
             new Middleware('can:materials.delete', only: ['destroy']),
@@ -55,6 +55,15 @@ class MaterialRequisitionController extends Controller implements HasMiddleware
         return view('material_requisitions.show', [
             'requisition' => $materialRequisition,
             'materials' => Material::orderBy('name')->get(),
+        ]);
+    }
+
+    public function print(MaterialRequisition $materialRequisition): View
+    {
+        $materialRequisition->load(['project', 'creator', 'approver', 'items.material']);
+
+        return view('material_requisitions.print', [
+            'requisition' => $materialRequisition,
         ]);
     }
 

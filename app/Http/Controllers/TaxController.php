@@ -27,15 +27,22 @@ class TaxController extends Controller implements HasMiddleware
         $search = trim((string) $request->input('search', ''));
         $status = (string) $request->input('status', '');
 
+        $applyFilters = fn ($q) => $q
+            ->when($search !== '', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+            ->when($status !== '', fn ($q) => $q->where('status', $status));
+
         $taxes = Tax::query()
             ->with('project')
-            ->when($search !== '', fn ($q) => $q->where('name', 'like', "%{$search}%"))
-            ->when($status !== '', fn ($q) => $q->where('status', $status))
+            ->tap($applyFilters)
             ->latest()
             ->paginate(15)
             ->withQueryString();
 
-        return view('taxes.index', compact('taxes', 'search', 'status'));
+        // إجماليات ملخّصة على نفس الفلاتر (عرض فقط)
+        $totalPending = (float) Tax::query()->tap($applyFilters)->where('status', 'pending')->sum('amount');
+        $totalPaid = (float) Tax::query()->tap($applyFilters)->where('status', 'paid')->sum('amount');
+
+        return view('taxes.index', compact('taxes', 'search', 'status', 'totalPending', 'totalPaid'));
     }
 
     public function show(Tax $tax): View

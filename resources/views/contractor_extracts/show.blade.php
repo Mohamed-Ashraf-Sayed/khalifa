@@ -73,11 +73,12 @@
     <div class="card mb-3"><div class="card-body">
         <form method="POST" action="{{ route('contractor_extract_items.store', $extract) }}" class="row g-2 align-items-end">
             @csrf
-            <div class="col-md-4"><label class="form-label small">بند الأعمال</label><input type="text" name="description" class="form-control" required></div>
+            <div class="col-md-3"><label class="form-label small">بند الأعمال</label><input type="text" name="description" class="form-control" required></div>
             <div class="col-md-2"><label class="form-label small">الوحدة</label><input type="text" name="unit" class="form-control" placeholder="م2/م3/طن.."></div>
+            <div class="col-md-2"><label class="form-label small">الكمية السابقة</label><input type="number" step="0.001" min="0" name="prev_quantity" value="0" class="form-control"></div>
             <div class="col-md-2"><label class="form-label small">الكمية</label><input type="number" step="0.001" min="0.001" name="quantity" value="1" class="form-control" required></div>
             <div class="col-md-2"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" class="form-control" required></div>
-            <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة بند</button></div>
+            <div class="col-md-1"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة</button></div>
         </form>
     </div></div>
     @endcan
@@ -87,12 +88,13 @@
             <h6 class="mb-3">بنود الأعمال</h6>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle">
-                    <thead class="table-light"><tr><th>البند</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th class="text-end"></th></tr></thead>
+                    <thead class="table-light"><tr><th>البند</th><th>الوحدة</th><th>الكمية السابقة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th class="text-end"></th></tr></thead>
                     <tbody>
                         @forelse ($extract->items as $item)
                             <tr>
                                 <td>{{ $item->description }}</td>
                                 <td>{{ $item->unit ?? '—' }}</td>
+                                <td>{{ rtrim(rtrim(number_format($item->prev_quantity, 3), '0'), '.') }}</td>
                                 <td>{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
                                 <td>{{ number_format($item->unit_price, 2) }}</td>
                                 <td class="fw-semibold">{{ number_format($item->total_price, 2) }}</td>
@@ -106,7 +108,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-3">لا توجد بنود. أضِف بنداً من الأعلى.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted py-3">لا توجد بنود. أضِف بنداً من الأعلى.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

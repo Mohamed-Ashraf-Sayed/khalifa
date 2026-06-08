@@ -59,10 +59,15 @@ class PartnerDepositController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('partner_deposits.form', [
-            'deposit' => new PartnerDeposit(['deposit_date' => now()->toDateString(), 'payout_frequency' => 'monthly', 'status' => 'active']),
+            'deposit' => new PartnerDeposit([
+                'deposit_date' => now()->toDateString(),
+                'payout_frequency' => 'monthly',
+                'status' => 'active',
+                'partner_id' => $request->integer('partner_id') ?: null,
+            ]),
             'partners' => Partner::orderBy('name')->get(),
             'accounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
         ]);

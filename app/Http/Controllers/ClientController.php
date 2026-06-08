@@ -40,14 +40,29 @@ class ClientController extends Controller implements HasMiddleware
             ->paginate(15)
             ->withQueryString();
 
-        return view('clients.index', compact('clients', 'search'));
+        // بطاقات إحصائية (للعرض فقط).
+        $invoiced = (string) Invoice::where('status', '!=', 'cancelled')->sum('total_amount');
+        $paid = (string) Invoice::where('status', '!=', 'cancelled')->sum('paid_amount');
+
+        $stats = [
+            'count' => Client::count(),
+            'with_projects' => Client::has('projects')->count(),
+            'balance_due' => bcsub($invoiced, $paid, 2),
+        ];
+
+        return view('clients.index', compact('clients', 'search', 'stats'));
     }
 
     public function show(Client $client): View
     {
         $client->load(['projects' => fn ($q) => $q->latest()]);
 
-        return view('clients.show', compact('client'));
+        // قيم مالية محسوبة للعرض فقط (مطابقة لمنطق كشف الحساب).
+        $totalInvoiced = $client->totalInvoiced();
+        $totalPaid = $client->totalPaid();
+        $balanceDue = bcsub($totalInvoiced, $totalPaid, 2);
+
+        return view('clients.show', compact('client', 'totalInvoiced', 'totalPaid', 'balanceDue'));
     }
 
     public function create(): View

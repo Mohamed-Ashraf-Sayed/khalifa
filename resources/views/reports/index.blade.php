@@ -84,6 +84,26 @@
                 <div class="col-12 col-sm-6 col-lg-4"><a href="{{ route('assets.report') }}" class="report-tile text-reset"><span class="rt-icon"><i class="fa-solid fa-warehouse"></i></span><span class="rt-title flex-grow-1">الأصول والإهلاك</span><i class="fa-solid fa-chevron-left rt-arrow"></i></a></div>
             @endcan
         </div>
+
+        <div class="rt-group-title">التحليلات</div>
+        <div class="row g-3">
+            @foreach ([
+                ['analytics.project_profitability', 'ربحية المشاريع', 'fa-chart-pie'],
+                ['analytics.budget_vs_actual', 'الموازنة مقابل الفعلي', 'fa-scale-unbalanced'],
+                ['analytics.supplier_performance', 'أداء المورّدين', 'fa-truck-field'],
+                ['analytics.contractor_performance', 'أداء المقاولين', 'fa-helmet-safety'],
+                ['analytics.payroll', 'كشف الرواتب', 'fa-money-check-dollar'],
+                ['analytics.partner_forecast', 'توقّعات أرباح الشركاء', 'fa-handshake'],
+            ] as [$r, $label, $icon])
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route($r) }}" class="report-tile text-reset">
+                        <span class="rt-icon"><i class="fa-solid {{ $icon }}"></i></span>
+                        <span class="rt-title flex-grow-1">{{ $label }}</span>
+                        <i class="fa-solid fa-chevron-left rt-arrow"></i>
+                    </a>
+                </div>
+            @endforeach
+        </div>
     </div></div>
 
     {{-- فلتر الفترة --}}

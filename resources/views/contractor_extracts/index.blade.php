@@ -6,8 +6,14 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2" method="GET">
+                <form class="d-flex gap-2 flex-wrap" method="GET">
                     <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث برقم المستخلص">
+                    <select name="contractor_id" class="form-select" style="min-width:180px" onchange="this.form.submit()">
+                        <option value="">كل المقاولين</option>
+                        @foreach ($contractors as $c)
+                            <option value="{{ $c->id }}" @selected($contractorId == $c->id)>{{ $c->name }}</option>
+                        @endforeach
+                    </select>
                     <select name="status" class="form-select" style="min-width:160px" onchange="this.form.submit()">
                         <option value="">كل الحالات</option>
                         @foreach (\App\Models\ContractorExtract::STATUSES as $key => $label)
@@ -15,6 +21,7 @@
                         @endforeach
                     </select>
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <a href="{{ route('contractor_extracts.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
                 </form>
                 @can('contractors.create')
                     <a href="{{ route('contractor_extracts.create') }}" class="btn" style="background:#2b4c80;color:#fff">

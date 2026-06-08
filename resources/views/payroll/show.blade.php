@@ -22,6 +22,7 @@
                 </form>
             @endif
         @endcan
+        <a href="{{ route('payroll.print', $run) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة المسيّر</a>
         <a href="{{ route('payroll.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 
@@ -96,9 +97,11 @@
                         <th>خصم السلفة</th>
                         <th>الصافي</th>
                         <th>الحالة</th>
-                        @can('employees.edit')
-                            @if ($run->status === 'draft')<th class="text-end">تعديل</th>@endif
-                        @endcan
+                        @if ($run->status === 'draft')
+                            @can('employees.edit')<th class="text-end">تعديل</th>@endcan
+                        @else
+                            <th class="text-end">قسيمة</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -132,6 +135,9 @@
                                 <td>{{ number_format((float) $item->advance_deduction, 2) }}</td>
                                 <td class="fw-semibold">{{ number_format((float) $item->net_salary, 2) }}</td>
                                 <td><span class="badge text-bg-{{ $item->paid ? 'success' : 'secondary' }}">{{ $item->paid ? 'مدفوع' : 'غير مدفوع' }}</span></td>
+                                <td class="text-end">
+                                    <a href="{{ route('payroll.payslip', [$run, $item]) }}" class="btn btn-sm btn-outline-secondary" title="قسيمة الراتب"><i class="fa-solid fa-print"></i></a>
+                                </td>
                             </tr>
                         @endif
                     @empty

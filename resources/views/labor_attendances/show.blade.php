@@ -4,6 +4,15 @@
 
 @section('content')
     <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+        @can('projects.edit')
+            <a href="{{ route('labor_attendances.edit', $attendance) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
+        @endcan
+        @can('projects.delete')
+            <form method="POST" action="{{ route('labor_attendances.destroy', $attendance) }}" class="d-inline" data-confirm="متأكد من حذف سجل الحضور؟">
+                @csrf @method('DELETE')
+                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف</button>
+            </form>
+        @endcan
         <a href="{{ route('labor_attendances.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 
@@ -18,7 +27,7 @@
                         @if ($attendance->present)
                             <span class="badge text-bg-success">حاضر</span>
                         @else
-                            <span class="badge text-bg-secondary">غائب</span>
+                            <span class="badge text-bg-danger">غائب</span>
                         @endif
                         @if (! $attendance->employee_id)<span class="badge text-bg-light ms-1">عامل يدوي</span>@endif
                     </div>
@@ -27,8 +36,8 @@
         </div>
         <div class="col-lg-7">
             <div class="row g-3 h-100">
-                <div class="col-6"><div class="stat-box"><div class="sl">عدد الساعات</div><div class="sv">{{ rtrim(rtrim(number_format($attendance->hours, 2), '0'), '.') }}</div></div></div>
-                <div class="col-6"><div class="stat-box accent"><div class="sl">الأجر اليومي</div><div class="sv">{{ $attendance->wage !== null ? number_format((float) $attendance->wage, 2) : '—' }}</div></div></div>
+                <div class="col-6"><div class="stat-box"><div class="sl">عدد الساعات</div><div class="sv">{{ $attendance->present ? rtrim(rtrim(number_format($attendance->hours, 2), '0'), '.') : '—' }}</div></div></div>
+                <div class="col-6"><div class="stat-box accent"><div class="sl">الأجر اليومي</div><div class="sv">{{ $attendance->present && $attendance->wage !== null ? number_format((float) $attendance->wage, 2) : '—' }}</div></div></div>
             </div>
         </div>
     </div>

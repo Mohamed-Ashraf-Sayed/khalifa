@@ -36,13 +36,18 @@
                             </div>
                             @if (! empty($items))
                                 <ul class="list-unstyled mb-1 small">
-                                    @foreach ($items as $item)
+                                    @foreach ($items as $i => $item)
                                         <li class="mb-1">
-                                            <a href="{{ $item['url'] ?? '#' }}" class="text-decoration-none">
-                                                <i class="fa-solid fa-angle-left text-muted"></i>
-                                                {{ $item['label'] ?? '' }}
-                                                <span class="badge text-bg-warning">{{ $item['count'] ?? 0 }}</span>
-                                            </a>
+                                            {{-- الضغط على العنصر يعلّم الإشعار كمقروء ثم يوجّه للسجل المستهدف --}}
+                                            <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="item" value="{{ $i }}">
+                                                <button type="submit" class="btn btn-link btn-sm p-0 text-decoration-none text-reset align-baseline">
+                                                    <i class="fa-solid fa-angle-left text-muted"></i>
+                                                    {{ $item['label'] ?? '' }}
+                                                    <span class="badge text-bg-warning">{{ $item['count'] ?? 0 }}</span>
+                                                </button>
+                                            </form>
                                         </li>
                                     @endforeach
                                 </ul>

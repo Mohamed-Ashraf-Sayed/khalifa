@@ -65,11 +65,12 @@ class ProjectCostController extends Controller implements HasMiddleware
         return view('project_costs.show', ['cost' => $project_cost]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('project_costs.form', $this->formData(new ProjectCost([
             'cost_date' => now()->toDateString(),
             'quantity' => 1,
+            'project_id' => $request->integer('project_id') ?: null,
         ])));
     }
 

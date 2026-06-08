@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
 use App\Models\LaborAttendance;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class LaborAttendanceController extends Controller implements HasMiddleware
@@ -18,6 +18,7 @@ class LaborAttendanceController extends Controller implements HasMiddleware
         return [
             new Middleware('can:projects.view', only: ['index', 'show']),
             new Middleware('can:projects.create', only: ['create', 'store']),
+            new Middleware('can:projects.edit', only: ['edit', 'update']),
             new Middleware('can:projects.delete', only: ['destroy']),
         ];
     }
@@ -29,29 +30,27 @@ class LaborAttendanceController extends Controller implements HasMiddleware
         $from = (string) $request->input('from', '');
         $to = (string) $request->input('to', '');
 
-        $attendances = LaborAttendance::query()
-            ->with(['project', 'employee'])
+        $filters = fn ($q) => $q
             ->when($projectId !== '', fn ($q) => $q->where('project_id', $projectId))
             ->when($date !== '', fn ($q) => $q->whereDate('attendance_date', $date))
             ->when($from !== '', fn ($q) => $q->whereDate('attendance_date', '>=', $from))
-            ->when($to !== '', fn ($q) => $q->whereDate('attendance_date', '<=', $to))
+            ->when($to !== '', fn ($q) => $q->whereDate('attendance_date', '<=', $to));
+
+        $attendances = LaborAttendance::query()
+            ->with(['project', 'employee'])
+            ->tap($filters)
             ->latest('attendance_date')
             ->latest('id')
             ->paginate(20)
             ->withQueryString();
 
         // ملخّص حسب نفس عوامل التصفية
-        $summaryQuery = LaborAttendance::query()
-            ->when($projectId !== '', fn ($q) => $q->where('project_id', $projectId))
-            ->when($date !== '', fn ($q) => $q->whereDate('attendance_date', $date))
-            ->when($from !== '', fn ($q) => $q->whereDate('attendance_date', '>=', $from))
-            ->when($to !== '', fn ($q) => $q->whereDate('attendance_date', '<=', $to));
-
-        $rows = (clone $summaryQuery)->get();
+        $rows = LaborAttendance::query()->tap($filters)->get();
         $summary = [
-            'present' => (int) (clone $summaryQuery)->where('present', true)->count(),
+            'present' => $rows->where('present', true)->count(),
+            'absent' => $rows->where('present', false)->count(),
             'hours' => (float) $rows->reduce(fn ($c, $r) => bcadd($c, (string) $r->hours, 2), '0'),
-            'wage' => (float) $rows->reduce(fn ($c, $r) => bcadd($c, (string) ($r->wage ?? 0), 2), '0'),
+            'wage' => (float) $rows->where('present', true)->reduce(fn ($c, $r) => bcadd($c, (string) ($r->wage ?? 0), 2), '0'),
         ];
 
         $projects = Project::orderBy('name')->get(['id', 'name']);
@@ -73,12 +72,24 @@ class LaborAttendanceController extends Controller implements HasMiddleware
         $date = (string) $request->input('attendance_date', now()->toDateString());
 
         $employees = collect();
+        $existing = collect();
         if ($projectId !== '') {
             $project = Project::with('assignedEmployees')->find($projectId);
             $employees = $project ? $project->assignedEmployees : collect();
+
+            // سجلات اليوم الحالية لنفس المشروع/التاريخ → لإعادة فتح الكشف كمحرّر
+            $existing = LaborAttendance::where('project_id', $projectId)
+                ->whereDate('attendance_date', $date)
+                ->get();
         }
 
-        return view('labor_attendances.create', compact('projects', 'projectId', 'date', 'employees'));
+        // مفاتيح الموظفين المسجّلين مسبقاً + العمال اليدويون المسجّلون
+        $existingByEmployee = $existing->whereNotNull('employee_id')->keyBy('employee_id');
+        $existingLaborers = $existing->whereNull('employee_id')->values();
+
+        return view('labor_attendances.create', compact(
+            'projects', 'projectId', 'date', 'employees', 'existingByEmployee', 'existingLaborers'
+        ));
     }
 
     public function store(Request $request): RedirectResponse
@@ -98,49 +109,107 @@ class LaborAttendanceController extends Controller implements HasMiddleware
         ]);
 
         $userId = $request->user()->id;
-        $count = 0;
+        $present = 0;
+        $absent = 0;
 
-        foreach ($request->input('rows', []) as $row) {
-            $present = (bool) ($row['present'] ?? false);
-            if (! $present) {
-                continue;
+        DB::transaction(function () use ($request, $data, $userId, &$present, &$absent) {
+            // تسجيل/تحديث الموظفين المسندين (حاضر وغائب) بدون تكرار لنفس اليوم
+            foreach ($request->input('rows', []) as $row) {
+                if (empty($row['employee_id'])) {
+                    continue;
+                }
+                $isPresent = (bool) ($row['present'] ?? false);
+
+                $this->upsertRecord(
+                    fn ($q) => $q->where('employee_id', $row['employee_id']),
+                    ['employee_id' => $row['employee_id']],
+                    $data, $isPresent, $row['hours'] ?? 0, $row['wage'] ?? null, $userId
+                );
+
+                $isPresent ? $present++ : $absent++;
             }
-            if (empty($row['employee_id'])) {
-                continue;
+
+            // عامل يدوي إضافي (ad-hoc) — تحديث إن وُجد بنفس الاسم/اليوم وإلا إنشاء
+            if (! empty($data['laborer_name'] ?? null)) {
+                $isPresent = (bool) $request->input('laborer_present', true);
+
+                $this->upsertRecord(
+                    fn ($q) => $q->whereNull('employee_id')->where('laborer_name', $data['laborer_name']),
+                    ['laborer_name' => $data['laborer_name']],
+                    $data, $isPresent, $data['laborer_hours'] ?? 0, $data['laborer_wage'] ?? null, $userId
+                );
+
+                $isPresent ? $present++ : $absent++;
             }
-            LaborAttendance::create([
-                'project_id' => $data['project_id'],
-                'attendance_date' => $data['attendance_date'],
-                'employee_id' => $row['employee_id'],
-                'hours' => $row['hours'] ?? 0,
-                'present' => true,
-                'wage' => $row['wage'] ?? null,
-                'created_by' => $userId,
-            ]);
-            $count++;
-        }
+        });
 
-        // عامل يدوي إضافي (ad-hoc)
-        if (! empty($data['laborer_name'] ?? null)) {
-            LaborAttendance::create([
-                'project_id' => $data['project_id'],
-                'attendance_date' => $data['attendance_date'],
-                'laborer_name' => $data['laborer_name'],
-                'hours' => $data['laborer_hours'] ?? 0,
-                'present' => (bool) ($request->input('laborer_present', true)),
-                'wage' => $data['laborer_wage'] ?? null,
-                'created_by' => $userId,
-            ]);
-            $count++;
-        }
-
-        if ($count === 0) {
-            return back()->withInput()->with('error', 'لم يتم تحديد أي عامل حاضر.');
+        if ($present === 0 && $absent === 0) {
+            return back()->withInput()->with('error', 'لا يوجد عمال في الكشف لحفظهم.');
         }
 
         return redirect()
             ->route('labor_attendances.index', ['project_id' => $data['project_id'], 'attendance_date' => $data['attendance_date']])
-            ->with('success', "تم تسجيل حضور {$count} عامل.");
+            ->with('success', "تم حفظ الكشف: {$present} حاضر، {$absent} غائب.");
+    }
+
+    /**
+     * يحدّث سجل حضور موجود لنفس المشروع/اليوم/العامل أو يُنشئه — مطابقة بـ whereDate
+     * كي تعمل على SQLite وMySQL معاً (عمود التاريخ قد يُخزَّن مع جزء وقت 00:00:00).
+     */
+    private function upsertRecord(callable $match, array $identity, array $data, bool $isPresent, $hours, $wage, int $userId): void
+    {
+        $record = LaborAttendance::query()
+            ->where('project_id', $data['project_id'])
+            ->whereDate('attendance_date', $data['attendance_date'])
+            ->tap($match)
+            ->first();
+
+        $attrs = [
+            'hours' => $isPresent ? ($hours ?? 0) : 0,
+            'present' => $isPresent,
+            'wage' => $isPresent ? ($wage ?? null) : null,
+            'created_by' => $userId,
+        ];
+
+        if ($record) {
+            $record->update($attrs);
+
+            return;
+        }
+
+        LaborAttendance::create(array_merge($identity, $attrs, [
+            'project_id' => $data['project_id'],
+            'attendance_date' => $data['attendance_date'],
+        ]));
+    }
+
+    public function edit(LaborAttendance $labor_attendance): View
+    {
+        $labor_attendance->load(['project', 'employee']);
+
+        return view('labor_attendances.edit', ['attendance' => $labor_attendance]);
+    }
+
+    public function update(Request $request, LaborAttendance $labor_attendance): RedirectResponse
+    {
+        $data = $request->validate([
+            'present' => ['nullable', 'boolean'],
+            'hours' => ['nullable', 'numeric', 'min:0'],
+            'wage' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $present = (bool) ($data['present'] ?? false);
+        $labor_attendance->update([
+            'present' => $present,
+            'hours' => $present ? ($data['hours'] ?? 0) : 0,
+            'wage' => $present ? ($data['wage'] ?? null) : null,
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('labor_attendances.show', $labor_attendance)
+            ->with('success', 'تم تحديث سجل الحضور.');
     }
 
     public function destroy(LaborAttendance $labor_attendance): RedirectResponse

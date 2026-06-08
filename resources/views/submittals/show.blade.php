@@ -66,26 +66,30 @@
     @endif
 
     @can('projects.edit')
-        <div class="card mb-3"><div class="card-body">
-            <h6 class="mb-3"><i class="fa-solid fa-stamp ms-1" style="color:#2b4c80"></i> تسجيل نتيجة المراجعة</h6>
-            <form method="POST" action="{{ route('submittals.review', $submittal) }}">
-                @csrf
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">الحالة الجديدة</label>
-                        <select name="status" class="form-select" required>
-                            @foreach (['under_review','approved','approved_as_noted','rejected'] as $key)
-                                <option value="{{ $key }}" @selected($submittal->status === $key)>{{ \App\Models\Submittal::STATUSES[$key] }}</option>
-                            @endforeach
-                        </select>
+        @if (in_array($submittal->status, ['submitted','under_review']))
+            <div class="card mb-3"><div class="card-body">
+                <h6 class="mb-3"><i class="fa-solid fa-stamp ms-1" style="color:#2b4c80"></i> تسجيل نتيجة المراجعة</h6>
+                <form method="POST" action="{{ route('submittals.review', $submittal) }}">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">الحالة الجديدة</label>
+                            <select name="status" class="form-select" required>
+                                @foreach (['under_review','approved','approved_as_noted','rejected'] as $key)
+                                    <option value="{{ $key }}" @selected($submittal->status === $key)>{{ \App\Models\Submittal::STATUSES[$key] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">ملاحظات المراجعة</label>
+                            <textarea name="review_notes" rows="3" class="form-control" placeholder="اكتب ملاحظات الاستشاري...">{{ old('review_notes', $submittal->review_notes) }}</textarea>
+                        </div>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label">ملاحظات المراجعة</label>
-                        <textarea name="review_notes" rows="3" class="form-control" placeholder="اكتب ملاحظات الاستشاري...">{{ old('review_notes', $submittal->review_notes) }}</textarea>
-                    </div>
-                </div>
-                <button class="btn mt-3" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ النتيجة</button>
-            </form>
-        </div></div>
+                    <button class="btn mt-3" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-paper-plane ms-1"></i> حفظ النتيجة</button>
+                </form>
+            </div></div>
+        @else
+            <div class="alert alert-secondary"><i class="fa-solid fa-lock ms-1"></i> صدر قرار نهائي على هذا الاعتماد الفني ({{ \App\Models\Submittal::STATUSES[$submittal->status] ?? $submittal->status }}){{ $submittal->reviewed_at ? ' بتاريخ ' . $submittal->reviewed_at->format('Y-m-d H:i') : '' }} — لا يمكن إعادة المراجعة.</div>
+        @endif
     @endcan
 @endsection

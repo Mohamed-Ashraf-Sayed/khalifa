@@ -16,6 +16,11 @@
         @if ($account->is_group) — @else {{ number_format((float) $account->balance(), 2) }} @endif
     </td>
     <td class="text-end">
+        @can('accounting.view')
+            @unless ($account->is_group)
+                <a href="{{ route('accounting.ledger', ['account_id' => $account->id]) }}" class="btn btn-sm btn-outline-secondary" title="كشف الحساب"><i class="fa-solid fa-book-open"></i></a>
+            @endunless
+        @endcan
         @can('accounting.edit')
             <a href="{{ route('accounts.edit', $account) }}" class="btn btn-sm btn-outline-primary" title="تعديل"><i class="fa-solid fa-pen"></i></a>
         @endcan

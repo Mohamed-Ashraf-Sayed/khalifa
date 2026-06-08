@@ -9,6 +9,14 @@
         @can('guarantees.edit')
             <a href="{{ route('insurance.edit', $policy) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
         @endcan
+        <a href="{{ route('insurance.print', $policy) }}" class="btn btn-sm btn-outline-dark"><i class="fa-solid fa-print ms-1"></i> طباعة</a>
+        @can('guarantees.delete')
+            <form method="POST" action="{{ route('insurance.destroy', $policy) }}" class="d-inline" data-confirm="تأكيد حذف وثيقة التأمين؟">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف</button>
+            </form>
+        @endcan
         <a href="{{ route('insurance.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 

@@ -26,12 +26,30 @@ class BankAccountController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $accounts = BankAccount::query()->latest()->paginate(15);
+        $search = trim((string) $request->input('search', ''));
+        $status = (string) $request->input('status', '');
+
+        $query = BankAccount::query()
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('bank_name', 'like', "%{$search}%")
+                        ->orWhere('account_number', 'like', "%{$search}%");
+                });
+            })
+            ->when($status === 'active', fn ($q) => $q->where('is_active', true))
+            ->when($status === 'inactive', fn ($q) => $q->where('is_active', false));
+
+        $accounts = $query->latest()->paginate(15)->withQueryString();
         $total = BankAccount::where('is_active', true)->sum('current_balance');
 
-        return view('bank_accounts.index', compact('accounts', 'total'));
+        return view('bank_accounts.index', [
+            'accounts' => $accounts,
+            'total' => $total,
+            'filters' => compact('search', 'status'),
+        ]);
     }
 
     public function create(): View
@@ -119,13 +137,17 @@ class BankAccountController extends Controller implements HasMiddleware
             $out = fopen('php://output', 'w');
             // BOM لدعم العربية في Excel
             fwrite($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['التاريخ', 'البيان', 'التصنيف', 'إيداع', 'سحب', 'الرصيد الجاري', 'المطابقة']);
+            fputcsv($out, ['التاريخ', 'البيان', 'التصنيف', 'المستفيد', 'رقم الشيك', 'المرجع', 'تاريخ القيمة', 'إيداع', 'سحب', 'الرصيد الجاري', 'المطابقة']);
             foreach ($rows as $row) {
                 $t = $row['txn'];
                 fputcsv($out, [
                     $t->transaction_date->format('Y-m-d'),
                     $t->description,
                     BankTransaction::CATEGORIES[$t->category] ?? ($t->category ?? ''),
+                    $t->beneficiary ?? '',
+                    $t->check_number ?? '',
+                    $t->reference_number ?? '',
+                    $t->value_date ? $t->value_date->format('Y-m-d') : '',
                     $t->type === 'deposit' ? number_format($t->amount, 2, '.', '') : '',
                     $t->type === 'withdrawal' ? number_format($t->amount, 2, '.', '') : '',
                     $row['running'],

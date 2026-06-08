@@ -6,6 +6,9 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="m-0">{{ $employee->name }}</h5>
         <div class="d-flex gap-2">
+            @can('employees.create')
+                <a href="{{ route('employee_transactions.create', ['employee_id' => $employee->id]) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-plus ms-1"></i> إضافة معاملة</a>
+            @endcan
             <a href="{{ route('employees.statement', $employee) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-file-invoice ms-1"></i> كشف حساب</a>
             @can('employees.edit')
                 <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
@@ -63,10 +66,15 @@
 
     <div class="card">
         <div class="card-body">
-            <h6 class="mb-3">حركات الموظف <span class="badge text-bg-light">{{ $employee->transactions->count() }}</span></h6>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0">حركات الموظف <span class="badge text-bg-light">{{ $employee->transactions->count() }}</span></h6>
+                @can('employees.create')
+                    <a href="{{ route('employee_transactions.create', ['employee_id' => $employee->id]) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-plus ms-1"></i> إضافة معاملة</a>
+                @endcan
+            </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th>النوع</th><th>المبلغ</th><th>التاريخ</th><th>البيان</th></tr></thead>
+                    <thead class="table-light"><tr><th>النوع</th><th>المبلغ</th><th>التاريخ</th><th>البيان</th><th class="text-end">إجراءات</th></tr></thead>
                     <tbody>
                         @forelse ($employee->transactions as $t)
                             <tr>
@@ -74,9 +82,15 @@
                                 <td>{{ number_format($t->amount, 2) }}</td>
                                 <td>{{ $t->transaction_date ? $t->transaction_date->format('Y-m-d') : '—' }}</td>
                                 <td>{{ $t->description ?: '—' }}</td>
+                                <td class="text-end">
+                                    <a href="{{ route('employee_transactions.show', $t) }}" class="btn btn-sm btn-outline-secondary" title="عرض"><i class="fa-solid fa-eye"></i></a>
+                                    @can('employees.edit')
+                                        <a href="{{ route('employee_transactions.edit', $t) }}" class="btn btn-sm btn-outline-primary" title="تعديل"><i class="fa-solid fa-pen"></i></a>
+                                    @endcan
+                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="text-center text-muted py-3">لا توجد حركات لهذا الموظف.</td></tr>
+                            <tr><td colspan="5" class="text-center text-muted py-3">لا توجد حركات لهذا الموظف.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

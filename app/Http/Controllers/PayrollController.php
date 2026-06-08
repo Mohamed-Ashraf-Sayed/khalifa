@@ -20,7 +20,7 @@ class PayrollController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:employees.view', only: ['index', 'show']),
+            new Middleware('can:employees.view', only: ['index', 'show', 'print', 'payslip']),
             new Middleware('can:employees.create', only: ['create', 'store']),
             new Middleware('can:employees.edit', only: ['edit', 'update', 'approve', 'pay', 'updateItem']),
             new Middleware('can:employees.delete', only: ['destroy']),
@@ -31,6 +31,7 @@ class PayrollController extends Controller implements HasMiddleware
     {
         $runs = PayrollRun::query()
             ->with(['creator'])
+            ->withCount('items')
             ->latest()
             ->paginate(15);
 
@@ -112,6 +113,23 @@ class PayrollController extends Controller implements HasMiddleware
             'run' => $payrollRun,
             'bankAccounts' => BankAccount::where('is_active', true)->orderBy('name')->get(),
         ]);
+    }
+
+    public function print(PayrollRun $payrollRun): View
+    {
+        $payrollRun->load(['items.employee', 'bankAccount', 'creator', 'approver']);
+
+        return view('payroll.print', ['run' => $payrollRun]);
+    }
+
+    public function payslip(PayrollRun $payrollRun, PayrollItem $item): View
+    {
+        abort_unless($item->payroll_run_id === $payrollRun->id, 404);
+
+        $payrollRun->load(['bankAccount', 'approver']);
+        $item->load('employee');
+
+        return view('payroll.payslip', ['run' => $payrollRun, 'item' => $item]);
     }
 
     public function updateItem(Request $request, PayrollRun $payrollRun, PayrollItem $item): RedirectResponse

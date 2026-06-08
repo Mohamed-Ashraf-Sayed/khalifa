@@ -33,7 +33,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">المشروع <span class="text-danger">*</span></label>
-                        <select name="project_id" class="form-select" required>
+                        <select name="project_id" id="co-project" class="form-select" required>
                             <option value="">— اختر —</option>
                             @foreach ($projects as $project)
                                 <option value="{{ $project->id }}" @selected((string) old('project_id', $changeOrder->project_id) === (string) $project->id)>{{ $project->name }}</option>
@@ -42,13 +42,10 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">العقد</label>
-                        <select name="contract_id" class="form-select">
+                        <select name="contract_id" id="co-contract" class="form-select" data-selected="{{ old('contract_id', $changeOrder->contract_id) }}">
                             <option value="">— بدون —</option>
-                            @foreach ($contracts as $contract)
-                                <option value="{{ $contract->id }}" @selected((string) old('contract_id', $changeOrder->contract_id) === (string) $contract->id)>{{ $contract->contract_number }} — {{ $contract->title }}</option>
-                            @endforeach
                         </select>
-                        <div class="form-text">العقود المتاحة تخص المشروع المحدد عند التعديل</div>
+                        <div class="form-text">العقود المتاحة تخص المشروع المحدد فقط</div>
                     </div>
                     <div class="col-md-8">
                         <label class="form-label">العنوان <span class="text-danger">*</span></label>
@@ -75,4 +72,46 @@
             </form>
         </div>
     </div>
+
+    @php($contractsJson = $contracts->map(fn ($c) => [
+        'id' => $c->id,
+        'project_id' => $c->project_id,
+        'label' => $c->contract_number.' — '.$c->title,
+    ])->values())
+
+    <script>
+        const CO_CONTRACTS = @json($contractsJson);
+
+        function coRefreshContracts() {
+            const projectSel = document.getElementById('co-project');
+            const contractSel = document.getElementById('co-contract');
+            if (!projectSel || !contractSel) {
+                return;
+            }
+
+            const projectId = projectSel.value;
+            const selected = contractSel.dataset.selected || '';
+
+            contractSel.innerHTML = '<option value="">— بدون —</option>';
+            CO_CONTRACTS
+                .filter(c => String(c.project_id) === String(projectId))
+                .forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.label;
+                    if (String(c.id) === String(selected)) {
+                        opt.selected = true;
+                    }
+                    contractSel.appendChild(opt);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const projectSel = document.getElementById('co-project');
+            if (projectSel) {
+                projectSel.addEventListener('change', coRefreshContracts);
+            }
+            coRefreshContracts();
+        });
+    </script>
 @endsection

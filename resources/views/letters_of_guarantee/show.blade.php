@@ -15,6 +15,14 @@
             @endif
             <a href="{{ route('guarantees.edit', $guarantee) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
         @endcan
+        <a href="{{ route('guarantees.print', $guarantee) }}" class="btn btn-sm btn-outline-dark"><i class="fa-solid fa-print ms-1"></i> طباعة</a>
+        @can('guarantees.delete')
+            <form method="POST" action="{{ route('guarantees.destroy', $guarantee) }}" class="d-inline" data-confirm="تأكيد حذف خطاب الضمان؟">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف</button>
+            </form>
+        @endcan
         <a href="{{ route('guarantees.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
     </div>
 

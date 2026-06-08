@@ -54,15 +54,29 @@
                                 <td>{{ number_format($item->quantity, 2) }}</td>
                                 <td>{{ number_format($item->unit_price, 2) }}</td>
                                 <td class="fw-semibold">{{ number_format($item->total_price, 2) }}</td>
-                                <td class="text-end">
+                                <td class="text-end text-nowrap">
                                     @can('quotations.edit')
-                                        <form method="POST" action="{{ route('quotation_items.destroy', $item) }}" class="d-inline" data-confirm="حذف البند؟">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" data-bs-toggle="collapse" data-bs-target="#edit-item-{{ $item->id }}" aria-expanded="false"><i class="fa-solid fa-pen"></i></button>
+                                        <form method="POST" action="{{ route('quotation_items.destroy', $item) }}" class="d-inline d-print-none" data-confirm="حذف البند؟">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                                         </form>
                                     @endcan
                                 </td>
                             </tr>
+                            @can('quotations.edit')
+                                <tr class="collapse d-print-none" id="edit-item-{{ $item->id }}">
+                                    <td colspan="5" class="bg-light">
+                                        <form method="POST" action="{{ route('quotation_items.update', $item) }}" class="row g-2 align-items-end">
+                                            @csrf @method('PUT')
+                                            <div class="col-md-5"><label class="form-label small">البند</label><input type="text" name="description" value="{{ $item->description }}" class="form-control form-control-sm" required></div>
+                                            <div class="col-md-2"><label class="form-label small">الكمية</label><input type="number" step="0.01" min="0.01" name="quantity" value="{{ rtrim(rtrim(number_format($item->quantity,2,'.',''),'0'),'.') }}" class="form-control form-control-sm" required></div>
+                                            <div class="col-md-3"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" value="{{ rtrim(rtrim(number_format($item->unit_price,2,'.',''),'0'),'.') }}" class="form-control form-control-sm" required></div>
+                                            <div class="col-md-2"><button class="btn btn-sm w-100" style="background:#2b4c80;color:#fff">حفظ التعديل</button></div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endcan
                         @empty
                             <tr><td colspan="5" class="text-center text-muted py-3">لا توجد بنود. أضِف بنداً من الأعلى.</td></tr>
                         @endforelse

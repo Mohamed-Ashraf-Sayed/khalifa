@@ -39,7 +39,13 @@
                     <tbody>
                         @forelse ($rows as $r)
                             <tr>
-                                <td>{{ $r['name'] }}</td>
+                                <td>
+                                    @can('projects.view')
+                                        <a href="{{ route('projects.show', $r['id']) }}" class="text-reset fw-semibold">{{ $r['name'] }}</a>
+                                    @else
+                                        {{ $r['name'] }}
+                                    @endcan
+                                </td>
                                 <td class="text-start">{{ number_format((float) $r['contract'], 2) }}</td>
                                 <td class="text-start text-danger">{{ number_format((float) $r['cost'], 2) }}</td>
                                 <td class="text-start text-success">{{ number_format((float) $r['revenue'], 2) }}</td>

@@ -35,6 +35,25 @@ class QuotationItemController extends Controller implements HasMiddleware
         return back()->with('success', 'تمت إضافة البند.');
     }
 
+    public function update(Request $request, QuotationItem $quotation_item): RedirectResponse
+    {
+        $data = $request->validate([
+            'description' => ['required', 'string', 'max:255'],
+            'quantity' => ['required', 'numeric', 'gt:0'],
+            'unit_price' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $quotation_item->update([
+            'description' => $data['description'],
+            'quantity' => $data['quantity'],
+            'unit_price' => $data['unit_price'],
+            'total_price' => bcmul((string) $data['quantity'], (string) $data['unit_price'], 2),
+        ]);
+        $quotation_item->quotation->recomputeTotals();
+
+        return back()->with('success', 'تم تحديث البند.');
+    }
+
     public function destroy(QuotationItem $quotation_item): RedirectResponse
     {
         $quotation = $quotation_item->quotation;

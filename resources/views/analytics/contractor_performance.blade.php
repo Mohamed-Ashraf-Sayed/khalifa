@@ -38,7 +38,13 @@
                     <tbody>
                         @forelse ($rows as $r)
                             <tr>
-                                <td>{{ $r['name'] }}</td>
+                                <td>
+                                    @can('contractors.view')
+                                        <a href="{{ route('contractors.show', $r['id']) }}" class="text-reset fw-semibold">{{ $r['name'] }}</a>
+                                    @else
+                                        {{ $r['name'] }}
+                                    @endcan
+                                </td>
                                 <td class="text-start">{{ $r['extractsCount'] }}</td>
                                 <td class="text-start fw-semibold">{{ number_format((float) $r['earned'], 2) }}</td>
                                 <td class="text-start text-success">{{ number_format((float) $r['paid'], 2) }}</td>

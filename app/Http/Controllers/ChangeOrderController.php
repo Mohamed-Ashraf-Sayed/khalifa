@@ -150,12 +150,16 @@ class ChangeOrderController extends Controller implements HasMiddleware
 
     private function formData(ChangeOrder $changeOrder): array
     {
+        // كل العقود تُمرّر للواجهة وتُفلتر حسب المشروع المحدد عبر الجافاسكريبت،
+        // عشان قائمة العقود تتحدّث فوراً عند تغيير المشروع في شاشة الإضافة والتعديل.
+        $contracts = ProjectContract::orderBy('contract_number')
+            ->get(['id', 'project_id', 'contract_number', 'title']);
+
         return [
             'changeOrder' => $changeOrder,
             'coNumber' => $changeOrder->exists ? $changeOrder->co_number : $this->nextNumber(),
             'projects' => Project::orderBy('name')->get(),
-            'contracts' => ProjectContract::when($changeOrder->project_id, fn ($q) => $q->where('project_id', $changeOrder->project_id))
-                ->orderBy('contract_number')->get(),
+            'contracts' => $contracts,
         ];
     }
 
@@ -163,7 +167,11 @@ class ChangeOrderController extends Controller implements HasMiddleware
     {
         return $request->validate([
             'project_id' => ['required', 'exists:projects,id'],
-            'contract_id' => ['nullable', Rule::exists('project_contracts', 'id')],
+            'contract_id' => [
+                'nullable',
+                // العقد لازم يكون تابع للمشروع المختار حتى لا يُربط أمر التغيير بعقد مشروع آخر.
+                Rule::exists('project_contracts', 'id')->where('project_id', $request->input('project_id')),
+            ],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'change_type' => ['required', 'in:'.implode(',', array_keys(ChangeOrder::TYPES))],

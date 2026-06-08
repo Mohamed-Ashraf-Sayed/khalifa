@@ -108,7 +108,11 @@ class MaterialController extends Controller implements HasMiddleware
 
     public function show(Material $material): View
     {
-        $material->load(['project', 'supplier', 'creator']);
+        $material->load([
+            'project', 'supplier', 'creator',
+            'movements' => fn ($q) => $q->with(['project', 'employee', 'toProject'])
+                ->latest('movement_date')->latest('id')->limit(20),
+        ]);
 
         return view('materials.show', compact('material'));
     }

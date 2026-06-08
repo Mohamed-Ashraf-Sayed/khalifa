@@ -27,16 +27,20 @@ class ContractorExtractController extends Controller implements HasMiddleware
     {
         $search = trim((string) $request->input('search', ''));
         $status = (string) $request->input('status', '');
+        $contractorId = (string) $request->input('contractor_id', '');
 
         $extracts = ContractorExtract::query()
             ->with(['contractor', 'project'])
             ->when($search !== '', fn ($q) => $q->where('extract_number', 'like', "%{$search}%"))
             ->when($status !== '', fn ($q) => $q->where('status', $status))
+            ->when($contractorId !== '', fn ($q) => $q->where('contractor_id', $contractorId))
             ->latest('extract_date')
             ->paginate(15)
             ->withQueryString();
 
-        return view('contractor_extracts.index', compact('extracts', 'search', 'status'));
+        $contractors = Contractor::orderBy('name')->get();
+
+        return view('contractor_extracts.index', compact('extracts', 'search', 'status', 'contractors', 'contractorId'));
     }
 
     public function show(ContractorExtract $contractor_extract): View
@@ -46,12 +50,13 @@ class ContractorExtractController extends Controller implements HasMiddleware
         return view('contractor_extracts.show', ['extract' => $contractor_extract]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('contractor_extracts.form', $this->formData(new ContractorExtract([
             'extract_number' => $this->nextNumber(),
             'extract_date' => now()->toDateString(),
             'status' => 'pending',
+            'contractor_id' => $request->integer('contractor_id') ?: null,
         ])));
     }
 

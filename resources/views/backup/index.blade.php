@@ -11,12 +11,21 @@
                     <p class="text-muted small mb-0">أنشئ نسخة احتياطية من قاعدة البيانات أو حمّل نسخة سابقة.</p>
                 </div>
                 @can('settings.edit')
-                    <form method="POST" action="{{ route('backups.run') }}" class="m-0">
-                        @csrf
-                        <button type="submit" class="btn" style="background:#2b4c80;color:#fff">
-                            <i class="fa-solid fa-plus ms-1"></i> إنشاء نسخة احتياطية الآن
-                        </button>
-                    </form>
+                    <div class="d-flex flex-wrap gap-2">
+                        <form method="POST" action="{{ route('backups.run') }}" class="m-0">
+                            @csrf
+                            <button type="submit" class="btn" style="background:#2b4c80;color:#fff">
+                                <i class="fa-solid fa-database ms-1"></i> نسخة قاعدة البيانات
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('backups.run') }}" class="m-0">
+                            @csrf
+                            <input type="hidden" name="full" value="1">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fa-solid fa-box-archive ms-1"></i> نسخة كاملة (ملفات + قاعدة)
+                            </button>
+                        </form>
+                    </div>
                 @endcan
             </div>
         </div>
@@ -43,10 +52,20 @@
                                 <td>{{ \Carbon\Carbon::createFromTimestamp($backup['date'])->format('Y-m-d H:i') }}</td>
                                 <td class="text-end">
                                     @can('settings.edit')
-                                        <a href="{{ route('backups.download', ['file' => $backup['name']]) }}"
-                                           class="btn btn-sm" style="background:#2b4c80;color:#fff">
-                                            <i class="fa-solid fa-download ms-1"></i> تحميل
-                                        </a>
+                                        <div class="d-inline-flex gap-1">
+                                            <a href="{{ route('backups.download', ['file' => $backup['name']]) }}"
+                                               class="btn btn-sm" style="background:#2b4c80;color:#fff">
+                                                <i class="fa-solid fa-download ms-1"></i> تحميل
+                                            </a>
+                                            <form method="POST" action="{{ route('backups.destroy', ['file' => $backup['name']]) }}"
+                                                  class="m-0" data-confirm="حذف النسخة الاحتياطية {{ $backup['name'] }}؟">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa-solid fa-trash ms-1"></i> حذف
+                                                </button>
+                                            </form>
+                                        </div>
                                     @endcan
                                 </td>
                             </tr>

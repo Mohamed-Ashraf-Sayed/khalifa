@@ -63,10 +63,10 @@ class DemoSeeder extends Seeder
 
         // مقاولون / موردون / موظفون / شركاء
         $contractors = collect([
-            ['contractor_code' => 'C-101', 'name' => 'شركة الاتحاد للمقاولات', 'specialty' => 'خرسانة وأعمال إنشائية', 'phone' => '01001234567'],
-            ['contractor_code' => 'C-102', 'name' => 'مؤسسة النور للتشطيبات', 'specialty' => 'تشطيبات', 'phone' => '01112223334'],
-            ['contractor_code' => 'C-103', 'name' => 'الشركة الوطنية للأسفلت', 'specialty' => 'أسفلت وطرق', 'phone' => '01223334445'],
-            ['contractor_code' => 'C-104', 'name' => 'م/ محمد رضا — كهرباء', 'specialty' => 'كهرباء', 'phone' => '01098765432'],
+            ['contractor_code' => 'C-101', 'name' => 'شركة الاتحاد للمقاولات', 'company_name' => 'شركة الاتحاد للمقاولات والإنشاءات', 'specialty' => 'خرسانة وأعمال إنشائية', 'phone' => '01001234567', 'phone2' => '0223456789', 'email' => 'info@aletihad-eg.com', 'national_id' => '27708151203451', 'tax_number' => '542-118-963', 'notes' => 'متخصصة في الأعمال الخرسانية والهياكل الإنشائية للمشروعات الكبرى. سجل تجاري 41825 — القاهرة.'],
+            ['contractor_code' => 'C-102', 'name' => 'مؤسسة النور للتشطيبات', 'company_name' => 'مؤسسة النور للتشطيبات والديكور', 'specialty' => 'تشطيبات', 'phone' => '01112223334', 'phone2' => '0224567890', 'email' => 'info@alnoor-finishing.com', 'national_id' => '28203221101892', 'tax_number' => '318-247-501', 'notes' => 'أعمال التشطيبات الفاخرة والدهانات والجبس بورد والأرضيات.'],
+            ['contractor_code' => 'C-103', 'name' => 'الشركة الوطنية للأسفلت', 'company_name' => 'الشركة الوطنية للأسفلت والطرق', 'specialty' => 'أسفلت وطرق', 'phone' => '01223334445', 'phone2' => '0225678901', 'email' => 'contact@national-asphalt.com', 'national_id' => '27911052100763', 'tax_number' => '427-339-612', 'notes' => 'تنفيذ أعمال الأسفلت والطرق والرصف وأعمال البنية التحتية.'],
+            ['contractor_code' => 'C-104', 'name' => 'م/ محمد رضا — كهرباء', 'company_name' => 'محمد رضا للمقاولات الكهربائية', 'specialty' => 'كهرباء', 'phone' => '01098765432', 'phone2' => '01155667788', 'email' => 'm.reda.electric@gmail.com', 'national_id' => '27905142101537', 'tax_number' => '255-401-118', 'notes' => 'مقاول كهرباء — تمديدات وتأسيس لوحات التوزيع والإنارة.'],
         ])->map(fn ($c) => Contractor::create($c + ['is_active' => true, 'created_by' => $this->by]));
 
         $suppliers = collect([

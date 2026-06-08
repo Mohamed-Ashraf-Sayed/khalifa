@@ -34,7 +34,43 @@
                     </select>
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
+                @can('assets.edit')
+                    <button class="btn" style="background:#2b4c80;color:#fff" type="button" data-bs-toggle="collapse" data-bs-target="#newLogForm">
+                        <i class="fa-solid fa-plus ms-1"></i> سجل جديد
+                    </button>
+                @endcan
             </div>
+
+            @can('assets.edit')
+                <div class="collapse mb-3" id="newLogForm">
+                    <div class="border rounded p-3 bg-light">
+                        <form method="POST" action="{{ route('equipment_logs.store') }}" class="row g-2 align-items-end">
+                            @csrf
+                            <div class="col-md-3"><label class="form-label small">المعدة</label>
+                                <select name="asset_id" class="form-select" required>
+                                    <option value="">— اختر المعدة —</option>
+                                    @foreach ($assets as $a)
+                                        <option value="{{ $a->id }}" @selected($assetId == $a->id)>{{ $a->asset_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2"><label class="form-label small">النوع</label>
+                                <select name="log_type" class="form-select">
+                                    @foreach (\App\Models\EquipmentLog::LOG_TYPES as $key => $label)
+                                        <option value="{{ $key }}" @selected($logType === $key)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2"><label class="form-label small">التاريخ</label><input type="date" name="log_date" value="{{ now()->toDateString() }}" class="form-control" required></div>
+                            <div class="col-md-2"><label class="form-label small">ساعات التشغيل</label><input type="number" step="0.01" min="0" name="operating_hours" class="form-control"></div>
+                            <div class="col-md-2"><label class="form-label small">التكلفة</label><input type="number" step="0.01" min="0" name="cost" class="form-control"></div>
+                            <div class="col-md-3"><label class="form-label small">الصيانة القادمة</label><input type="date" name="next_service_date" class="form-control"></div>
+                            <div class="col-md-6"><label class="form-label small">الوصف</label><input type="text" name="description" class="form-control"></div>
+                            <div class="col-md-3"><button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة سجل</button></div>
+                        </form>
+                    </div>
+                </div>
+            @endcan
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

@@ -20,6 +20,10 @@
                 <div class="col-md-4"><div class="text-muted small">النوع</div><div>{{ \App\Models\PartnerTransaction::TYPES[$transaction->type] ?? $transaction->type }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">المبلغ</div><div class="fw-bold">{{ number_format($transaction->amount, 2) }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">التاريخ</div><div>{{ $transaction->transaction_date->format('Y-m-d') }}</div></div>
+                @php($paymentMethods = ['cash' => 'نقدي', 'bank' => 'تحويل بنكي', 'check' => 'شيك'])
+                <div class="col-md-4"><div class="text-muted small">طريقة الدفع</div><div>{{ $paymentMethods[$transaction->payment_method] ?? ($transaction->payment_method ?: '—') }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">الحساب البنكي</div><div>{{ $transaction->bankAccount?->name ?? '—' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">رقم الشيك</div><div>{{ $transaction->check_number ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">أضيفت بواسطة</div><div>{{ $transaction->creator?->name ?? '—' }}</div></div>
                 <div class="col-md-12"><div class="text-muted small">الوصف</div><div>{{ $transaction->description ?: '—' }}</div></div>
                 @if ($transaction->notes)<div class="col-12"><div class="text-muted small">ملاحظات</div><div>{{ $transaction->notes }}</div></div>@endif

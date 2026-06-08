@@ -14,25 +14,17 @@
     </style>
 
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-        <h5 class="m-0">كشف الرواتب — {{ $monthLabel }}</h5>
+        <h5 class="m-0">كشف الرواتب — لقطة بتاريخ {{ $snapshotDate }}</h5>
         <div class="d-flex gap-2">
-            <a href="{{ route('analytics.payroll', ['format' => 'xlsx', 'month' => $monthLabel]) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> تصدير Excel</a>
+            <a href="{{ route('analytics.payroll', ['format' => 'xlsx']) }}" class="btn btn-sm btn-success"><i class="fa-solid fa-file-excel ms-1"></i> تصدير Excel</a>
             <button onclick="window.print()" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
         </div>
     </div>
 
-    <div class="card mb-3 no-print">
-        <div class="card-body">
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label small">الشهر</label>
-                    <input type="month" name="month" value="{{ $monthLabel }}" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-filter ms-1"></i> عرض</button>
-                    <a href="{{ route('analytics.payroll') }}" class="btn btn-light">الشهر الحالي</a>
-                </div>
-            </form>
+    <div class="card mb-3">
+        <div class="card-body text-center">
+            <h4 class="m-0">كشف الرواتب</h4>
+            <div class="text-muted">لقطة بالأرصدة القائمة بتاريخ {{ $snapshotDate }}</div>
         </div>
     </div>
 

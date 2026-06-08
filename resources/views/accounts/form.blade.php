@@ -27,7 +27,7 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">الحساب الأب</label>
+                        <label class="form-label">الحساب الأب <span class="text-muted small">(حسابات تجميعية فقط)</span></label>
                         <select name="parent_id" class="form-select">
                             <option value="">— بدون (حساب رئيسي) —</option>
                             @foreach ($parents as $p)

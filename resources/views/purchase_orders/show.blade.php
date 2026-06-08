@@ -24,6 +24,11 @@
                 @endif
                 <a href="{{ route('purchase_orders.edit', $purchaseOrder) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
             @endcan
+            @can('suppliers.create')
+                @if ($purchaseOrder->supplier && bccomp($purchaseOrder->remaining(), '0', 2) > 0)
+                    <a href="{{ route('supplier_payments.create', ['supplier_id' => $purchaseOrder->supplier_id]) }}" class="btn btn-sm" style="background:#0f7a4f;color:#fff"><i class="fa-solid fa-money-bill-wave ms-1"></i> تسجيل دفعة</a>
+                @endif
+            @endcan
             <a href="{{ route('purchase_orders.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
         </div>
     </div>
@@ -62,13 +67,45 @@
     <div class="card mb-3"><div class="card-body">
         <form method="POST" action="{{ route('purchase_order_items.store', $purchaseOrder) }}" class="row g-2 align-items-end">
             @csrf
-            <div class="col-md-4"><label class="form-label small">الصنف</label><input type="text" name="description" class="form-control" required></div>
-            <div class="col-md-2"><label class="form-label small">الوحدة</label><input type="text" name="unit" class="form-control" placeholder="قطعة/طن.."></div>
-            <div class="col-md-2"><label class="form-label small">الكمية</label><input type="number" step="0.001" min="0.001" name="quantity" value="1" class="form-control" required></div>
-            <div class="col-md-2"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" class="form-control" required></div>
-            <div class="col-md-2"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة صنف</button></div>
+            <div class="col-md-3">
+                <label class="form-label small">صنف من المخزون <span class="text-muted">(اختياري)</span></label>
+                <select name="material_id" id="po-material-select" class="form-select">
+                    <option value="">— صنف حر —</option>
+                    @foreach ($materials as $material)
+                        <option value="{{ $material->id }}"
+                            data-name="{{ $material->name }}"
+                            data-unit="{{ $material->unit }}"
+                            data-price="{{ $material->unit_price }}"
+                            @selected((int) old('material_id') === $material->id)>{{ $material->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3"><label class="form-label small">الصنف <span class="text-danger">*</span></label><input type="text" name="description" id="po-item-description" value="{{ old('description') }}" class="form-control" required></div>
+            <div class="col-md-2"><label class="form-label small">الوحدة</label><input type="text" name="unit" id="po-item-unit" value="{{ old('unit') }}" class="form-control" placeholder="قطعة/طن.."></div>
+            <div class="col-md-1"><label class="form-label small">الكمية</label><input type="number" step="0.001" min="0.001" name="quantity" value="{{ old('quantity', 1) }}" class="form-control" required></div>
+            <div class="col-md-2"><label class="form-label small">سعر الوحدة</label><input type="number" step="0.01" min="0" name="unit_price" id="po-item-price" value="{{ old('unit_price') }}" class="form-control" required></div>
+            <div class="col-md-1"><button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة</button></div>
         </form>
+        @unless ($purchaseOrder->add_to_inventory)
+            <div class="alert alert-light border mt-2 mb-0 small"><i class="fa-solid fa-circle-info ms-1"></i> ربط الصنف بالمخزون يظهر أثره عند الاستلام فقط لو خيار "إضافة للمخزون عند الاستلام" مفعّل في أمر الشراء.</div>
+        @endunless
     </div></div>
+    <script>
+        (function () {
+            const select = document.getElementById('po-material-select');
+            if (!select) return;
+            select.addEventListener('change', function () {
+                const opt = this.options[this.selectedIndex];
+                if (!opt || !opt.value) return;
+                const desc = document.getElementById('po-item-description');
+                const unit = document.getElementById('po-item-unit');
+                const price = document.getElementById('po-item-price');
+                if (desc && !desc.value) desc.value = opt.dataset.name || '';
+                if (unit && !unit.value) unit.value = opt.dataset.unit || '';
+                if (price && !price.value) price.value = opt.dataset.price || '';
+            });
+        })();
+    </script>
     @endcan
 
     <div class="card">
@@ -76,11 +113,18 @@
             <h6 class="mb-3">أصناف أمر الشراء</h6>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle">
-                    <thead class="table-light"><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th class="text-end"></th></tr></thead>
+                    <thead class="table-light"><tr><th>الصنف</th><th>مرتبط بالمخزون</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th class="text-end"></th></tr></thead>
                     <tbody>
                         @forelse ($purchaseOrder->items as $item)
                             <tr>
                                 <td>{{ $item->description }}</td>
+                                <td>
+                                    @if ($item->material)
+                                        <span class="badge text-bg-light"><i class="fa-solid fa-boxes-stacked ms-1"></i> {{ $item->material->name }}</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
                                 <td>{{ $item->unit ?? '—' }}</td>
                                 <td>{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
                                 <td>{{ number_format($item->unit_price, 2) }}</td>
@@ -95,7 +139,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-3">لا توجد أصناف. أضِف صنفاً من الأعلى.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted py-3">لا توجد أصناف. أضِف صنفاً من الأعلى.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

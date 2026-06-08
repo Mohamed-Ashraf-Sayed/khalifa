@@ -9,6 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BankTransactionController extends Controller implements HasMiddleware
 {
@@ -32,9 +34,17 @@ class BankTransactionController extends Controller implements HasMiddleware
             'beneficiary' => ['nullable', 'string', 'max:150'],
             'check_number' => ['nullable', 'string', 'max:50'],
             'value_date' => ['nullable', 'date'],
+            'attachment' => ['nullable', 'file', 'max:8192', 'mimes:pdf,jpg,jpeg,png,webp,docx,xlsx'],
         ]);
         $data['category'] = $data['category'] ?? 'general';
         $data['created_by'] = $request->user()->id;
+
+        // رفع المرفق (إن وُجد) على القرص الخاص — غير قابل للوصول المباشر
+        if ($request->hasFile('attachment')) {
+            $data['attachment'] = $request->file('attachment')->store('bank-transactions', 'local');
+        } else {
+            unset($data['attachment']);
+        }
 
         $this->ledger->post($bank_account, $data);
 
@@ -50,8 +60,23 @@ class BankTransactionController extends Controller implements HasMiddleware
         return back()->with('success', $bank_transaction->is_reconciled ? 'تمت المطابقة.' : 'تم إلغاء المطابقة.');
     }
 
+    public function downloadAttachment(BankTransaction $bank_transaction): StreamedResponse
+    {
+        abort_unless($bank_transaction->attachment, 404);
+        abort_unless(Storage::disk('local')->exists($bank_transaction->attachment), 404);
+
+        $name = 'transaction-'.$bank_transaction->id.'.'.pathinfo($bank_transaction->attachment, PATHINFO_EXTENSION);
+
+        return Storage::disk('local')->download($bank_transaction->attachment, $name);
+    }
+
     public function destroy(BankTransaction $bank_transaction): RedirectResponse
     {
+        // حذف ملف المرفق المرتبط (إن وُجد) قبل حذف الحركة — لا يمسّ منطق الرصيد
+        if ($bank_transaction->attachment && Storage::disk('local')->exists($bank_transaction->attachment)) {
+            Storage::disk('local')->delete($bank_transaction->attachment);
+        }
+
         $this->ledger->deleteTransaction($bank_transaction);
 
         return back()->with('success', 'تم حذف الحركة وتحديث الرصيد.');

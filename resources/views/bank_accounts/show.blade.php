@@ -35,7 +35,7 @@
     <div class="card mb-3">
         <div class="card-body">
             <h6 class="mb-3">إضافة حركة</h6>
-            <form method="POST" action="{{ route('bank_transactions.store', $account) }}" class="row g-2 align-items-end">
+            <form method="POST" action="{{ route('bank_transactions.store', $account) }}" enctype="multipart/form-data" class="row g-2 align-items-end">
                 @csrf
                 <div class="col-md-2">
                     <label class="form-label small">النوع</label>
@@ -79,6 +79,11 @@
                 <div class="col-md-3">
                     <label class="form-label small">المرجع</label>
                     <input type="text" name="reference_number" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">مرفق</label>
+                    <input type="file" name="attachment" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.webp,.docx,.xlsx">
+                    <div class="form-text small">PDF أو صورة أو مستند (8MB حد أقصى)</div>
                 </div>
                 <div class="col-md-2">
                     <button class="btn w-100" style="background:#2b4c80;color:#fff">إضافة</button>
@@ -136,10 +141,15 @@
                             <th>التاريخ</th>
                             <th>البيان</th>
                             <th>التصنيف</th>
+                            <th>المستفيد</th>
+                            <th>رقم الشيك</th>
+                            <th>المرجع</th>
+                            <th>تاريخ القيمة</th>
                             <th>إيداع</th>
                             <th>سحب</th>
                             <th>الرصيد الجاري</th>
                             <th>المطابقة</th>
+                            <th>مرفق</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
@@ -150,6 +160,10 @@
                                 <td>{{ $t->transaction_date->format('Y-m-d') }}</td>
                                 <td>{{ $t->description }}</td>
                                 <td><span class="badge text-bg-light">{{ $t->category ? (\App\Models\BankTransaction::CATEGORIES[$t->category] ?? $t->category) : '—' }}</span></td>
+                                <td>{{ $t->beneficiary ?: '—' }}</td>
+                                <td>{{ $t->check_number ?: '—' }}</td>
+                                <td>{{ $t->reference_number ?: '—' }}</td>
+                                <td>{{ $t->value_date ? $t->value_date->format('Y-m-d') : '—' }}</td>
                                 <td class="text-success">{{ $t->type === 'deposit' ? number_format($t->amount, 2) : '' }}</td>
                                 <td class="text-danger">{{ $t->type === 'withdrawal' ? number_format($t->amount, 2) : '' }}</td>
                                 <td class="fw-semibold">{{ number_format((float) $row['running'], 2) }}</td>
@@ -158,6 +172,13 @@
                                         <span class="badge text-bg-success">تمت المطابقة</span>
                                     @else
                                         <span class="badge text-bg-secondary">غير مطابَق</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($t->attachment)
+                                        <a href="{{ route('bank_transactions.attachment', $t) }}" class="btn btn-sm btn-outline-secondary" title="تنزيل المرفق"><i class="fa-solid fa-paperclip"></i></a>
+                                    @else
+                                        <span class="text-muted">—</span>
                                     @endif
                                 </td>
                                 <td class="text-end text-nowrap">
@@ -176,7 +197,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-center text-muted py-4">لا توجد حركات مطابقة للفلاتر.</td></tr>
+                            <tr><td colspan="13" class="text-center text-muted py-4">لا توجد حركات مطابقة للفلاتر.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

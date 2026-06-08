@@ -28,15 +28,29 @@ class EmployeeTransactionController extends Controller implements HasMiddleware
         $search = trim((string) $request->input('search', ''));
         $type = (string) $request->input('type', '');
 
-        $transactions = EmployeeTransaction::query()
+        $base = EmployeeTransaction::query()
+            ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q
+                ->where('description', 'like', "%{$search}%")
+                ->orWhereHas('employee', fn ($e) => $e
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('employee_code', 'like', "%{$search}%"))
+            ))
+            ->when($type !== '', fn ($q) => $q->where('type', $type));
+
+        $transactions = (clone $base)
             ->with(['employee', 'project'])
-            ->when($search !== '', fn ($q) => $q->where('description', 'like', "%{$search}%"))
-            ->when($type !== '', fn ($q) => $q->where('type', $type))
             ->latest('transaction_date')
             ->paginate(15)
             ->withQueryString();
 
-        return view('employee_transactions.index', compact('transactions', 'search', 'type'));
+        $stats = [
+            'count' => (clone $base)->count(),
+            'advances' => (string) (clone $base)->where('type', 'advance')->sum('amount'),
+            'custody' => (string) (clone $base)->where('type', 'custody')->sum('amount'),
+            'deductions' => (string) (clone $base)->where('type', 'deduction')->sum('amount'),
+        ];
+
+        return view('employee_transactions.index', compact('transactions', 'search', 'type', 'stats'));
     }
 
     public function show(EmployeeTransaction $employee_transaction): View
@@ -46,10 +60,15 @@ class EmployeeTransactionController extends Controller implements HasMiddleware
         return view('employee_transactions.show', ['transaction' => $employee_transaction]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
+        $employeeId = $request->input('employee_id');
+
         return view('employee_transactions.form', [
-            'transaction' => new EmployeeTransaction(['transaction_date' => now()->toDateString()]),
+            'transaction' => new EmployeeTransaction([
+                'transaction_date' => now()->toDateString(),
+                'employee_id' => $employeeId ? (int) $employeeId : null,
+            ]),
             'employees' => Employee::orderBy('name')->get(),
             'projects' => Project::orderBy('name')->get(),
         ]);

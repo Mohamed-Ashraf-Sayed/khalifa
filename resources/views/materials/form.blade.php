@@ -56,6 +56,10 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">موقع المخزن</label>
+                        <input type="text" name="warehouse_location" value="{{ old('warehouse_location', $material->warehouse_location) }}" class="form-control" placeholder="رف / منطقة / مخزن">
+                    </div>
                     <div class="col-12">
                         <label class="form-label">ملاحظات</label>
                         <textarea name="notes" rows="2" class="form-control">{{ old('notes', $material->notes) }}</textarea>

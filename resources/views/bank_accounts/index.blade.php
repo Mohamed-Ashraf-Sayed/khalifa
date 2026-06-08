@@ -12,6 +12,29 @@
         </div>
     </div>
 
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small">بحث (الاسم / البنك / رقم الحساب)</label>
+                    <input type="text" name="search" value="{{ $filters['search'] }}" class="form-control" placeholder="اكتب للبحث...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">الحالة</label>
+                    <select name="status" class="form-select">
+                        <option value="" @selected($filters['status'] === '')>الكل</option>
+                        <option value="active" @selected($filters['status'] === 'active')>نشط</option>
+                        <option value="inactive" @selected($filters['status'] === 'inactive')>معطّل</option>
+                    </select>
+                </div>
+                <div class="col-md-5 d-flex gap-2">
+                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass ms-1"></i> بحث</button>
+                    <a href="{{ route('bank_accounts.index') }}" class="btn btn-light">إعادة ضبط</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-end mb-3">
@@ -29,6 +52,7 @@
                             <th>الحساب</th>
                             <th>البنك</th>
                             <th>رقم الحساب</th>
+                            <th>نوع الحساب</th>
                             <th>الرصيد الحالي</th>
                             <th>الحالة</th>
                             <th class="text-end">إجراءات</th>
@@ -37,9 +61,16 @@
                     <tbody>
                         @forelse ($accounts as $account)
                             <tr>
-                                <td class="fw-semibold">{{ $account->name }}</td>
+                                <td class="fw-semibold">
+                                    @can('bank_accounts.view')
+                                        <a href="{{ route('bank_accounts.show', $account) }}" class="text-decoration-none">{{ $account->name }}</a>
+                                    @else
+                                        {{ $account->name }}
+                                    @endcan
+                                </td>
                                 <td>{{ $account->bank_name }}</td>
                                 <td>{{ $account->account_number ?: '—' }}</td>
+                                <td>{{ $account->account_type ? (\App\Models\BankAccount::ACCOUNT_TYPES[$account->account_type] ?? $account->account_type) : '—' }}</td>
                                 <td class="fw-bold">{{ number_format($account->current_balance, 2) }} {{ $account->currency }}</td>
                                 <td><span class="badge text-bg-{{ $account->is_active ? 'success' : 'secondary' }}">{{ $account->is_active ? 'نشط' : 'معطّل' }}</span></td>
                                 <td class="text-end">
@@ -56,7 +87,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-4">لا توجد حسابات بنكية بعد.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted py-4">لا توجد حسابات بنكية بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

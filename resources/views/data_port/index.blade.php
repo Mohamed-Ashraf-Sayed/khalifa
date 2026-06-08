@@ -77,6 +77,7 @@
                             <th>إجمالي</th>
                             <th>تم استيراده</th>
                             <th>فشل</th>
+                            <th>ملاحظات / أخطاء</th>
                             <th>المستخدم</th>
                             <th>التاريخ</th>
                         </tr>
@@ -95,11 +96,18 @@
                                         <span class="badge text-bg-secondary">0</span>
                                     @endif
                                 </td>
+                                <td style="max-width:320px">
+                                    @if ($log->notes)
+                                        <div class="small text-danger" style="white-space:pre-wrap">{{ $log->notes }}</div>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
                                 <td>{{ $log->user?->name ?? '—' }}</td>
                                 <td>{{ $log->created_at?->format('Y-m-d H:i') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center text-muted py-4">لا توجد عمليات استيراد بعد.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">لا توجد عمليات استيراد بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

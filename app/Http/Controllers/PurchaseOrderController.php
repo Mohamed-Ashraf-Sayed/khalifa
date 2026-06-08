@@ -52,20 +52,30 @@ class PurchaseOrderController extends Controller implements HasMiddleware
 
     public function show(PurchaseOrder $purchase_order): View
     {
-        $purchase_order->load(['supplier', 'project', 'creator', 'approver', 'items']);
+        $purchase_order->load(['supplier', 'project', 'creator', 'approver', 'items.material']);
 
-        return view('purchase_orders.show', ['purchaseOrder' => $purchase_order]);
+        return view('purchase_orders.show', [
+            'purchaseOrder' => $purchase_order,
+            'materials' => Material::orderBy('name')->get(),
+        ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('purchase_orders.form', $this->formData(
-            new PurchaseOrder([
-                'order_number' => $this->nextNumber(),
-                'order_date' => now()->toDateString(),
-                'status' => 'draft',
-            ])
-        ));
+        $attributes = [
+            'order_number' => $this->nextNumber(),
+            'order_date' => now()->toDateString(),
+            'status' => 'draft',
+        ];
+
+        // دعم التعبئة المسبقة للمورّد عند الدخول من صفحة المورّد.
+        if ($supplierId = $request->integer('supplier_id')) {
+            if (Supplier::whereKey($supplierId)->exists()) {
+                $attributes['supplier_id'] = $supplierId;
+            }
+        }
+
+        return view('purchase_orders.form', $this->formData(new PurchaseOrder($attributes)));
     }
 
     public function store(Request $request): RedirectResponse

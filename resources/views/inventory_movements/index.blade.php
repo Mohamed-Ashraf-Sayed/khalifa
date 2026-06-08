@@ -3,6 +3,27 @@
 @section('title', 'حركات المخزون')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">عدد الحركات (ضمن الفلترة)</div>
+                <div class="fs-4 fw-bold">{{ number_format($stats['count']) }}</div>
+            </div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي قيمة الإضافات</div>
+                <div class="fs-4 fw-bold text-success">{{ number_format((float) $stats['in_value'], 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي قيمة الصرف</div>
+                <div class="fs-4 fw-bold text-warning">{{ number_format((float) $stats['out_value'], 2) }} ج</div>
+            </div></div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -27,7 +48,7 @@
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
-                        <tr><th>التاريخ</th><th>المادة</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>القيمة</th><th>الرصيد بعد</th><th>المشروع</th><th>السبب</th><th class="text-end"></th></tr>
+                        <tr><th>التاريخ</th><th>المادة</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>القيمة</th><th>الرصيد بعد</th><th>المشروع</th><th>المستلِم</th><th>السبب</th><th class="text-end"></th></tr>
                     </thead>
                     <tbody>
                         @forelse ($movements as $m)
@@ -35,7 +56,12 @@
                                 'in' => 'success', 'out' => 'warning', 'transfer' => 'info', 'adjustment' => 'secondary', default => 'secondary' })
                             <tr>
                                 <td>{{ $m->movement_date->format('Y-m-d') }}</td>
-                                <td class="fw-semibold">{{ $m->material?->name ?? '—' }}</td>
+                                <td class="fw-semibold">
+                                    {{ $m->material?->name ?? '—' }}
+                                    @if ($m->warehouse_location)
+                                        <i class="fa-solid fa-location-dot text-muted ms-1" title="موقع المخزن: {{ $m->warehouse_location }}"></i>
+                                    @endif
+                                </td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\InventoryMovement::TYPES[$m->type] ?? $m->type }}</span></td>
                                 <td class="fw-bold">{{ number_format($m->quantity, 2) }}</td>
                                 <td>{{ number_format($m->unit_price, 2) }} ج</td>
@@ -47,8 +73,10 @@
                                         <i class="fa-solid fa-arrow-left-long mx-1 text-muted"></i> {{ $m->toProject->name }}
                                     @endif
                                 </td>
+                                <td>{{ $m->employee?->name ?? '—' }}</td>
                                 <td>{{ $m->reason ?: '—' }}</td>
                                 <td class="text-end">
+                                    <a href="{{ route('inventory_movements.show', $m) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
                                     @can('materials.edit')
                                         <form method="POST" action="{{ route('inventory_movements.destroy', $m) }}" class="d-inline" data-confirm="حذف الحركة وعكس أثرها؟">
                                             @csrf @method('DELETE')
@@ -58,7 +86,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="10" class="text-center text-muted py-4">لا توجد حركات بعد.</td></tr>
+                            <tr><td colspan="11" class="text-center text-muted py-4">لا توجد حركات بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

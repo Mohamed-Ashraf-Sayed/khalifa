@@ -6,10 +6,11 @@
     <div class="row g-3 mb-3">
         @foreach ([
             ['عدد الحاضرين', number_format($summary['present']), 'fa-user-check', 'text-success'],
+            ['عدد الغائبين', number_format($summary['absent']), 'fa-user-xmark', 'text-danger'],
             ['إجمالي الساعات', number_format($summary['hours'], 1), 'fa-clock', 'text-primary'],
-            ['إجمالي الأجور', number_format($summary['wage'], 0), 'fa-sack-dollar', 'text-secondary'],
+            ['إجمالي الأجور', number_format($summary['wage'], 0).' ج', 'fa-sack-dollar', 'text-secondary'],
         ] as [$l, $v, $icon, $color])
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3">
+        <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body py-3">
             <i class="fa-solid {{ $icon }} {{ $color }}"></i>
             <div class="fs-4 fw-bold">{{ $v }}</div>
             <div class="small text-muted">{{ $l }}</div>
@@ -67,15 +68,20 @@
                                     @if ($att->present)
                                         <span class="badge text-bg-success">حاضر</span>
                                     @else
-                                        <span class="badge text-bg-secondary">غائب</span>
+                                        <span class="badge text-bg-danger">غائب</span>
                                     @endif
                                 </td>
-                                <td>{{ rtrim(rtrim(number_format($att->hours, 2), '0'), '.') }}</td>
-                                <td>{{ $att->wage !== null ? number_format((float) $att->wage, 2) : '—' }}</td>
+                                <td>{{ $att->present ? rtrim(rtrim(number_format($att->hours, 2), '0'), '.') : '—' }}</td>
+                                <td>{{ $att->present && $att->wage !== null ? number_format((float) $att->wage, 2) : '—' }}</td>
                                 <td class="text-end">
                                     <a href="{{ route('labor_attendances.show', $att) }}" class="btn btn-sm btn-outline-secondary" title="عرض">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
+                                    @can('projects.edit')
+                                        <a href="{{ route('labor_attendances.edit', $att) }}" class="btn btn-sm btn-outline-primary" title="تعديل">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                    @endcan
                                     @can('projects.delete')
                                         <form method="POST" action="{{ route('labor_attendances.destroy', $att) }}" class="d-inline"
                                               data-confirm="متأكد من حذف سجل الحضور؟">

@@ -80,6 +80,7 @@ class AnalyticsController extends Controller implements HasMiddleware
             $margin = $this->percentage($profit, $revenue);
 
             $rows[] = [
+                'id' => $project->id,
                 'name' => $project->name,
                 'contract' => $contract,
                 'cost' => $cost,
@@ -153,6 +154,7 @@ class AnalyticsController extends Controller implements HasMiddleware
             $used = $this->percentage($actual, $budget);
 
             $rows[] = [
+                'id' => $project->id,
                 'name' => $project->name,
                 'budget' => $budget,
                 'actual' => $actual,
@@ -218,6 +220,7 @@ class AnalyticsController extends Controller implements HasMiddleware
             $paid = bcadd($paymentsPaid, $txnPaid, 2);
 
             $rows[] = [
+                'id' => $supplier->id,
                 'name' => $supplier->name,
                 'purchases' => $purchases,
                 'paid' => $paid,
@@ -280,6 +283,7 @@ class AnalyticsController extends Controller implements HasMiddleware
             $avgExecution = (float) ($contractor->extracts->avg('execution_percent') ?? 0);
 
             $rows[] = [
+                'id' => $contractor->id,
                 'name' => $contractor->name,
                 'extractsCount' => $contractor->extracts->count(),
                 'earned' => $earned,
@@ -331,13 +335,14 @@ class AnalyticsController extends Controller implements HasMiddleware
     }
 
     /**
-     * الرواتب — لكل موظف نشط: الراتب، رصيد السلف، رصيد العهدة، صافي المستحقّ (إرشادي = الراتب − السلف).
-     * فلتر الشهر (YYYY-MM) اختياري للعرض.
+     * الرواتب — لقطة بالوضع الحالي لكل موظف نشط: الراتب، رصيد السلف، رصيد العهدة،
+     * صافي المستحقّ (إرشادي = الراتب − السلف).
+     * ملاحظة: الأرقام تعكس الأرصدة القائمة حالياً (وليست مقصورة على شهر معيّن)،
+     * لذا أُزيل فلتر الشهر تفادياً للإيحاء بفلترة زمنية لا تُطبَّق على الأرقام.
      */
     public function payroll(Request $request): View|StreamedResponse
     {
-        $month = $request->input('month');
-        $monthLabel = $month ?: now()->format('Y-m');
+        $snapshotDate = now()->toDateString();
 
         $employees = Employee::where('is_active', true)->orderBy('name')->get();
 
@@ -397,10 +402,10 @@ class AnalyticsController extends Controller implements HasMiddleware
                 number_format((float) $totals['net'], 2),
             ];
 
-            return app(ExportService::class)->excel($headers, $excelRows, 'payroll-'.$monthLabel, 'كشف الرواتب — '.$monthLabel);
+            return app(ExportService::class)->excel($headers, $excelRows, 'payroll-'.$snapshotDate, 'كشف الرواتب — لقطة بتاريخ '.$snapshotDate);
         }
 
-        return view('analytics.payroll', compact('rows', 'totals', 'monthLabel'));
+        return view('analytics.payroll', compact('rows', 'totals', 'snapshotDate'));
     }
 
     /**

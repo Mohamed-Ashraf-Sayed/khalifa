@@ -69,9 +69,13 @@ class ContractorPaymentController extends Controller implements HasMiddleware
         return view('contractor_payments.show', ['payment' => $contractor_payment]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('contractor_payments.form', $this->formData(new ContractorPayment(['payment_date' => now()->toDateString(), 'payment_method' => 'cash'])));
+        return view('contractor_payments.form', $this->formData(new ContractorPayment([
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'contractor_id' => $request->integer('contractor_id') ?: null,
+        ])));
     }
 
     public function store(Request $request): RedirectResponse

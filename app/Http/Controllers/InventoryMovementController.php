@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\InventoryMovement;
 use App\Models\Material;
+use App\Models\MaterialRequisition;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class InventoryMovementController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:materials.view', only: ['index']),
+            new Middleware('can:materials.view', only: ['index', 'show']),
             new Middleware('can:materials.edit', only: ['create', 'store', 'destroy']),
         ];
     }
@@ -28,17 +29,42 @@ class InventoryMovementController extends Controller implements HasMiddleware
         $type = (string) $request->input('type', '');
         $materialId = (string) $request->input('material_id', '');
 
-        $movements = InventoryMovement::query()
-            ->with(['material', 'project', 'employee', 'toProject'])
+        $base = InventoryMovement::query()
             ->when($type !== '', fn ($q) => $q->where('type', $type))
-            ->when($materialId !== '', fn ($q) => $q->where('material_id', $materialId))
+            ->when($materialId !== '', fn ($q) => $q->where('material_id', $materialId));
+
+        $movements = (clone $base)
+            ->with(['material', 'project', 'employee', 'toProject'])
             ->latest('movement_date')
             ->paginate(15)
             ->withQueryString();
 
+        // بطاقات إحصائية على نفس مجموعة الفلترة (عرض فقط لقيم محسوبة مسبقاً)
+        $stats = [
+            'count' => (clone $base)->count(),
+            'in_value' => (string) ((clone $base)->where('type', 'in')->sum('total_value')),
+            'out_value' => (string) ((clone $base)->where('type', 'out')->sum('total_value')),
+        ];
+
         $materials = Material::orderBy('name')->get();
 
-        return view('inventory_movements.index', compact('movements', 'type', 'materialId', 'materials'));
+        return view('inventory_movements.index', compact('movements', 'type', 'materialId', 'materials', 'stats'));
+    }
+
+    public function show(InventoryMovement $inventory_movement): View
+    {
+        $inventory_movement->load(['material', 'project', 'employee', 'toProject', 'creator']);
+
+        // المستند المرجعي: إذن صرف مواد (عند الصرف من إذن)
+        $requisition = null;
+        if ($inventory_movement->reference_type === 'material_requisition' && $inventory_movement->reference_id) {
+            $requisition = MaterialRequisition::find($inventory_movement->reference_id);
+        }
+
+        return view('inventory_movements.show', [
+            'movement' => $inventory_movement,
+            'requisition' => $requisition,
+        ]);
     }
 
     public function create(): View

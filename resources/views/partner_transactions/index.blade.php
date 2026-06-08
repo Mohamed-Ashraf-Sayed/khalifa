@@ -6,13 +6,16 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form method="GET">
+                <form class="d-flex gap-2 flex-wrap" method="GET">
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" style="min-width:200px" placeholder="بحث في البيان">
                     <select name="type" class="form-select" style="min-width:180px" onchange="this.form.submit()">
                         <option value="">كل الأنواع</option>
                         @foreach (\App\Models\PartnerTransaction::TYPES as $k => $label)
                             <option value="{{ $k }}" @selected($type === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    <button class="btn btn-outline-secondary" type="submit" title="بحث"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <a href="{{ route('partner_transactions.index') }}" class="btn btn-outline-secondary" title="مسح الفلاتر"><i class="fa-solid fa-xmark"></i></a>
                 </form>
                 @can('partners.create')
                     <a href="{{ route('partner_transactions.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> حركة جديدة</a>

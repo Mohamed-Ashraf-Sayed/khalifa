@@ -31,6 +31,9 @@
                     <a href="{{ route('material_requisitions.edit', $requisition) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen ms-1"></i> تعديل</a>
                 @endif
             @endcan
+            @can('materials.view')
+                <a href="{{ route('material_requisitions.print', $requisition) }}" class="btn btn-sm btn-outline-secondary" target="_blank"><i class="fa-solid fa-print ms-1"></i> طباعة</a>
+            @endcan
             <a href="{{ route('material_requisitions.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
         </div>
     </div>

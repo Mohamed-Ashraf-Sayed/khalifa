@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Artisan;
@@ -16,7 +17,7 @@ class BackupController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('can:settings.view', only: ['index']),
-            new Middleware('can:settings.edit', only: ['run', 'download']),
+            new Middleware('can:settings.edit', only: ['run', 'download', 'destroy']),
         ];
     }
 
@@ -53,13 +54,20 @@ class BackupController extends Controller implements HasMiddleware
         return view('backup.index', compact('backups'));
     }
 
-    public function run(): RedirectResponse
+    public function run(Request $request): RedirectResponse
     {
+        // نسخة كاملة (ملفات + قاعدة) إذا طُلب ذلك، وإلا قاعدة البيانات فقط.
+        $full = $request->boolean('full');
+
         try {
-            Artisan::call('backup:run', ['--only-db' => true]);
+            Artisan::call('backup:run', $full ? [] : ['--only-db' => true]);
             $output = trim(Artisan::output());
 
-            return back()->with('success', 'تم إنشاء نسخة احتياطية لقاعدة البيانات بنجاح.'.($output !== '' ? ' '.$output : ''));
+            $msg = $full
+                ? 'تم إنشاء نسخة احتياطية كاملة (ملفات + قاعدة) بنجاح.'
+                : 'تم إنشاء نسخة احتياطية لقاعدة البيانات بنجاح.';
+
+            return back()->with('success', $msg.($output !== '' ? ' '.$output : ''));
         } catch (\Throwable $e) {
             return back()->with('error', 'فشل إنشاء النسخة الاحتياطية: '.$e->getMessage());
         }
@@ -78,5 +86,22 @@ class BackupController extends Controller implements HasMiddleware
         abort_unless($disk->exists($path), 404);
 
         return $disk->download($path, $file);
+    }
+
+    public function destroy(string $file): RedirectResponse
+    {
+        // basename فقط لمنع أي محاولة traversal
+        $file = basename($file);
+
+        abort_unless(str_ends_with(strtolower($file), '.zip'), 404);
+
+        $disk = Storage::disk($this->disk());
+        $path = $this->backupFolder().'/'.$file;
+
+        abort_unless($disk->exists($path), 404);
+
+        $disk->delete($path);
+
+        return back()->with('success', 'تم حذف النسخة الاحتياطية.');
     }
 }

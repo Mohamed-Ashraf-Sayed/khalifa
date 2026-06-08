@@ -38,7 +38,19 @@ class SupplierController extends Controller implements HasMiddleware
             ->paginate(15)
             ->withQueryString();
 
-        return view('suppliers.index', compact('suppliers', 'search'));
+        // إجمالي المستحقّ يُحسب من balanceDue() لكل مورّد (قراءة فقط، بدون أي تعديل على منطق الحساب).
+        $totalOutstanding = '0';
+        foreach (Supplier::all() as $s) {
+            $totalOutstanding = bcadd($totalOutstanding, $s->balanceDue(), 2);
+        }
+
+        $stats = [
+            'count' => Supplier::count(),
+            'active' => Supplier::where('is_active', true)->count(),
+            'outstanding' => $totalOutstanding,
+        ];
+
+        return view('suppliers.index', compact('suppliers', 'search', 'stats'));
     }
 
     public function show(Supplier $supplier): View

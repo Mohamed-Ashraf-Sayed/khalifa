@@ -3,6 +3,21 @@
 @section('title', 'الضرائب')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي المستحق</div>
+                <div class="fs-4 fw-bold text-danger">{{ number_format($totalPending, 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-6">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي المدفوع</div>
+                <div class="fs-4 fw-bold text-success">{{ number_format($totalPaid, 2) }} ج</div>
+            </div></div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -29,6 +44,8 @@
                         <tr>
                             <th>الاسم</th>
                             <th>النوع</th>
+                            <th>المشروع</th>
+                            <th>النسبة</th>
                             <th>المبلغ</th>
                             <th>تاريخ الاستحقاق</th>
                             <th>الحالة</th>
@@ -42,6 +59,8 @@
                             <tr>
                                 <td class="fw-semibold">{{ $tax->name }}</td>
                                 <td><span class="badge text-bg-info">{{ \App\Models\Tax::TYPES[$tax->tax_type] ?? $tax->tax_type }}</span></td>
+                                <td>{{ $tax->project?->name ?? '—' }}</td>
+                                <td>{{ number_format($tax->rate, 2) }}%</td>
                                 <td>{{ number_format($tax->amount, 2) }} ج</td>
                                 <td>{{ $tax->due_date?->format('Y-m-d') ?? '—' }}</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Tax::STATUSES[$tax->status] ?? $tax->status }}</span></td>
@@ -60,7 +79,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted py-4">لا توجد ضرائب بعد.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">لا توجد ضرائب بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

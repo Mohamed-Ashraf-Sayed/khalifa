@@ -3,17 +3,52 @@
 @section('title', 'الفواتير')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        <div class="col-md-3 col-6">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي الفواتير</div>
+                <div class="fs-4 fw-bold">{{ number_format($totalInvoiced, 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">إجمالي المُحصّل</div>
+                <div class="fs-4 fw-bold text-success">{{ number_format($totalCollected, 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">المتبقّي</div>
+                <div class="fs-4 fw-bold text-danger">{{ number_format($totalOutstanding, 2) }} ج</div>
+            </div></div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card"><div class="card-body">
+                <div class="text-muted small">فواتير متأخرة</div>
+                <div class="fs-4 fw-bold text-warning">{{ number_format($overdueCount) }}</div>
+            </div></div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form class="d-flex gap-2" method="GET">
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="بحث برقم الفاتورة">
+                <form class="d-flex gap-2 flex-wrap" method="GET">
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" style="min-width:180px" placeholder="بحث برقم الفاتورة أو العميل">
+                    <select name="client_id" class="form-select" style="min-width:160px" onchange="this.form.submit()">
+                        <option value="">كل العملاء</option>
+                        @foreach ($clients as $client)
+                            <option value="{{ $client->id }}" @selected((string) $clientId === (string) $client->id)>{{ $client->name }}</option>
+                        @endforeach
+                    </select>
                     <select name="status" class="form-select" style="min-width:160px" onchange="this.form.submit()">
                         <option value="">كل الحالات</option>
                         @foreach (\App\Models\Invoice::STATUSES as $k => $label)
                             <option value="{{ $k }}" @selected($status === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    <input type="date" name="from" value="{{ $from }}" class="form-control" style="min-width:150px" title="من تاريخ">
+                    <input type="date" name="to" value="{{ $to }}" class="form-control" style="min-width:150px" title="إلى تاريخ">
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
                 @can('invoices.create')
@@ -25,7 +60,7 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>رقم الفاتورة</th><th>العميل</th><th>المشروع</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th><th class="text-end">إجراءات</th>
+                            <th>رقم الفاتورة</th><th>العميل</th><th>المشروع</th><th>التاريخ</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقّي</th><th>الحالة</th><th class="text-end">إجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,6 +72,8 @@
                                 <td>{{ $invoice->project?->name ?? '—' }}</td>
                                 <td>{{ $invoice->issue_date->format('Y-m-d') }}</td>
                                 <td class="fw-bold">{{ number_format($invoice->total_amount, 2) }}</td>
+                                <td class="text-success">{{ number_format($invoice->paid_amount, 2) }}</td>
+                                <td class="text-danger">{{ number_format($invoice->remaining(), 2) }}</td>
                                 <td><span class="badge text-bg-{{ $badge }}">{{ \App\Models\Invoice::STATUSES[$invoice->status] ?? $invoice->status }}</span></td>
                                 <td class="text-end">
                                     <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
@@ -52,7 +89,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center text-muted py-4">لا توجد فواتير بعد.</td></tr>
+                            <tr><td colspan="9" class="text-center text-muted py-4">لا توجد فواتير بعد.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

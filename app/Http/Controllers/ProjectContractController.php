@@ -49,10 +49,14 @@ class ProjectContractController extends Controller implements HasMiddleware
         return view('contracts.show', compact('contract'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('contracts.form', [
-            'contract' => new ProjectContract(['status' => 'draft', 'contract_type' => 'main']),
+            'contract' => new ProjectContract([
+                'status' => 'draft',
+                'contract_type' => 'main',
+                'project_id' => $request->integer('project_id') ?: null,
+            ]),
             'projects' => Project::orderBy('name')->get(),
         ]);
     }

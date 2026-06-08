@@ -17,7 +17,7 @@ class InsurancePolicyController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:guarantees.view', only: ['index', 'show']),
+            new Middleware('can:guarantees.view', only: ['index', 'show', 'print']),
             new Middleware('can:guarantees.create', only: ['create', 'store']),
             new Middleware('can:guarantees.edit', only: ['edit', 'update']),
             new Middleware('can:guarantees.delete', only: ['destroy']),
@@ -55,6 +55,13 @@ class InsurancePolicyController extends Controller implements HasMiddleware
         $insurancePolicy->load(['project', 'creator']);
 
         return view('insurance_policies.show', ['policy' => $insurancePolicy]);
+    }
+
+    public function print(InsurancePolicy $insurancePolicy): View
+    {
+        $insurancePolicy->load(['project', 'creator']);
+
+        return view('insurance_policies.print', ['policy' => $insurancePolicy]);
     }
 
     public function create(): View

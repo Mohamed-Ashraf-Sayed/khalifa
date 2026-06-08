@@ -3,6 +3,23 @@
 @section('title', 'معاملات الموظفين')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['عدد المعاملات', number_format($stats['count']), 'fa-list-check', 'text-primary'],
+            ['إجمالي السلف', number_format((float) $stats['advances'], 2).' ج', 'fa-hand-holding-dollar', 'text-warning'],
+            ['إجمالي العهد', number_format((float) $stats['custody'], 2).' ج', 'fa-box-archive', 'text-info'],
+            ['إجمالي الخصومات', number_format((float) $stats['deductions'], 2).' ج', 'fa-circle-minus', 'text-danger'],
+        ] as [$label, $val, $icon, $color])
+            <div class="col-md-3 col-6">
+                <div class="card h-100"><div class="card-body py-3">
+                    <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+                    <div class="fs-4 fw-bold">{{ $val }}</div>
+                    <div class="small text-muted">{{ $label }}</div>
+                </div></div>
+            </div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -13,7 +30,7 @@
                             <option value="{{ $k }}" @selected($type === $k)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <input type="text" name="search" value="{{ $search }}" class="form-control" style="min-width:180px" placeholder="بحث بالبيان">
+                    <input type="text" name="search" value="{{ $search }}" class="form-control" style="min-width:180px" placeholder="بحث بالموظف أو البيان">
                     <button class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
                 @can('employees.create')

@@ -3,6 +3,20 @@
 @section('title', 'العملاء')
 
 @section('content')
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['إجمالي العملاء', number_format($stats['count']), 'fa-users', 'text-primary'],
+            ['عملاء لديهم مشاريع', number_format($stats['with_projects']), 'fa-diagram-project', 'text-info'],
+            ['إجمالي الرصيد المستحقّ', number_format((float) $stats['balance_due'], 2), 'fa-scale-balanced', 'text-warning'],
+        ] as [$l, $v, $icon, $color])
+        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3">
+            <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+            <div class="fs-4 fw-bold">{{ $v }}</div>
+            <div class="small text-muted">{{ $l }}</div>
+        </div></div></div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">

@@ -6,23 +6,54 @@
     <div class="row g-3 mb-3">
         <div class="col-md-4">
             <div class="card"><div class="card-body">
-                <div class="text-muted small">إجمالي المصروفات{{ $category ? ' (' . (\App\Models\Expense::CATEGORIES[$category] ?? '') . ')' : '' }}</div>
+                <div class="text-muted small">إجمالي المصروفات{{ $category ? ' (' . ($categories[$category] ?? $category) . ')' : '' }}</div>
                 <div class="fs-4 fw-bold text-danger">{{ number_format($total, 2) }} ج</div>
             </div></div>
         </div>
     </div>
 
+    <div class="card mb-3"><div class="card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small">بحث (البيان / المستلِم)</label>
+                <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="ابحث...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">الفئة</label>
+                <select name="category" class="form-select">
+                    <option value="">كل الفئات</option>
+                    @foreach ($categories as $k => $label)
+                        <option value="{{ $k }}" @selected($category === (string) $k)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">المشروع</label>
+                <select name="project_id" class="form-select">
+                    <option value="">كل المشاريع</option>
+                    @foreach ($projects as $p)
+                        <option value="{{ $p->id }}" @selected($projectId === (string) $p->id)>{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">من تاريخ</label>
+                <input type="date" name="from" value="{{ $from }}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">إلى تاريخ</label>
+                <input type="date" name="to" value="{{ $to }}" class="form-control">
+            </div>
+            <div class="col-md-1 d-flex gap-2">
+                <button class="btn flex-fill" style="background:#2b4c80;color:#fff" title="تصفية"><i class="fa-solid fa-filter"></i></button>
+                <a href="{{ route('expenses.index') }}" class="btn btn-light" title="إعادة"><i class="fa-solid fa-rotate-right"></i></a>
+            </div>
+        </form>
+    </div></div>
+
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <form method="GET">
-                    <select name="category" class="form-select" style="min-width:180px" onchange="this.form.submit()">
-                        <option value="">كل الفئات</option>
-                        @foreach (\App\Models\Expense::CATEGORIES as $k => $label)
-                            <option value="{{ $k }}" @selected($category === $k)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </form>
+            <div class="d-flex justify-content-end gap-2 mb-3">
                 @can('expenses.create')
                     <a href="{{ route('expenses.create') }}" class="btn" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> مصروف جديد</a>
                 @endcan
@@ -58,7 +89,7 @@
                                 @can('expenses.delete')<td><input type="checkbox" form="bulk-form" name="ids[]" value="{{ $expense->id }}" class="form-check-input bulk-item"></td>@endcan
                                 <td>{{ $expense->expense_date->format('Y-m-d') }}</td>
                                 <td class="fw-semibold">{{ $expense->description }}</td>
-                                <td><span class="badge text-bg-light">{{ \App\Models\Expense::CATEGORIES[$expense->category] ?? $expense->category }}</span></td>
+                                <td><span class="badge text-bg-light">{{ $categories[$expense->category] ?? $expense->category }}</span></td>
                                 <td>{{ $expense->project?->name ?? '—' }}</td>
                                 <td class="fw-bold text-danger">{{ number_format($expense->amount, 2) }}</td>
                                 <td>

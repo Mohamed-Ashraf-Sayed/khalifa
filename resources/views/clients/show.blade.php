@@ -14,6 +14,20 @@
         </div>
     </div>
 
+    <div class="row g-3 mb-3">
+        @foreach ([
+            ['الرصيد المستحقّ', number_format((float) $balanceDue, 2), 'fa-scale-balanced', 'text-warning'],
+            ['إجمالي الفواتير', number_format((float) $totalInvoiced, 2), 'fa-file-invoice-dollar', 'text-secondary'],
+            ['إجمالي المسدّد', number_format((float) $totalPaid, 2), 'fa-circle-check', 'text-success'],
+        ] as [$l, $v, $icon, $color])
+        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3">
+            <i class="fa-solid {{ $icon }} {{ $color }}"></i>
+            <div class="fs-4 fw-bold">{{ $v }}</div>
+            <div class="small text-muted">{{ $l }}</div>
+        </div></div></div>
+        @endforeach
+    </div>
+
     <div class="card mb-3">
         <div class="card-body">
             <div class="row g-3">
@@ -40,7 +54,7 @@
                     <tbody>
                         @forelse ($client->projects as $p)
                             <tr>
-                                <td>{{ $p->name }}</td>
+                                <td><a href="{{ route('projects.show', $p) }}" class="text-decoration-none">{{ $p->name }}</a></td>
                                 <td>{{ number_format($p->contract_value, 2) }}</td>
                                 <td><span class="badge text-bg-light">{{ \App\Models\Project::STATUSES[$p->status] ?? $p->status }}</span></td>
                             </tr>

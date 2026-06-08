@@ -28,8 +28,13 @@
                 </div>
                 <div class="list-group list-group-flush">
                     @foreach ($group['hits'] as $hit)
-                        <a href="{{ route($group['route'], $hit) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <span>{{ $hit->{$group['display']} ?? '—' }}</span>
+                        <a href="{{ route($group['route'], $hit['model']) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span>
+                                <span class="d-block">{{ $hit['display'] ?: '—' }}</span>
+                                @if (! empty($hit['subtitle']))
+                                    <small class="text-muted">{{ $hit['subtitle'] }}</small>
+                                @endif
+                            </span>
                             <i class="fa-solid fa-chevron-left text-muted"></i>
                         </a>
                     @endforeach

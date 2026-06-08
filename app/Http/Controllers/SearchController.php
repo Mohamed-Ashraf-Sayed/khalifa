@@ -24,16 +24,17 @@ class SearchController extends Controller
         'projects' => [
             'model' => Project::class,
             'permission' => 'projects.view',
-            'column' => 'name',
+            'columns' => ['name', 'location'],
             'route' => 'projects.show',
             'label' => 'المشاريع',
             'display' => 'name',
             'icon' => 'fa-diagram-project',
+            'with' => ['client'],
         ],
         'clients' => [
             'model' => Client::class,
             'permission' => 'clients.view',
-            'column' => 'name',
+            'columns' => ['name', 'company_name', 'phone', 'phone2', 'email'],
             'route' => 'clients.show',
             'label' => 'العملاء',
             'display' => 'name',
@@ -42,7 +43,7 @@ class SearchController extends Controller
         'contractors' => [
             'model' => Contractor::class,
             'permission' => 'contractors.view',
-            'column' => 'name',
+            'columns' => ['contractor_code', 'name', 'company_name', 'phone', 'phone2', 'email'],
             'route' => 'contractors.show',
             'label' => 'المقاولون',
             'display' => 'name',
@@ -51,7 +52,7 @@ class SearchController extends Controller
         'suppliers' => [
             'model' => Supplier::class,
             'permission' => 'suppliers.view',
-            'column' => 'name',
+            'columns' => ['name', 'company_name', 'phone', 'phone2', 'email'],
             'route' => 'suppliers.show',
             'label' => 'الموردون',
             'display' => 'name',
@@ -60,7 +61,7 @@ class SearchController extends Controller
         'employees' => [
             'model' => Employee::class,
             'permission' => 'employees.view',
-            'column' => 'name',
+            'columns' => ['name'],
             'route' => 'employees.show',
             'label' => 'الموظفون',
             'display' => 'name',
@@ -69,29 +70,32 @@ class SearchController extends Controller
         'invoices' => [
             'model' => Invoice::class,
             'permission' => 'invoices.view',
-            'column' => 'invoice_number',
+            'columns' => ['invoice_number'],
             'route' => 'invoices.show',
             'label' => 'الفواتير',
             'display' => 'invoice_number',
             'icon' => 'fa-file-invoice',
+            'with' => ['client'],
         ],
         'purchase_orders' => [
             'model' => PurchaseOrder::class,
             'permission' => 'purchase_orders.view',
-            'column' => 'order_number',
+            'columns' => ['order_number'],
             'route' => 'purchase_orders.show',
             'label' => 'أوامر الشراء',
             'display' => 'order_number',
             'icon' => 'fa-cart-shopping',
+            'with' => ['supplier'],
         ],
         'contractor_extracts' => [
             'model' => ContractorExtract::class,
             'permission' => 'contractors.view',
-            'column' => 'extract_number',
+            'columns' => ['extract_number'],
             'route' => 'contractor_extracts.show',
             'label' => 'مستخلصات المقاولين',
             'display' => 'extract_number',
             'icon' => 'fa-file-contract',
+            'with' => ['contractor', 'project'],
         ],
     ];
 
@@ -108,7 +112,12 @@ class SearchController extends Controller
                 }
 
                 $hits = $cfg['model']::query()
-                    ->where($cfg['column'], 'like', '%'.$q.'%')
+                    ->with($cfg['with'] ?? [])
+                    ->where(function ($query) use ($cfg, $q) {
+                        foreach ($cfg['columns'] as $column) {
+                            $query->orWhere($column, 'like', '%'.$q.'%');
+                        }
+                    })
                     ->limit(8)
                     ->get();
 
@@ -118,7 +127,11 @@ class SearchController extends Controller
                         'route' => $cfg['route'],
                         'display' => $cfg['display'],
                         'icon' => $cfg['icon'],
-                        'hits' => $hits,
+                        'hits' => $hits->map(fn ($hit) => [
+                            'model' => $hit,
+                            'display' => $hit->{$cfg['display']} ?? '—',
+                            'subtitle' => $this->subtitle($key, $hit),
+                        ]),
                     ];
                 }
             }
@@ -128,5 +141,24 @@ class SearchController extends Controller
             'q' => $q,
             'groups' => $groups,
         ]);
+    }
+
+    /**
+     * سطر سياقي ثانوي لكل نتيجة بحث (قراءة فقط، يعرض قيم محسوبة مسبقاً)
+     * لتمييز السجلات المتشابهة قبل الدخول عليها.
+     */
+    private function subtitle(string $key, $hit): ?string
+    {
+        return match ($key) {
+            'projects' => $hit->client?->name,
+            'clients', 'suppliers' => $hit->company_name ?: $hit->phone,
+            'contractors' => $hit->contractor_code
+                ? trim($hit->contractor_code.' · '.($hit->company_name ?: $hit->phone), ' ·')
+                : ($hit->company_name ?: $hit->phone),
+            'invoices' => trim(($hit->client?->name ?? '').' · '.number_format((float) $hit->total_amount, 2).' ج.م', ' ·'),
+            'purchase_orders' => $hit->supplier?->name,
+            'contractor_extracts' => trim(($hit->contractor?->name ?? '').' · '.($hit->project?->name ?? ''), ' ·'),
+            default => null,
+        };
     }
 }

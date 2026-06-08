@@ -47,7 +47,7 @@ class ContractorController extends Controller implements HasMiddleware
     {
         $contractor->load([
             'creator',
-            'extracts' => fn ($q) => $q->latest(),
+            'extracts' => fn ($q) => $q->with('project')->latest(),
             'payments' => fn ($q) => $q->latest(),
         ]);
 

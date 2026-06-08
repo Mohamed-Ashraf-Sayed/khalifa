@@ -125,9 +125,18 @@ class SupplierPaymentController extends Controller implements HasMiddleware
         return view('supplier_payments.certificate', array_merge($data, ['pdf' => false]));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('supplier_payments.form', $this->formData(new SupplierPayment(['payment_date' => now()->toDateString(), 'payment_method' => 'cash'])));
+        $attributes = ['payment_date' => now()->toDateString(), 'payment_method' => 'cash'];
+
+        // دعم التعبئة المسبقة للمورّد عند الدخول من صفحة المورّد.
+        if ($supplierId = $request->integer('supplier_id')) {
+            if (Supplier::whereKey($supplierId)->exists()) {
+                $attributes['supplier_id'] = $supplierId;
+            }
+        }
+
+        return view('supplier_payments.form', $this->formData(new SupplierPayment($attributes)));
     }
 
     public function store(Request $request): RedirectResponse

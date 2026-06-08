@@ -103,7 +103,7 @@ class RevenueController extends Controller implements HasMiddleware
 
     public function show(Revenue $revenue): View
     {
-        $revenue->load(['project', 'bankAccount', 'creator', 'collections.bankAccount']);
+        $revenue->load(['project', 'costCenter', 'bankAccount', 'creator', 'collections.bankAccount']);
         $accounts = BankAccount::where('is_active', true)->orderBy('name')->get();
 
         return view('revenues.show', compact('revenue', 'accounts'));

@@ -47,6 +47,7 @@
             <div class="il"><span class="k">نسبة الإهلاك</span><span class="v">{{ rtrim(rtrim(number_format($asset->depreciation_rate, 2), '0'), '.') }}%</span></div>
             <div class="il"><span class="k">مدة الخدمة</span><span class="v">{{ intdiv($asset->monthsInService(), 12) }} سنة و{{ $asset->monthsInService() % 12 }} شهر</span></div>
             <div class="il"><span class="k">الموقع</span><span class="v">{{ $asset->location ?: '—' }}</span></div>
+            <div class="il"><span class="k">أضيف بواسطة</span><span class="v">{{ $asset->creator?->name ?? '—' }} · {{ $asset->created_at?->format('Y-m-d') ?? '—' }}</span></div>
             @if ($asset->disposal_date)
                 <div class="il"><span class="k">تاريخ الاستبعاد</span><span class="v">{{ $asset->disposal_date->format('Y-m-d') }}</span></div>
                 <div class="il"><span class="k">قيمة البيع/الاستبعاد</span><span class="v">{{ number_format((float) $asset->disposal_value, 2) }}</span></div>

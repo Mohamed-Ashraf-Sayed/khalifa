@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
     Route::post('backups/run', [BackupController::class, 'run'])->name('backups.run');
     Route::get('backups/download/{file}', [BackupController::class, 'download'])->where('file', '[A-Za-z0-9._-]+')->name('backups.download');
+    Route::delete('backups/{file}', [BackupController::class, 'destroy'])->where('file', '[A-Za-z0-9._-]+')->name('backups.destroy');
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read_all');
@@ -153,6 +154,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('bank-transactions/{bank_transaction}', [BankTransactionController::class, 'destroy'])
         ->name('bank_transactions.destroy');
     Route::post('bank-transactions/{bank_transaction}/reconcile', [BankTransactionController::class, 'reconcile'])->name('bank_transactions.reconcile');
+    Route::get('bank-transactions/{bank_transaction}/attachment', [BankTransactionController::class, 'downloadAttachment'])->name('bank_transactions.attachment');
     Route::resource('payment-methods', CustomPaymentMethodController::class)->names('payment_methods')->except(['show']);
 
     Route::resource('expense-categories', ExpenseCategoryController::class)->names('expense_categories')->except(['show']);
@@ -226,6 +228,7 @@ Route::middleware('auth')->group(function () {
     // موجة 7 — تحويلات بنكية + حركات مخزون
     Route::resource('bank-transfers', BankTransferController::class)->names('bank_transfers')->only(['index', 'create', 'store', 'destroy']);
     Route::resource('inventory-movements', InventoryMovementController::class)->names('inventory_movements')->only(['index', 'create', 'store', 'destroy']);
+    Route::get('inventory-movements/{inventory_movement}', [InventoryMovementController::class, 'show'])->name('inventory_movements.show');
 
     // موجة 8 — ملفات المشاريع (رفع آمن) + الإعدادات + سجل النشاطات
     Route::get('project-files', [ProjectFileController::class, 'index'])->name('project_files.index');
@@ -241,6 +244,7 @@ Route::middleware('auth')->group(function () {
     // الأدوار والصلاحيات + المستخدمون + سلة المحذوفات + البحث + المرفقات
     Route::resource('roles', RoleController::class)->except(['show']);
     Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset_password');
+    Route::patch('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle_active');
     Route::get('trash', [TrashController::class, 'index'])->name('trash.index');
     Route::post('trash/{type}/{id}/restore', [TrashController::class, 'restore'])->name('trash.restore');
     Route::delete('trash/{type}/{id}', [TrashController::class, 'forceDelete'])->name('trash.force_delete');
@@ -281,7 +285,9 @@ Route::middleware('auth')->group(function () {
     // ===== موجات المقاولات الجديدة =====
     // الضمانات والتأمينات
     Route::post('letters-of-guarantee/{letterOfGuarantee}/release', [LetterOfGuaranteeController::class, 'release'])->name('guarantees.release');
+    Route::get('letters-of-guarantee/{letterOfGuarantee}/print', [LetterOfGuaranteeController::class, 'print'])->name('guarantees.print');
     Route::resource('letters-of-guarantee', LetterOfGuaranteeController::class)->names('guarantees')->parameters(['letters-of-guarantee' => 'letterOfGuarantee']);
+    Route::get('insurance-policies/{insurancePolicy}/print', [InsurancePolicyController::class, 'print'])->name('insurance.print');
     Route::resource('insurance-policies', InsurancePolicyController::class)->names('insurance')->parameters(['insurance-policies' => 'insurancePolicy']);
 
     // المناقصات وعروض الأسعار
@@ -291,6 +297,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('quotations', QuotationController::class);
     Route::post('quotations/{quotation}/items', [QuotationItemController::class, 'store'])->name('quotation_items.store');
     Route::delete('quotation-items/{quotation_item}', [QuotationItemController::class, 'destroy'])->name('quotation_items.destroy');
+    Route::put('quotation-items/{quotation_item}', [QuotationItemController::class, 'update'])->name('quotation_items.update');
 
     // تنفيذ الموقع: مراحل + يومية + حضور
     Route::post('projects/{project}/milestones', [ProjectMilestoneController::class, 'store'])->name('project_milestones.store');
@@ -300,6 +307,8 @@ Route::middleware('auth')->group(function () {
     Route::get('labor-attendances', [LaborAttendanceController::class, 'index'])->name('labor_attendances.index');
     Route::get('labor-attendances/create', [LaborAttendanceController::class, 'create'])->name('labor_attendances.create');
     Route::post('labor-attendances', [LaborAttendanceController::class, 'store'])->name('labor_attendances.store');
+    Route::get('labor-attendances/{labor_attendance}/edit', [LaborAttendanceController::class, 'edit'])->name('labor_attendances.edit');
+    Route::put('labor-attendances/{labor_attendance}', [LaborAttendanceController::class, 'update'])->name('labor_attendances.update');
     Route::get('labor-attendances/{labor_attendance}', [LaborAttendanceController::class, 'show'])->name('labor_attendances.show');
     Route::delete('labor-attendances/{labor_attendance}', [LaborAttendanceController::class, 'destroy'])->name('labor_attendances.destroy');
 
@@ -310,6 +319,7 @@ Route::middleware('auth')->group(function () {
     Route::post('material-requisitions/{materialRequisition}/approve', [MaterialRequisitionController::class, 'approve'])->name('material_requisitions.approve');
     Route::post('material-requisitions/{materialRequisition}/issue', [MaterialRequisitionController::class, 'issue'])->name('material_requisitions.issue');
     Route::post('material-requisitions/{materialRequisition}/reject', [MaterialRequisitionController::class, 'reject'])->name('material_requisitions.reject');
+    Route::get('material-requisitions/{materialRequisition}/print', [MaterialRequisitionController::class, 'print'])->name('material_requisitions.print');
     Route::resource('material-requisitions', MaterialRequisitionController::class)->names('material_requisitions')->parameters(['material-requisitions' => 'materialRequisition']);
     Route::post('material-requisitions/{materialRequisition}/items', [MaterialRequisitionItemController::class, 'store'])->name('material_requisition_items.store');
     Route::delete('material-requisition-items/{materialRequisitionItem}', [MaterialRequisitionItemController::class, 'destroy'])->name('material_requisition_items.destroy');
@@ -333,6 +343,8 @@ Route::middleware('auth')->group(function () {
     Route::post('payroll-runs/{payrollRun}/approve', [PayrollController::class, 'approve'])->name('payroll.approve');
     Route::post('payroll-runs/{payrollRun}/pay', [PayrollController::class, 'pay'])->name('payroll.pay');
     Route::post('payroll-runs/{payrollRun}/items/{item}', [PayrollController::class, 'updateItem'])->name('payroll.update_item');
+    Route::get('payroll-runs/{payrollRun}/print', [PayrollController::class, 'print'])->name('payroll.print');
+    Route::get('payroll-runs/{payrollRun}/items/{item}/payslip', [PayrollController::class, 'payslip'])->name('payroll.payslip');
     Route::resource('payroll-runs', PayrollController::class)->names('payroll')->parameters(['payroll-runs' => 'payrollRun'])->except(['edit', 'update']);
 
     // ===== المحاسبة الدفترية (قيد مزدوج) =====

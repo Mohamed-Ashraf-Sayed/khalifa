@@ -45,7 +45,11 @@ class PartnerController extends Controller implements HasMiddleware
 
     public function show(Partner $partner): View
     {
-        $partner->load(['creator', 'transactions' => fn ($q) => $q->latest('transaction_date')]);
+        $partner->load([
+            'creator',
+            'transactions' => fn ($q) => $q->latest('transaction_date'),
+            'deposits' => fn ($q) => $q->latest('deposit_date'),
+        ]);
 
         return view('partners.show', compact('partner'));
     }

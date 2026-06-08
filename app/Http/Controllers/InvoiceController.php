@@ -29,16 +29,40 @@ class InvoiceController extends Controller implements HasMiddleware
     {
         $status = (string) $request->input('status', '');
         $search = trim((string) $request->input('search', ''));
+        $clientId = (string) $request->input('client_id', '');
+        $from = (string) $request->input('from', '');
+        $to = (string) $request->input('to', '');
+
+        $applyFilters = fn ($q) => $q
+            ->when($status !== '', fn ($q) => $q->where('status', $status))
+            ->when($clientId !== '', fn ($q) => $q->where('client_id', $clientId))
+            ->when($from !== '', fn ($q) => $q->whereDate('issue_date', '>=', $from))
+            ->when($to !== '', fn ($q) => $q->whereDate('issue_date', '<=', $to))
+            ->when($search !== '', fn ($q) => $q->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                    ->orWhereHas('client', fn ($c) => $c->where('name', 'like', "%{$search}%"));
+            }));
 
         $invoices = Invoice::query()
             ->with(['client', 'project'])
-            ->when($status !== '', fn ($q) => $q->where('status', $status))
-            ->when($search !== '', fn ($q) => $q->where('invoice_number', 'like', "%{$search}%"))
+            ->tap($applyFilters)
             ->latest('issue_date')
             ->paginate(15)
             ->withQueryString();
 
-        return view('invoices.index', compact('invoices', 'status', 'search'));
+        // إحصائيات ملخّصة على نفس الفلاتر المطبّقة (عرض فقط)
+        $statsQuery = Invoice::query()->tap($applyFilters);
+        $totalInvoiced = (clone $statsQuery)->sum('total_amount');
+        $totalCollected = (clone $statsQuery)->sum('paid_amount');
+        $totalOutstanding = bcsub((string) $totalInvoiced, (string) $totalCollected, 2);
+        $overdueCount = (clone $statsQuery)->where('status', 'overdue')->count();
+
+        $clients = Client::orderBy('name')->get();
+
+        return view('invoices.index', compact(
+            'invoices', 'status', 'search', 'clientId', 'from', 'to', 'clients',
+            'totalInvoiced', 'totalCollected', 'totalOutstanding', 'overdueCount'
+        ));
     }
 
     public function create(): View

@@ -44,7 +44,7 @@ class AccountController extends Controller implements HasMiddleware
     {
         return view('accounts.form', [
             'account' => new Account(['normal_balance' => 'debit', 'type' => 'asset', 'is_active' => true, 'opening_balance' => 0]),
-            'parents' => Account::orderBy('code')->get(),
+            'parents' => Account::where('is_group', true)->orderBy('code')->get(),
         ]);
     }
 
@@ -61,7 +61,7 @@ class AccountController extends Controller implements HasMiddleware
     {
         return view('accounts.form', [
             'account' => $account,
-            'parents' => Account::where('id', '!=', $account->id)->orderBy('code')->get(),
+            'parents' => Account::where('is_group', true)->where('id', '!=', $account->id)->orderBy('code')->get(),
         ]);
     }
 
@@ -93,12 +93,14 @@ class AccountController extends Controller implements HasMiddleware
             'code' => ['required', 'string', 'max:50', Rule::unique('accounts', 'code')->ignore($account?->id)],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:'.implode(',', array_keys(Account::TYPES))],
-            'parent_id' => ['nullable', 'exists:accounts,id'],
+            'parent_id' => ['nullable', Rule::exists('accounts', 'id')->where('is_group', true)],
             'normal_balance' => ['required', 'in:'.implode(',', array_keys(Account::NORMAL))],
             'is_group' => ['nullable', 'boolean'],
             'opening_balance' => ['nullable', 'numeric'],
             'is_active' => ['nullable', 'boolean'],
             'description' => ['nullable', 'string', 'max:255'],
+        ], [
+            'parent_id.exists' => 'الحساب الأب يجب أن يكون حساباً تجميعياً.',
         ]);
     }
 }

@@ -767,7 +767,7 @@ class ReportController extends Controller implements HasMiddleware
      * يُحتسب العمر من تاريخ أقدم مستند مصدر غير مسدّد (أقدم أمر شراء للمورّد / أقدم مستخلص غير مسدّد
      * للمقاول، وإلا تاريخ اليوم). شرائح: 0-30 / 31-60 / 61-90 / 90+.
      */
-    public function apAging(Request $request): View
+    public function apAging(Request $request)
     {
         $today = Carbon::today();
         $rows = [];
@@ -815,6 +815,41 @@ class ReportController extends Controller implements HasMiddleware
             foreach (['b0', 'b30', 'b60', 'b90', 'total'] as $k) {
                 $totals[$k] = bcadd($totals[$k], $r[$k], 2);
             }
+        }
+
+        $format = $request->query('format');
+        if ($format === 'pdf' || $format === 'xlsx') {
+            $headers = ['الجهة', 'النوع', '0-30 يوم', '31-60 يوم', '61-90 يوم', '90+ يوم', 'الإجمالي'];
+            $exportRows = [];
+            foreach ($rows as $r) {
+                $exportRows[] = [
+                    $r['name'],
+                    $r['kind'],
+                    number_format((float) $r['b0'], 2),
+                    number_format((float) $r['b30'], 2),
+                    number_format((float) $r['b60'], 2),
+                    number_format((float) $r['b90'], 2),
+                    number_format((float) $r['total'], 2),
+                ];
+            }
+            $exportRows[] = [
+                'الإجمالي',
+                '',
+                number_format((float) $totals['b0'], 2),
+                number_format((float) $totals['b30'], 2),
+                number_format((float) $totals['b60'], 2),
+                number_format((float) $totals['b90'], 2),
+                number_format((float) $totals['total'], 2),
+            ];
+            $title = 'أعمار الذمم الدائنة بتاريخ '.$today->toDateString();
+
+            if ($format === 'xlsx') {
+                return app(ExportService::class)->excel($headers, $exportRows, 'ap_aging', $title);
+            }
+
+            $html = $this->buildSimpleHtml($title, $headers, $exportRows);
+
+            return app(ExportService::class)->pdf($html, 'ap_aging.pdf');
         }
 
         return view('reports.ap_aging', [

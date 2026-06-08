@@ -18,7 +18,7 @@ class UserController extends Controller implements HasMiddleware
         return [
             new Middleware('can:users.view', only: ['index', 'show']),
             new Middleware('can:users.create', only: ['create', 'store']),
-            new Middleware('can:users.edit', only: ['edit', 'update', 'resetPassword']),
+            new Middleware('can:users.edit', only: ['edit', 'update', 'resetPassword', 'toggleActive']),
             new Middleware('can:users.delete', only: ['destroy']),
         ];
     }
@@ -131,6 +131,19 @@ class UserController extends Controller implements HasMiddleware
         $user->save();
 
         return redirect()->route('users.show', $user)->with('success', 'تم تعيين كلمة مرور جديدة.');
+    }
+
+    public function toggleActive(Request $request, User $user): RedirectResponse
+    {
+        // امنع المدير من تعطيل حسابه الخاص (قفل النفس خارج النظام)
+        if ($request->user()->id === $user->id) {
+            return back()->with('error', 'لا يمكنك تعطيل حسابك الخاص.');
+        }
+
+        $user->is_active = ! $user->is_active;
+        $user->save();
+
+        return back()->with('success', $user->is_active ? 'تم تفعيل الحساب.' : 'تم تعطيل الحساب.');
     }
 
     public function destroy(Request $request, User $user): RedirectResponse

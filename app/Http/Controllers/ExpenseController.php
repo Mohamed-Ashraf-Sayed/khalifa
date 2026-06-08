@@ -35,26 +35,49 @@ class ExpenseController extends Controller implements HasMiddleware
     public function index(Request $request): View
     {
         $category = (string) $request->input('category', '');
+        $projectId = (string) $request->input('project_id', '');
+        $search = trim((string) $request->input('search', ''));
+        $from = trim((string) $request->input('from', ''));
+        $to = trim((string) $request->input('to', ''));
 
-        $expenses = Expense::query()
-            ->with(['project', 'bankAccount'])
+        $base = Expense::query()
             ->when($category !== '', fn ($q) => $q->where('category', $category))
+            ->when($projectId !== '', fn ($q) => $q->where('project_id', $projectId))
+            ->when($search !== '', fn ($q) => $q->where(fn ($w) => $w
+                ->where('description', 'like', '%'.$search.'%')
+                ->orWhere('recipient', 'like', '%'.$search.'%')))
+            ->when($from !== '', fn ($q) => $q->whereDate('expense_date', '>=', $from))
+            ->when($to !== '', fn ($q) => $q->whereDate('expense_date', '<=', $to));
+
+        $expenses = (clone $base)
+            ->with(['project', 'bankAccount'])
             ->latest('expense_date')
             ->paginate(15)
             ->withQueryString();
 
-        $total = Expense::when($category !== '', fn ($q) => $q->where('category', $category))->sum('amount');
+        $total = (clone $base)->sum('amount');
 
-        return view('expenses.index', compact('expenses', 'category', 'total'));
+        return view('expenses.index', [
+            'expenses' => $expenses,
+            'category' => $category,
+            'projectId' => $projectId,
+            'search' => $search,
+            'from' => $from,
+            'to' => $to,
+            'total' => $total,
+            'projects' => Project::orderBy('name')->get(),
+            'categories' => $this->categoryOptions(),
+        ]);
     }
 
     public function show(Expense $expense): View
     {
-        $expense->load(['project', 'bankAccount', 'creator', 'payments.bankAccount', 'payments.creator']);
+        $expense->load(['project', 'costCenter', 'bankAccount', 'creator', 'payments.bankAccount', 'payments.creator']);
 
         $accounts = BankAccount::where('is_active', true)->orderBy('name')->get();
+        $categories = $this->categoryOptions();
 
-        return view('expenses.show', compact('expense', 'accounts'));
+        return view('expenses.show', compact('expense', 'accounts', 'categories'));
     }
 
     public function create(): View

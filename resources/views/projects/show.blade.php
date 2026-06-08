@@ -21,6 +21,12 @@
             @endcan
             <a href="{{ route('general_ledger.project', $project) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-book ms-1"></i> دفتر أستاذ المشروع</a>
             <a href="{{ route('reports.project_income', ['project_id' => $project->id]) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-file-invoice-dollar ms-1"></i> قائمة دخل المشروع</a>
+            @can('projects.delete')
+                <form method="POST" action="{{ route('projects.destroy', $project) }}" class="d-inline" data-confirm="حذف المشروع نهائياً؟ سيتم حذف كل البيانات المرتبطة.">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash ms-1"></i> حذف</button>
+                </form>
+            @endcan
             <a href="{{ route('projects.index') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع</a>
         </div>
     </div>
@@ -375,7 +381,10 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0"><i class="fa-solid fa-file-invoice ms-1"></i> الفواتير <span class="badge text-bg-secondary">{{ $project->invoices->count() }}</span></h6>
-                <a href="{{ route('invoices.index') }}" class="small text-decoration-none">عرض الكل</a>
+                <div class="d-flex align-items-center gap-2">
+                    @can('invoices.create')<a href="{{ route('invoices.create', ['project_id' => $project->id]) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة</a>@endcan
+                    <a href="{{ route('invoices.index') }}" class="small text-decoration-none">عرض الكل</a>
+                </div>
             </div>
             <div class="small text-muted mb-2">إجمالي مُفوتر: {{ number_format((float) $summary['invoicedTotal'], 2) }} ج · مدفوع: {{ number_format((float) $summary['invoicePaid'], 2) }} ج</div>
             <div class="table-responsive">
@@ -404,7 +413,10 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0"><i class="fa-solid fa-file-contract ms-1"></i> مستخلصات المقاولين <span class="badge text-bg-secondary">{{ $project->contractorExtracts->count() }}</span></h6>
-                <a href="{{ route('contractor_extracts.index') }}" class="small text-decoration-none">عرض الكل</a>
+                <div class="d-flex align-items-center gap-2">
+                    @can('contractors.create')<a href="{{ route('contractor_extracts.create', ['project_id' => $project->id]) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة</a>@endcan
+                    <a href="{{ route('contractor_extracts.index') }}" class="small text-decoration-none">عرض الكل</a>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">
@@ -432,7 +444,10 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0"><i class="fa-solid fa-cart-shopping ms-1"></i> أوامر الشراء <span class="badge text-bg-secondary">{{ $project->purchaseOrders->count() }}</span></h6>
-                <a href="{{ route('purchase_orders.index') }}" class="small text-decoration-none">عرض الكل</a>
+                <div class="d-flex align-items-center gap-2">
+                    @can('purchase_orders.create')<a href="{{ route('purchase_orders.create', ['project_id' => $project->id]) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة</a>@endcan
+                    <a href="{{ route('purchase_orders.index') }}" class="small text-decoration-none">عرض الكل</a>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">
@@ -487,7 +502,10 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0"><i class="fa-solid fa-list-check ms-1"></i> بنود التكلفة <span class="badge text-bg-secondary">{{ $project->projectCosts->count() }}</span></h6>
-                <a href="{{ route('project_costs.index') }}" class="small text-decoration-none">عرض الكل</a>
+                <div class="d-flex align-items-center gap-2">
+                    @can('projects.create')<a href="{{ route('project_costs.create', ['project_id' => $project->id]) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة</a>@endcan
+                    <a href="{{ route('project_costs.index', ['project_id' => $project->id]) }}" class="small text-decoration-none">عرض الكل</a>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">
@@ -569,7 +587,10 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0"><i class="fa-solid fa-file-signature ms-1"></i> العقود <span class="badge text-bg-secondary">{{ $project->contracts->count() }}</span></h6>
-                <a href="{{ route('contracts.index') }}" class="small text-decoration-none">عرض الكل</a>
+                <div class="d-flex align-items-center gap-2">
+                    @can('contracts.create')<a href="{{ route('contracts.create', ['project_id' => $project->id]) }}" class="btn btn-sm" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-plus ms-1"></i> إضافة</a>@endcan
+                    <a href="{{ route('contracts.index') }}" class="small text-decoration-none">عرض الكل</a>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">
@@ -734,14 +755,22 @@
             </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th>اسم الملف</th><th>الوصف</th><th>الحجم</th><th></th></tr></thead>
+                    <thead class="table-light"><tr><th>اسم الملف</th><th>الوصف</th><th>الحجم</th><th class="text-end">إجراءات</th></tr></thead>
                     <tbody>
                         @forelse ($project->files as $file)
                             <tr>
                                 <td><i class="fa-solid fa-file ms-1 text-muted"></i> {{ $file->original_name }}</td>
                                 <td>{{ $file->description ?: '—' }}</td>
                                 <td>{{ number_format($file->size / 1024, 1) }} ك.ب</td>
-                                <td class="text-end"><a href="{{ route('project_files.download', $file) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-download"></i></a></td>
+                                <td class="text-end">
+                                    <a href="{{ route('project_files.download', $file) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-download"></i></a>
+                                    @can('projects.edit')
+                                        <form method="POST" action="{{ route('project_files.destroy', $file) }}" class="d-inline" data-confirm="حذف الملف؟">
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    @endcan
+                                </td>
                             </tr>
                         @empty
                             <tr><td colspan="4" class="text-center text-muted py-3">لا توجد ملفات مرفوعة.</td></tr>
@@ -749,6 +778,25 @@
                     </tbody>
                 </table>
             </div>
+
+            @can('projects.edit')
+                <form method="POST" action="{{ route('project_files.store') }}" enctype="multipart/form-data" class="row g-2 mt-2 align-items-end">
+                    @csrf
+                    <input type="hidden" name="project_id" value="{{ $project->id }}">
+                    <div class="col-md-5">
+                        <label class="form-label small">الملف <span class="text-danger">*</span></label>
+                        <input type="file" name="file" class="form-control" required>
+                        <div class="form-text">الامتدادات المسموحة: pdf, doc, docx, xls, xlsx, jpg, jpeg, png, webp · بحد أقصى 10 م.ب</div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small">الوصف</label>
+                        <input type="text" name="description" value="{{ old('description') }}" class="form-control" maxlength="255">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn w-100" style="background:#2b4c80;color:#fff"><i class="fa-solid fa-upload ms-1"></i> رفع</button>
+                    </div>
+                </form>
+            @endcan
         </div>
     </div>
 

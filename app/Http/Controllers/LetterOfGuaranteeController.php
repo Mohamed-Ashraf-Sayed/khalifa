@@ -18,7 +18,7 @@ class LetterOfGuaranteeController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('can:guarantees.view', only: ['index', 'show']),
+            new Middleware('can:guarantees.view', only: ['index', 'show', 'print']),
             new Middleware('can:guarantees.create', only: ['create', 'store']),
             new Middleware('can:guarantees.edit', only: ['edit', 'update', 'release']),
             new Middleware('can:guarantees.delete', only: ['destroy']),
@@ -60,6 +60,13 @@ class LetterOfGuaranteeController extends Controller implements HasMiddleware
         $letterOfGuarantee->load('project', 'bankAccount', 'creator');
 
         return view('letters_of_guarantee.show', ['guarantee' => $letterOfGuarantee]);
+    }
+
+    public function print(LetterOfGuarantee $letterOfGuarantee): View
+    {
+        $letterOfGuarantee->load('project', 'bankAccount', 'creator');
+
+        return view('letters_of_guarantee.print', ['guarantee' => $letterOfGuarantee]);
     }
 
     public function create(): View

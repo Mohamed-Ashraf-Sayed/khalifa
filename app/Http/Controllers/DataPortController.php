@@ -140,9 +140,13 @@ class DataPortController extends Controller implements HasMiddleware
         $failed = 0;
         $total = 0;
         $header = null;
+        $rowNumber = 0;        // رقم الصف داخل الملف (للترويسة + البيانات)
+        $errors = [];          // رسائل أخطاء الصفوف الفاشلة لتُحفظ في notes
 
         if ($handle !== false) {
             while (($data = fgetcsv($handle)) !== false) {
+                $rowNumber++;
+
                 // تخطّي الصفوف الفارغة تماماً
                 if ($data === [null] || (count($data) === 1 && trim((string) $data[0]) === '')) {
                     continue;
@@ -169,6 +173,7 @@ class DataPortController extends Controller implements HasMiddleware
 
                     if ($mapped === []) {
                         $failed++;
+                        $errors[] = "صف {$rowNumber}: لا توجد أعمدة معروفة قابلة للاستيراد.";
                         continue;
                     }
 
@@ -180,9 +185,20 @@ class DataPortController extends Controller implements HasMiddleware
                     $imported++;
                 } catch (\Throwable $e) {
                     $failed++;
+                    $errors[] = "صف {$rowNumber}: ".$e->getMessage();
                 }
             }
             fclose($handle);
+        }
+
+        // نحفظ أول 20 رسالة خطأ كحد أقصى لتجنّب امتلاء العمود
+        $notes = null;
+        if ($errors !== []) {
+            $shown = array_slice($errors, 0, 20);
+            $notes = implode("\n", $shown);
+            if (count($errors) > 20) {
+                $notes .= "\n… و".(count($errors) - 20).' أخطاء أخرى.';
+            }
         }
 
         ImportLog::create([
@@ -192,7 +208,7 @@ class DataPortController extends Controller implements HasMiddleware
             'imported_rows' => $imported,
             'failed_rows' => $failed,
             'user_id' => $request->user()->id,
-            'notes' => null,
+            'notes' => $notes,
         ]);
 
         return redirect()->route('data_port.index')

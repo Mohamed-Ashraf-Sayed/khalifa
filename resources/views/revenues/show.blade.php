@@ -32,6 +32,7 @@
                 <div class="col-md-4"><div class="text-muted small">المبلغ</div><div class="fw-bold text-success">{{ number_format($revenue->amount, 2) }} ج</div></div>
                 <div class="col-md-4"><div class="text-muted small">التاريخ</div><div>{{ $revenue->revenue_date->format('Y-m-d') }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">المشروع</div><div>{{ $revenue->project?->name ?: '—' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">مركز التكلفة</div><div>{{ $revenue->costCenter?->name ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">طريقة الاستلام</div><div>{{ \App\Models\Revenue::PAYMENT_METHODS[$revenue->payment_method] ?? $revenue->payment_method }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">الحساب البنكي</div><div>{{ $revenue->bankAccount?->name ?: '—' }}</div></div>
                 <div class="col-md-4"><div class="text-muted small">تاريخ الاستحقاق</div><div>{{ $revenue->due_date?->format('Y-m-d') ?: '—' }}</div></div>
