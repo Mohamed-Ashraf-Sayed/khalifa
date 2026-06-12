@@ -4,9 +4,9 @@
 
 @section('content')
     <div class="row g-3 mb-3">
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-coins text-success"></i><div class="fs-4 fw-bold">{{ number_format((float) $stats['total'], 2) }}</div><div class="small text-muted">إجمالي التكاليف</div></div></div></div>
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-list text-primary"></i><div class="fs-4 fw-bold">{{ number_format($stats['count']) }}</div><div class="small text-muted">عدد البنود</div></div></div></div>
-        <div class="col-md-4 col-12"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-layer-group text-warning"></i><div class="fs-4 fw-bold">{{ number_format($stats['work_items']) }}</div><div class="small text-muted">عدد بنود الأعمال</div></div></div></div>
+        <div class="col-md-4 col-6"><div class="statcard sc-success h-100"><span class="sc-ic"><i class="fa-solid fa-coins"></i></span><span><span class="sc-v d-block">{{ number_format((float) $stats['total'], 2) }}</span><span class="sc-l d-block">إجمالي التكاليف</span></span></div></div>
+        <div class="col-md-4 col-6"><div class="statcard sc-primary h-100"><span class="sc-ic"><i class="fa-solid fa-list"></i></span><span><span class="sc-v d-block">{{ number_format($stats['count']) }}</span><span class="sc-l d-block">عدد البنود</span></span></div></div>
+        <div class="col-md-4 col-12"><div class="statcard sc-warning h-100"><span class="sc-ic"><i class="fa-solid fa-layer-group"></i></span><span><span class="sc-v d-block">{{ number_format($stats['work_items']) }}</span><span class="sc-l d-block">عدد بنود الأعمال</span></span></div></div>
     </div>
 
     <div class="card">

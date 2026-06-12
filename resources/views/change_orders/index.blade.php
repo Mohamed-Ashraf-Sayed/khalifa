@@ -5,16 +5,17 @@
 @section('content')
     <div class="row g-3 mb-3">
         @foreach ([
-            ['عدد الأوامر', number_format($stats['count']), 'fa-file-pen', 'text-primary'],
-            ['إجمالي الإضافات المعتمدة', number_format($stats['additions'], 0), 'fa-circle-plus', 'text-success'],
-            ['إجمالي الخصومات المعتمدة', number_format($stats['deductions'], 0), 'fa-circle-minus', 'text-danger'],
-            ['صافي المعتمد', number_format($stats['net'], 0), 'fa-scale-balanced', 'text-info'],
-        ] as [$l, $v, $icon, $color])
-        <div class="col-md-3 col-6"><div class="card h-100"><div class="card-body py-3">
-            <i class="fa-solid {{ $icon }} {{ $color }}"></i>
-            <div class="fs-4 fw-bold">{{ $v }}</div>
-            <div class="small text-muted">{{ $l }}</div>
-        </div></div></div>
+            ['عدد الأوامر', number_format($stats['count']), 'fa-clipboard-list', 'primary'],
+            ['إجمالي الإضافات المعتمدة', number_format($stats['additions'], 0), 'fa-arrow-trend-up', 'success'],
+            ['إجمالي الخصومات المعتمدة', number_format($stats['deductions'], 0), 'fa-arrow-trend-down', 'danger'],
+            ['صافي المعتمد', number_format($stats['net'], 0), 'fa-scale-balanced', 'info'],
+        ] as [$l, $v, $icon, $c])
+        <div class="col-md-3 col-6">
+            <div class="statcard sc-{{ $c }} h-100">
+                <span class="sc-ic"><i class="fa-solid {{ $icon }}"></i></span>
+                <span><span class="sc-v d-block">{{ $v }}</span><span class="sc-l d-block">{{ $l }}</span></span>
+            </div>
+        </div>
         @endforeach
     </div>
 

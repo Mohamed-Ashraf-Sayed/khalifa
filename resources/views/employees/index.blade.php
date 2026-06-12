@@ -11,11 +11,10 @@
             ['السلف المستحقة', number_format((float) $stats['advances'], 2).' ج', 'fa-hand-holding-dollar', 'text-warning'],
         ] as [$label, $val, $icon, $color])
             <div class="col-md-3 col-6">
-                <div class="card h-100"><div class="card-body py-3">
-                    <i class="fa-solid {{ $icon }} {{ $color }}"></i>
-                    <div class="fs-4 fw-bold">{{ $val }}</div>
-                    <div class="small text-muted">{{ $label }}</div>
-                </div></div>
+                <div class="statcard {{ str_replace('text-','sc-',$color) }} h-100">
+                <span class="sc-ic"><i class="fa-solid {{ $icon }}"></i></span>
+                <span><span class="sc-v d-block">{{ $val }}</span><span class="sc-l d-block">{{ $label }}</span></span>
+            </div>
             </div>
         @endforeach
     </div>

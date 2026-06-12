@@ -139,6 +139,23 @@
         .filter-bar .form-control, .filter-bar .form-select { font-size: .85rem; }
         .filter-bar .filter-actions { display: flex; gap: .4rem; }
 
+        /* ===== Stat cards (موحّد لكل صفحات القوائم) ===== */
+        .statcard { display: flex; align-items: center; gap: .85rem; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+            padding: .85rem .95rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; height: 100%;
+            transition: transform .15s, box-shadow .15s, border-color .15s; }
+        .statcard:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--bg-2); }
+        .statcard::before { content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 4px; background: var(--c, var(--brown)); }
+        .statcard .sc-ic { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+            background: var(--c-bg, var(--brown-50)); color: var(--c, var(--brown)); font-size: 1.15rem; }
+        .statcard .sc-v { font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; color: var(--ink); }
+        .statcard .sc-l { font-size: .78rem; color: var(--muted); font-weight: 600; margin-top: 1px; }
+        .sc-primary   { --c: var(--brown);   --c-bg: var(--brown-50); }
+        .sc-info      { --c: var(--info);    --c-bg: var(--info-bg); }
+        .sc-warning   { --c: var(--warning); --c-bg: var(--warning-bg); }
+        .sc-secondary { --c: var(--muted);   --c-bg: var(--bg-2); }
+        .sc-success   { --c: var(--success); --c-bg: var(--success-bg); }
+        .sc-danger    { --c: var(--danger);  --c-bg: var(--danger-bg); }
+
         /* ===== Buttons ===== */
         .btn { border-radius: .6rem; font-weight: 600; font-size: .9rem; transition: all .15s ease; }
         .btn:active { transform: translateY(1px); }

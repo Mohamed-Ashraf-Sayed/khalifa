@@ -4,9 +4,9 @@
 
 @section('content')
     <div class="row g-3 mb-3">
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-bag-shopping text-primary"></i><div class="fs-4 fw-bold">{{ number_format($totalNet, 0) }}</div><div class="small text-muted">صافي المشتريات</div></div></div></div>
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-money-check-dollar text-success"></i><div class="fs-4 fw-bold">{{ number_format($totalPaid, 0) }}</div><div class="small text-muted">المدفوع عند الشراء</div></div></div></div>
-        <div class="col-md-4 col-12"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-scale-balanced text-warning"></i><div class="fs-4 fw-bold">{{ number_format($totalNet - $totalPaid, 0) }}</div><div class="small text-muted">المتبقّي</div></div></div></div>
+        <div class="col-md-4 col-6"><div class="statcard sc-primary h-100"><span class="sc-ic"><i class="fa-solid fa-bag-shopping"></i></span><span><span class="sc-v d-block">{{ number_format($totalNet, 0) }}</span><span class="sc-l d-block">صافي المشتريات</span></span></div></div>
+        <div class="col-md-4 col-6"><div class="statcard sc-success h-100"><span class="sc-ic"><i class="fa-solid fa-money-check-dollar"></i></span><span><span class="sc-v d-block">{{ number_format($totalPaid, 0) }}</span><span class="sc-l d-block">المدفوع عند الشراء</span></span></div></div>
+        <div class="col-md-4 col-12"><div class="statcard sc-warning h-100"><span class="sc-ic"><i class="fa-solid fa-scale-balanced"></i></span><span><span class="sc-v d-block">{{ number_format($totalNet - $totalPaid, 0) }}</span><span class="sc-l d-block">المتبقّي</span></span></div></div>
     </div>
 
     <div class="card">

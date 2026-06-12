@@ -5,28 +5,16 @@
 @section('content')
     <div class="row g-3 mb-3">
         <div class="col-md-3">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">إجمالي الإيرادات</div>
-                <div class="fs-4 fw-bold text-success">{{ number_format((float) $stats['total'], 2) }} ج</div>
-            </div></div>
+            <div class="statcard sc-success h-100"><span class="sc-ic"><i class="fa-solid fa-sack-dollar"></i></span><span><span class="sc-v d-block">{{ number_format((float) $stats['total'], 2) }} ج</span><span class="sc-l d-block">إجمالي الإيرادات</span></span></div>
         </div>
         <div class="col-md-3">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">إجمالي المحصّل</div>
-                <div class="fs-4 fw-bold text-success">{{ number_format((float) $stats['collected'], 2) }} ج</div>
-            </div></div>
+            <div class="statcard sc-success h-100"><span class="sc-ic"><i class="fa-solid fa-circle-check"></i></span><span><span class="sc-v d-block">{{ number_format((float) $stats['collected'], 2) }} ج</span><span class="sc-l d-block">إجمالي المحصّل</span></span></div>
         </div>
         <div class="col-md-3">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">المتبقّي</div>
-                <div class="fs-4 fw-bold text-warning">{{ number_format((float) $stats['remaining'], 2) }} ج</div>
-            </div></div>
+            <div class="statcard sc-warning h-100"><span class="sc-ic"><i class="fa-solid fa-hourglass-half"></i></span><span><span class="sc-v d-block">{{ number_format((float) $stats['remaining'], 2) }} ج</span><span class="sc-l d-block">المتبقّي</span></span></div>
         </div>
         <div class="col-md-3">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">عدد الإيرادات</div>
-                <div class="fs-4 fw-bold">{{ $stats['count'] }}</div>
-            </div></div>
+            <div class="statcard sc-primary h-100"><span class="sc-ic"><i class="fa-solid fa-sack-dollar"></i></span><span><span class="sc-v d-block">{{ $stats['count'] }}</span><span class="sc-l d-block">عدد الإيرادات</span></span></div>
         </div>
     </div>
 

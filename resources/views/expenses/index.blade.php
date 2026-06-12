@@ -5,10 +5,7 @@
 @section('content')
     <div class="row g-3 mb-3">
         <div class="col-md-4">
-            <div class="card"><div class="card-body">
-                <div class="text-muted small">إجمالي المصروفات{{ $category ? ' (' . ($categories[$category] ?? $category) . ')' : '' }}</div>
-                <div class="fs-4 fw-bold text-danger">{{ number_format($total, 2) }} ج</div>
-            </div></div>
+            <div class="statcard sc-danger h-100"><span class="sc-ic"><i class="fa-solid fa-money-bill-trend-up"></i></span><span><span class="sc-v d-block">{{ number_format($total, 2) }} ج</span><span class="sc-l d-block">إجمالي المصروفات{{ $category ? ' (' . ($categories[$category] ?? $category) . ')' : '' }}</span></span></div>
         </div>
     </div>
 

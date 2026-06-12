@@ -9,11 +9,10 @@
             ['إجمالي التغطية (السارية)', number_format($stats['coverage'], 0), 'fa-shield-halved', 'text-success'],
             ['قاربت على الانتهاء', number_format($stats['expiring']), 'fa-triangle-exclamation', 'text-warning'],
         ] as [$l, $v, $icon, $color])
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3">
-            <i class="fa-solid {{ $icon }} {{ $color }}"></i>
-            <div class="fs-4 fw-bold">{{ $v }}</div>
-            <div class="small text-muted">{{ $l }}</div>
-        </div></div></div>
+        <div class="col-md-4 col-6"><div class="statcard {{ str_replace('text-','sc-',$color) }} h-100">
+                <span class="sc-ic"><i class="fa-solid {{ $icon }}"></i></span>
+                <span><span class="sc-v d-block">{{ $v }}</span><span class="sc-l d-block">{{ $l }}</span></span>
+            </div></div>
         @endforeach
     </div>
 
