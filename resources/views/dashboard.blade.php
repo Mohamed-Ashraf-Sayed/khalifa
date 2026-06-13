@@ -32,17 +32,27 @@
     .ms-secondary { --c: var(--muted);   --c-bg: var(--bg-2); }
     .ms-success   { --c: var(--success); --c-bg: var(--success-bg); }
     .ms-danger    { --c: var(--danger);  --c-bg: var(--danger-bg); }
-    /* شرائح التنبيهات — واضحة ومريحة: أبيض + حدّ ملوّن خفيف + عدّاد بلون صريح */
-    .alert-chip { display:inline-flex; align-items:center; gap:.5rem; background:#fff; border:1px solid var(--line); border-radius:50rem; padding:.45rem .9rem; font-size:.84rem; font-weight:700; color:var(--ink); box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s, border-color .15s; }
-    .alert-chip:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
-    .alert-chip i { font-size:.92rem; }
-    .alert-chip .c { min-width:21px; height:21px; padding:0 6px; border-radius:50rem; color:#fff; font-size:.73rem; font-weight:800; display:inline-flex; align-items:center; justify-content:center; }
-    .alert-chip.warning   { border-color:#e7d3a8; } .alert-chip.warning i   { color:var(--warning); } .alert-chip.warning .c   { background:var(--warning); }
-    .alert-chip.danger    { border-color:#e8c2bf; } .alert-chip.danger i    { color:var(--danger);  } .alert-chip.danger .c    { background:var(--danger);  }
-    .alert-chip.info      { border-color:#c2d2db; } .alert-chip.info i      { color:var(--info);    } .alert-chip.info .c      { background:var(--info);    }
-    .alert-chip.success   { border-color:#bfdcc9; } .alert-chip.success i   { color:var(--success); } .alert-chip.success .c   { background:var(--success); }
-    .alert-chip.secondary { border-color:var(--line); } .alert-chip.secondary i { color:var(--muted); } .alert-chip.secondary .c { background:var(--muted); }
-    .alert-chip.primary   { border-color:var(--brown-100); } .alert-chip.primary i { color:var(--brown); } .alert-chip.primary .c { background:var(--brown); }
+    /* ===== لوحة التنبيهات — "أعلام حالة" هندسية منظّمة ===== */
+    .alerts-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: .8rem 1rem 1rem; box-shadow: var(--shadow-sm); }
+    .alerts-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; padding-bottom: .6rem; border-bottom: 1px dashed var(--line); }
+    .alerts-head .ah-title { font-weight: 800; font-size: .9rem; color: var(--ink); letter-spacing: -.01em; }
+    .alerts-head .ah-title i { color: var(--warning); margin-inline-end: .3rem; }
+    .alerts-head .ah-count { margin-inline-start: auto; background: var(--brown); color: #fff; font-size: .72rem; font-weight: 800; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; padding: 0 6px; }
+    .alerts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: .5rem; }
+
+    .alert-chip { display: flex; align-items: center; gap: .6rem; background: #fff; border: 1px solid var(--line);
+        border-inline-start: 3px solid var(--c); border-radius: 9px; padding: .55rem .8rem; color: var(--ink); text-decoration: none;
+        box-shadow: 0 1px 2px rgba(20,38,74,.04); transition: transform .14s ease, box-shadow .14s ease, background .14s ease; }
+    .alert-chip:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(20,38,74,.10); background: var(--c-bg); }
+    .alert-chip i { font-size: 1rem; color: var(--c); width: 1.15em; text-align: center; flex: 0 0 auto; }
+    .alert-chip > span:not(.c) { font-size: .82rem; font-weight: 600; color: var(--ink-2); flex: 1 1 auto; line-height: 1.25; }
+    .alert-chip .c { flex: 0 0 auto; font-size: 1.05rem; font-weight: 800; color: var(--c); font-variant-numeric: tabular-nums; line-height: 1; padding-inline-start: .6rem; border-inline-start: 1px solid var(--line); }
+    .alert-chip.warning   { --c: var(--warning); --c-bg: var(--warning-bg); }
+    .alert-chip.danger    { --c: var(--danger);  --c-bg: var(--danger-bg); }
+    .alert-chip.info      { --c: var(--info);    --c-bg: var(--info-bg); }
+    .alert-chip.success   { --c: var(--success); --c-bg: var(--success-bg); }
+    .alert-chip.secondary { --c: var(--muted);   --c-bg: var(--bg-2); }
+    .alert-chip.primary   { --c: var(--brown);   --c-bg: var(--brown-50); }
 </style>
 @endpush
 
@@ -68,16 +78,22 @@
         @endforeach
     </div>
 
-    {{-- شريط التنبيهات --}}
+    {{-- لوحة التنبيهات --}}
     @if (count($alerts))
-    <div class="d-flex flex-wrap gap-2 mb-3">
-        @foreach ($alerts as $a)
-            <a href="{{ $a['url'] }}" class="alert-chip {{ $a['color'] }}">
-                <i class="fa-solid {{ $a['icon'] }}"></i>
-                <span>{{ $a['label'] }}</span>
-                <span class="c">{{ $a['count'] }}</span>
-            </a>
-        @endforeach
+    <div class="alerts-panel mb-3">
+        <div class="alerts-head">
+            <span class="ah-title"><i class="fa-solid fa-triangle-exclamation"></i> ما يحتاج انتباهك</span>
+            <span class="ah-count">{{ count($alerts) }}</span>
+        </div>
+        <div class="alerts-grid">
+            @foreach ($alerts as $a)
+                <a href="{{ $a['url'] }}" class="alert-chip {{ $a['color'] }}">
+                    <i class="fa-solid {{ $a['icon'] }}"></i>
+                    <span>{{ $a['label'] }}</span>
+                    <span class="c">{{ $a['count'] }}</span>
+                </a>
+            @endforeach
+        </div>
     </div>
     @endif
 
