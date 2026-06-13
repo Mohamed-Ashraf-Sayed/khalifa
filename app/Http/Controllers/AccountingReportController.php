@@ -44,7 +44,7 @@ class AccountingReportController extends Controller implements HasMiddleware
 
             // الرصيد الختامي: موجب يعني الرصيد في الجهة الطبيعية للحساب.
             $balance = $this->num($account->balance($to));
-            $natural = $this->naturalSide($account->type);
+            $natural = $account->normal_balance; // طبيعة الحساب من normal_balance لمعالجة الحسابات المقابلة (contra) — متّسق مع balance()
 
             // تجاهل الحسابات بلا حركة ولا رصيد للتقليل من الضوضاء.
             if (bccomp($debitMovement, '0', 2) === 0
@@ -151,7 +151,7 @@ class AccountingReportController extends Controller implements HasMiddleware
             ]);
         }
 
-        $natural = $this->naturalSide($account->type);
+        $natural = $account->normal_balance; // طبيعة الحساب من normal_balance لمعالجة الحسابات المقابلة (contra) — متّسق مع balance()
         $opening = $this->num($account->opening_balance ?? '0');
 
         $entryLines = JournalEntryLine::query()
