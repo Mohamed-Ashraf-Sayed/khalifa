@@ -29,7 +29,7 @@
             <div class="col-md-4 col-12"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-coins text-success"></i><div class="fs-4 fw-bold">{{ number_format((float) $totalCost, 2) }}</div><div class="small text-muted">إجمالي التكاليف — {{ $project->name }}</div></div></div></div>
             @if (! is_null($contractValue))
                 <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-file-contract text-primary"></i><div class="fs-4 fw-bold">{{ number_format((float) $contractValue, 2) }}</div><div class="small text-muted">قيمة العقد</div></div></div></div>
-                <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-scale-balanced {{ bccomp($variance, '0', 2) < 0 ? 'text-danger' : 'text-warning' }}"></i><div class="fs-4 fw-bold {{ bccomp($variance, '0', 2) < 0 ? 'text-danger' : '' }}">{{ number_format((float) $variance, 2) }}</div><div class="small text-muted">الفرق (قيمة العقد − التكاليف)</div></div></div></div>
+                <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-equals {{ bccomp($variance, '0', 2) < 0 ? 'text-danger' : 'text-warning' }}"></i><div class="fs-4 fw-bold {{ bccomp($variance, '0', 2) < 0 ? 'text-danger' : '' }}">{{ number_format((float) $variance, 2) }}</div><div class="small text-muted">الفرق (قيمة العقد − التكاليف)</div></div></div></div>
             @endif
         </div>
 

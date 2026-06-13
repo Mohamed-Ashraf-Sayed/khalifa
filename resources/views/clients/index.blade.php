@@ -7,7 +7,7 @@
         @foreach ([
             ['إجمالي العملاء', number_format($stats['count']), 'fa-users', 'text-primary'],
             ['عملاء لديهم مشاريع', number_format($stats['with_projects']), 'fa-diagram-project', 'text-info'],
-            ['إجمالي الرصيد المستحقّ', number_format((float) $stats['balance_due'], 2), 'fa-scale-balanced', 'text-warning'],
+            ['إجمالي الرصيد المستحقّ', number_format((float) $stats['balance_due'], 2), 'fa-hand-holding-dollar', 'text-warning'],
         ] as [$l, $v, $icon, $color])
         <div class="col-md-4 col-6"><div class="statcard {{ str_replace('text-','sc-',$color) }} h-100">
                 <span class="sc-ic"><i class="fa-solid {{ $icon }}"></i></span>

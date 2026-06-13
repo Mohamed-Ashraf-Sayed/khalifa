@@ -16,7 +16,7 @@
 
     <div class="row g-3 mb-3">
         @foreach ([
-            ['الرصيد المستحقّ', number_format((float) $balanceDue, 2), 'fa-scale-balanced', 'text-warning'],
+            ['الرصيد المستحقّ', number_format((float) $balanceDue, 2), 'fa-hand-holding-dollar', 'text-warning'],
             ['إجمالي الفواتير', number_format((float) $totalInvoiced, 2), 'fa-file-invoice-dollar', 'text-secondary'],
             ['إجمالي المسدّد', number_format((float) $totalPaid, 2), 'fa-circle-check', 'text-success'],
         ] as [$l, $v, $icon, $color])

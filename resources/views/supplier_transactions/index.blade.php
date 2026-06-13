@@ -6,7 +6,7 @@
     <div class="row g-3 mb-3">
         <div class="col-md-4 col-6"><div class="statcard sc-primary h-100"><span class="sc-ic"><i class="fa-solid fa-bag-shopping"></i></span><span><span class="sc-v d-block">{{ number_format($totalNet, 0) }}</span><span class="sc-l d-block">صافي المشتريات</span></span></div></div>
         <div class="col-md-4 col-6"><div class="statcard sc-success h-100"><span class="sc-ic"><i class="fa-solid fa-money-check-dollar"></i></span><span><span class="sc-v d-block">{{ number_format($totalPaid, 0) }}</span><span class="sc-l d-block">المدفوع عند الشراء</span></span></div></div>
-        <div class="col-md-4 col-12"><div class="statcard sc-warning h-100"><span class="sc-ic"><i class="fa-solid fa-scale-balanced"></i></span><span><span class="sc-v d-block">{{ number_format($totalNet - $totalPaid, 0) }}</span><span class="sc-l d-block">المتبقّي</span></span></div></div>
+        <div class="col-md-4 col-12"><div class="statcard sc-warning h-100"><span class="sc-ic"><i class="fa-solid fa-hourglass-half"></i></span><span><span class="sc-v d-block">{{ number_format($totalNet - $totalPaid, 0) }}</span><span class="sc-l d-block">المتبقّي</span></span></div></div>
     </div>
 
     <div class="card">

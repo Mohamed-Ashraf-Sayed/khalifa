@@ -8,7 +8,7 @@
             ['عدد الأصول', number_format($stats['count']), 'fa-warehouse', 'text-primary'],
             ['إجمالي التكلفة', number_format($stats['cost'], 0), 'fa-sack-dollar', 'text-secondary'],
             ['مجمّع الإهلاك', number_format($stats['accumulated'], 0), 'fa-arrow-trend-down', 'text-danger'],
-            ['صافي القيمة الدفترية', number_format($stats['book'], 0), 'fa-scale-balanced', 'text-success'],
+            ['صافي القيمة الدفترية', number_format($stats['book'], 0), 'fa-equals', 'text-success'],
         ] as [$l, $v, $icon, $color])
         <div class="col-md-3 col-6"><div class="statcard {{ str_replace('text-','sc-',$color) }} h-100">
                 <span class="sc-ic"><i class="fa-solid {{ $icon }}"></i></span>

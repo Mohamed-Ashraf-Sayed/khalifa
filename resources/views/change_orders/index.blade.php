@@ -8,7 +8,7 @@
             ['عدد الأوامر', number_format($stats['count']), 'fa-clipboard-list', 'primary'],
             ['إجمالي الإضافات المعتمدة', number_format($stats['additions'], 0), 'fa-arrow-trend-up', 'success'],
             ['إجمالي الخصومات المعتمدة', number_format($stats['deductions'], 0), 'fa-arrow-trend-down', 'danger'],
-            ['صافي المعتمد', number_format($stats['net'], 0), 'fa-scale-balanced', 'info'],
+            ['صافي المعتمد', number_format($stats['net'], 0), 'fa-equals', 'info'],
         ] as [$l, $v, $icon, $c])
         <div class="col-md-3 col-6">
             <div class="statcard sc-{{ $c }} h-100">

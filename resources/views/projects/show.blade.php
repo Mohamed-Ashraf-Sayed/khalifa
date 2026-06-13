@@ -218,7 +218,7 @@
             @empty
                 <div class="text-muted small py-2">لا توجد أوامر تغيير لهذا المشروع.</div>
             @endforelse
-            <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-scale-balanced ms-1" style="color:#2b4c80"></i> قيمة العقد المعدّلة = الأصلي ({{ number_format((float) ($project->contract_value ?? 0), 2) }}) + صافي أوامر التغيير المعتمدة ({{ number_format((float) $coNetSigned, 2) }}) = <strong>{{ number_format((float) $revisedContractValue, 2) }} ج</strong></div>
+            <div class="alert alert-light border mt-3 mb-0 small"><i class="fa-solid fa-equals ms-1" style="color:#2b4c80"></i> قيمة العقد المعدّلة = الأصلي ({{ number_format((float) ($project->contract_value ?? 0), 2) }}) + صافي أوامر التغيير المعتمدة ({{ number_format((float) $coNetSigned, 2) }}) = <strong>{{ number_format((float) $revisedContractValue, 2) }} ج</strong></div>
         </div></div>
     @endcan
 

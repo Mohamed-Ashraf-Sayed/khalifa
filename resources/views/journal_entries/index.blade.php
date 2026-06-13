@@ -8,7 +8,7 @@
             ['عدد القيود', number_format($stats['count']), 'fa-book-journal-whills', 'text-primary'],
             ['مسودات', number_format($stats['drafts']), 'fa-pen-ruler', 'text-warning'],
             ['مرحّلة', number_format($stats['posted']), 'fa-circle-check', 'text-success'],
-            ['إجمالي المدين المرحّل', number_format($stats['posted_debit'], 2), 'fa-scale-balanced', 'text-info'],
+            ['إجمالي المدين المرحّل', number_format($stats['posted_debit'], 2), 'fa-coins', 'text-info'],
         ] as [$l, $v, $icon, $color])
         <div class="col-md-3 col-6"><div class="statcard {{ str_replace('text-','sc-',$color) }} h-100">
                 <span class="sc-ic"><i class="fa-solid {{ $icon }}"></i></span>

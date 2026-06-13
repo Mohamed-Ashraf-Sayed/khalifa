@@ -14,7 +14,7 @@
     <div class="row g-3 mb-3">
         <div class="col-md-4 col-12"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-arrow-trend-up text-success"></i><div class="fs-4 fw-bold">{{ number_format((float) $totalRevenues, 2) }}</div><div class="small text-muted">إجمالي الإيرادات</div></div></div></div>
         <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-arrow-trend-down text-danger"></i><div class="fs-4 fw-bold">{{ number_format((float) $totalExpenses, 2) }}</div><div class="small text-muted">إجمالي المصروفات</div></div></div></div>
-        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-scale-balanced {{ bccomp($totalNet, '0', 2) < 0 ? 'text-danger' : 'text-warning' }}"></i><div class="fs-4 fw-bold {{ bccomp($totalNet, '0', 2) < 0 ? 'text-danger' : '' }}">{{ number_format((float) $totalNet, 2) }}</div><div class="small text-muted">الصافي (الإيرادات − المصروفات)</div></div></div></div>
+        <div class="col-md-4 col-6"><div class="card h-100"><div class="card-body py-3"><i class="fa-solid fa-equals {{ bccomp($totalNet, '0', 2) < 0 ? 'text-danger' : 'text-warning' }}"></i><div class="fs-4 fw-bold {{ bccomp($totalNet, '0', 2) < 0 ? 'text-danger' : '' }}">{{ number_format((float) $totalNet, 2) }}</div><div class="small text-muted">الصافي (الإيرادات − المصروفات)</div></div></div></div>
     </div>
 
     <div class="card">
