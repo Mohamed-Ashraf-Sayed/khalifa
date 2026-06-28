@@ -202,7 +202,7 @@
                     </tbody>
                 </table>
             </div>
-            <a href="{{ route('bank_accounts.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-right ms-1"></i> رجوع للحسابات</a>
+            <a href="{{ $account->isCash() ? route('treasury') : route('bank_accounts.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-right ms-1"></i> {{ $account->isCash() ? 'رجوع للخزنة' : 'رجوع للحسابات' }}</a>
         </div>
     </div>
 @endsection

@@ -12,7 +12,26 @@ class BankAccount extends Model
         'current' => 'جاري',
         'savings' => 'توفير',
         'business' => 'تجاري',
+        'cash' => 'خزنة نقدية',
     ];
+
+    /** هل هذا الحساب خزنة نقدية (كاش) وليس حساباً بنكياً؟ */
+    public function isCash(): bool
+    {
+        return $this->account_type === 'cash';
+    }
+
+    /** الخزائن النقدية فقط. */
+    public function scopeCash($q)
+    {
+        return $q->where('account_type', 'cash');
+    }
+
+    /** الحسابات البنكية فقط (كل ما عدا الخزائن). */
+    public function scopeBanksOnly($q)
+    {
+        return $q->where(fn ($w) => $w->where('account_type', '!=', 'cash')->orWhereNull('account_type'));
+    }
 
     protected $fillable = [
         'name', 'bank_name', 'account_number', 'iban', 'branch',

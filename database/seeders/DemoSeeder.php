@@ -60,6 +60,7 @@ class DemoSeeder extends Seeder
         // بنوك
         $bankMain = BankAccount::create(['name' => 'الحساب الجاري الرئيسي', 'bank_name' => 'البنك الأهلي المصري', 'account_number' => '1234567890', 'currency' => 'EGP', 'opening_balance' => 0, 'current_balance' => 0, 'is_active' => true, 'created_by' => $this->by]);
         $bankProjects = BankAccount::create(['name' => 'حساب المشاريع', 'bank_name' => 'بنك مصر', 'account_number' => '9988776655', 'currency' => 'EGP', 'opening_balance' => 5000000, 'current_balance' => 5000000, 'is_active' => true, 'created_by' => $this->by]);
+        $treasury = BankAccount::create(['name' => 'خزنة الشركة الرئيسية', 'bank_name' => '—', 'account_type' => 'cash', 'currency' => 'EGP', 'opening_balance' => 0, 'current_balance' => 0, 'is_active' => true, 'created_by' => $this->by]);
 
         // مقاولون / موردون / موظفون / شركاء
         $contractors = collect([

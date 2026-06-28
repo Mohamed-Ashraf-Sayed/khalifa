@@ -347,7 +347,7 @@
             @endcanany
 
             @canany(['expenses.view','revenues.view','invoices.view','bank_accounts.view','taxes.view'])
-                <div class="nav-sec {{ request()->routeIs('expenses.*','expense_categories.*','revenues.*','invoices.*','taxes.*','bank_accounts.*','bank_transfers.*','cheques.*','payment_methods.*') ? 'open' : '' }}">
+                <div class="nav-sec {{ request()->routeIs('expenses.*','expense_categories.*','revenues.*','invoices.*','taxes.*','bank_accounts.*','bank_transfers.*','cheques.*','payment_methods.*','treasury') ? 'open' : '' }}">
                     <button type="button" class="nav-sec-head" data-sec="finance"><span class="lbl"><i class="fa-solid fa-money-bill-trend-up"></i> المالية</span><i class="fa-solid fa-chevron-down chev"></i></button>
                     <div class="nav-sec-body">
                         @can('expenses.view')   <a class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}" href="{{ route('expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> المصروفات</a> @endcan
@@ -355,6 +355,7 @@
                         @can('revenues.view')   <a class="nav-link {{ request()->routeIs('revenues.*') ? 'active' : '' }}" href="{{ route('revenues.index') }}"><i class="fa-solid fa-sack-dollar"></i> الإيرادات</a> @endcan
                         @can('invoices.view')   <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" href="{{ route('invoices.index') }}"><i class="fa-solid fa-file-lines"></i> الفواتير</a> @endcan
                         @can('taxes.view')      <a class="nav-link {{ request()->routeIs('taxes.*') ? 'active' : '' }}" href="{{ route('taxes.index') }}"><i class="fa-solid fa-file-invoice-dollar"></i> الضرائب</a> @endcan
+                        @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('treasury') ? 'active' : '' }}" href="{{ route('treasury') }}"><i class="fa-solid fa-vault"></i> الخزنة النقدية</a> @endcan
                         @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_accounts.*') ? 'active' : '' }}" href="{{ route('bank_accounts.index') }}"><i class="fa-solid fa-building-columns"></i> الحسابات البنكية</a> @endcan
                         @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('bank_transfers.*') ? 'active' : '' }}" href="{{ route('bank_transfers.index') }}"><i class="fa-solid fa-right-left"></i> التحويلات البنكية</a> @endcan
                         @can('bank_accounts.view')<a class="nav-link {{ request()->routeIs('cheques.*') ? 'active' : '' }}" href="{{ route('cheques.index') }}"><i class="fa-solid fa-money-check"></i> سجل الشيكات</a> @endcan

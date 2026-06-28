@@ -146,6 +146,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('partners', PartnerController::class);
 
     // الحسابات البنكية + حركاتها (عبر BankLedgerService)
+    Route::get('treasury', [BankAccountController::class, 'treasury'])->name('treasury');
     Route::resource('bank-accounts', BankAccountController::class)
         ->names('bank_accounts')
         ->parameters(['bank-accounts' => 'bank_account']);

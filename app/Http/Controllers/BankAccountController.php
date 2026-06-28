@@ -32,6 +32,7 @@ class BankAccountController extends Controller implements HasMiddleware
         $status = (string) $request->input('status', '');
 
         $query = BankAccount::query()
+            ->banksOnly() // الخزائن النقدية تُعرض في شاشة «الخزنة» المستقلة
             ->when($search !== '', function ($q) use ($search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -43,7 +44,7 @@ class BankAccountController extends Controller implements HasMiddleware
             ->when($status === 'inactive', fn ($q) => $q->where('is_active', false));
 
         $accounts = $query->latest()->paginate(15)->withQueryString();
-        $total = BankAccount::where('is_active', true)->sum('current_balance');
+        $total = BankAccount::banksOnly()->where('is_active', true)->sum('current_balance');
 
         return view('bank_accounts.index', [
             'accounts' => $accounts,
@@ -52,9 +53,22 @@ class BankAccountController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function create(): View
+    /** شاشة الخزنة النقدية: قائمة الخزائن بأرصدتها (تفتح صفحة الحركات لكل خزنة). */
+    public function treasury(): View
     {
-        return view('bank_accounts.form', ['account' => new BankAccount(['currency' => 'EGP', 'is_active' => true])]);
+        $treasuries = BankAccount::query()->cash()->orderBy('name')->get();
+        $total = BankAccount::query()->cash()->where('is_active', true)->sum('current_balance');
+
+        return view('bank_accounts.treasury', compact('treasuries', 'total'));
+    }
+
+    public function create(Request $request): View
+    {
+        $type = $request->query('type') === 'cash' ? 'cash' : null;
+
+        return view('bank_accounts.form', ['account' => new BankAccount([
+            'currency' => 'EGP', 'is_active' => true, 'account_type' => $type,
+        ])]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -187,7 +201,7 @@ class BankAccountController extends Controller implements HasMiddleware
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'bank_name' => ['required', 'string', 'max:255'],
+            'bank_name' => ['nullable', 'required_unless:account_type,cash', 'string', 'max:255'],
             'account_number' => ['nullable', 'string', 'max:50'],
             'iban' => ['nullable', 'string', 'max:50'],
             'branch' => ['nullable', 'string', 'max:255'],
@@ -198,6 +212,11 @@ class BankAccountController extends Controller implements HasMiddleware
             'notes' => ['nullable', 'string'],
         ]);
         $data['is_active'] = $request->boolean('is_active');
+
+        // الخزنة النقدية لا بنك لها — قيمة افتراضية للعمود غير الفارغ (NOT NULL)
+        if (($data['account_type'] ?? null) === 'cash' && empty($data['bank_name'])) {
+            $data['bank_name'] = '—';
+        }
 
         return $data;
     }
