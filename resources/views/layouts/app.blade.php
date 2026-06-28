@@ -37,7 +37,10 @@
             --bs-link-color: #1f3a63; --bs-link-hover-color: #14264a;
         }
         * { font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: .92rem; letter-spacing: .003em; }
+        body { background-color: var(--bg);
+            background-image: linear-gradient(rgba(245,247,250,.93), rgba(245,247,250,.93)), url('/images/login-bg.png');
+            background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
+            color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: .92rem; letter-spacing: .003em; }
         ::selection { background: rgba(43,76,128,.22); }
         h1,h2,h3,h4,h5,h6 { font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
         a { text-decoration: none; }
