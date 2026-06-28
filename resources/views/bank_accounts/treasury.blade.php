@@ -48,7 +48,8 @@
                                     @if ($t->is_active)<span class="badge text-bg-success">نشطة</span>@else<span class="badge text-bg-secondary">غير نشطة</span>@endif
                                 </td>
                                 <td class="text-end" onclick="event.stopPropagation()">
-                                    <a href="{{ route('bank_accounts.show', $t) }}" class="btn btn-sm btn-outline-secondary" title="الحركات وإيداع/سحب"><i class="fa-solid fa-right-left"></i></a>
+                                    <a href="{{ route('bank_accounts.show', $t) }}" class="btn btn-sm btn-outline-secondary" title="عرض الحركات والمسحوبات"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="{{ route('bank_accounts.show', ['bank_account' => $t, 'type' => 'withdrawal']) }}" class="btn btn-sm btn-outline-danger" title="المسحوبات فقط"><i class="fa-solid fa-money-bill-transfer"></i></a>
                                     @can('bank_accounts.edit')
                                         <a href="{{ route('bank_accounts.edit', $t) }}" class="btn btn-sm btn-outline-primary" title="تعديل"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
