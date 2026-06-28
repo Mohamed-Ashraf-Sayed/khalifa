@@ -8,26 +8,39 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Cairo', sans-serif; }
-        body {
-            background: linear-gradient(160deg, rgba(31,58,99,.34) 0%, rgba(20,38,74,.46) 100%), url('/images/login-bg.png') center center / cover no-repeat fixed;
-            background-color: #14264a;
-            min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;
-            position: relative; overflow: hidden;
+        * { font-family: 'Cairo', sans-serif; box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; background: #14264a; }
+
+        /* تقسيم الصفحة: الفورم يمين والصورة شمال (RTL) */
+        .split { display: flex; min-height: 100vh; }
+
+        /* الجهة اليمنى — نموذج الدخول */
+        .split-form {
+            flex: 1 1 44%; display: flex; align-items: center; justify-content: center;
+            background: #fff; padding: 2.5rem 2rem; position: relative; z-index: 2;
+            box-shadow: -12px 0 40px rgba(20,38,74,.12);
         }
-        body::before { content: ''; position: absolute; width: 480px; height: 480px; border-radius: 50%;
-            background: rgba(255,255,255,.035); top: -160px; inset-inline-start: -120px; }
-        body::after { content: ''; position: absolute; width: 360px; height: 360px; border-radius: 50%;
-            background: rgba(255,255,255,.03); bottom: -140px; inset-inline-end: -100px; }
-        .login-card { width: 100%; max-width: 410px; border: none; border-radius: 18px; position: relative; z-index: 2;
-            box-shadow: 0 18px 50px rgba(40,30,20,.32); overflow: hidden; }
-        .login-head { background: #f3f6fb; padding: 2.4rem 2rem 1.4rem; text-align: center; }
-        .brand-badge { width: 84px; height: 84px; border-radius: 20px; margin: 0 auto .9rem;
-            background: #fff; color: #2f2a22; display: flex; align-items: center; justify-content: center; padding: 12px;
-            box-shadow: 0 10px 24px rgba(43,76,128,.28); border: 1px solid #ece5d8; }
+        .form-wrap { width: 100%; max-width: 390px; }
+
+        /* الجهة الشمال — صورة البراند */
+        .split-image {
+            flex: 1 1 56%; position: relative;
+            background: linear-gradient(115deg, rgba(20,38,74,.10) 0%, rgba(20,38,74,.30) 100%),
+                        url('/images/login-bg.png') center center / cover no-repeat;
+        }
+        .split-image::after {
+            content: ''; position: absolute; inset: 0;
+            box-shadow: inset 0 0 120px rgba(20,38,74,.18);
+        }
+
+        /* ترويسة النموذج */
+        .brand-badge { width: 88px; height: 88px; border-radius: 22px; margin: 0 auto 1rem;
+            background: #fff; color: #2f2a22; display: flex; align-items: center; justify-content: center; padding: 13px;
+            box-shadow: 0 12px 28px rgba(43,76,128,.22); border: 1px solid #ece5d8; }
         .brand-badge .app-logo { width: 100%; height: 100%; object-fit: contain; }
-        .login-head h4 { font-weight: 800; color: #2f2a22; margin: 0; letter-spacing: -.01em; }
-        .login-head small { color: #938974; }
+        .form-wrap h4 { font-weight: 800; color: #2f2a22; margin: 0; text-align: center; letter-spacing: -.01em; }
+        .form-wrap .sub { color: #938974; text-align: center; margin: .25rem 0 1.8rem; font-size: .9rem; }
+
         .form-label { font-weight: 600; font-size: .85rem; color: #3a4452; }
         .form-control { border-radius: .7rem; border-color: #ece5d8; padding: .62rem .9rem; background: #fbfcfe; }
         .form-control:focus { border-color: #5b7bab; box-shadow: 0 0 0 .2rem rgba(43,76,128,.15); background: #fff; }
@@ -35,23 +48,30 @@
         .btn-brown { background: #2b4c80; color: #fff; border: none; border-radius: .7rem; font-weight: 700;
             box-shadow: 0 2px 8px rgba(43,76,128,.25); transition: all .15s; }
         .btn-brown:hover { color: #fff; filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(43,76,128,.3); }
-        .login-foot { color: rgba(255,255,255,.92); font-size: .8rem; text-align: center; margin-top: 1.1rem; position: relative; z-index: 2; text-shadow: 0 1px 4px rgba(0,0,0,.55); }
+        .form-foot { color: #a79f8f; font-size: .78rem; text-align: center; margin-top: 1.6rem; }
+
+        /* موبايل: الصورة تختفي والفورم ياخد كل العرض فوق خلفية مصغّرة */
+        @media (max-width: 860px) {
+            .split-image { display: none; }
+            .split-form { flex: 1 1 100%; box-shadow: none; }
+        }
     </style>
 </head>
 <body>
-    <div>
-        <div class="card login-card">
-            <div class="login-head">
+    <div class="split">
+        {{-- يمين: نموذج الدخول --}}
+        <div class="split-form">
+            <div class="form-wrap">
                 <div class="brand-badge">@include('partials.logo')</div>
                 <h4>{{ config('app.name') }}</h4>
-                <small>سجّل دخولك للمتابعة</small>
-            </div>
-            <div class="card-body p-4">
+                <p class="sub">سجّل دخولك للمتابعة</p>
+
                 @if ($errors->any())
                     <div class="alert alert-danger py-2 border-0" style="background:#f6ebea;color:#8f3f3b;border-radius:.7rem">
                         <i class="fa-solid fa-circle-exclamation ms-1"></i> {{ $errors->first() }}
                     </div>
                 @endif
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="mb-3">
@@ -77,9 +97,13 @@
                         <i class="fa-solid fa-right-to-bracket ms-1"></i> تسجيل الدخول
                     </button>
                 </form>
+
+                <div class="form-foot">© {{ date('Y') }} {{ config('app.name') }} — جميع الحقوق محفوظة</div>
             </div>
         </div>
-        <div class="login-foot">© {{ date('Y') }} {{ config('app.name') }} — جميع الحقوق محفوظة</div>
+
+        {{-- شمال: صورة البراند --}}
+        <div class="split-image" aria-hidden="true"></div>
     </div>
 </body>
 </html>
