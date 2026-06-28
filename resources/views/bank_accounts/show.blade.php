@@ -93,43 +93,43 @@
     </div>
     @endcan
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-md-2">
-                    <label class="form-label small">من تاريخ</label>
-                    <input type="date" name="from" value="{{ $filters['from'] }}" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">إلى تاريخ</label>
-                    <input type="date" name="to" value="{{ $filters['to'] }}" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">النوع</label>
-                    <select name="type" class="form-select">
-                        <option value="">الكل</option>
-                        @foreach (\App\Models\BankTransaction::TYPES as $key => $label)
-                            <option value="{{ $key }}" @selected($filters['type'] === $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">المطابقة</label>
-                    <select name="reconciled" class="form-select">
-                        <option value="" @selected($filters['reconciled'] === '')>الكل</option>
-                        <option value="reconciled" @selected($filters['reconciled'] === 'reconciled')>مطابَق</option>
-                        <option value="unreconciled" @selected($filters['reconciled'] === 'unreconciled')>غير مطابَق</option>
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex gap-2">
-                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-filter ms-1"></i> فلترة</button>
-                    <a href="{{ route('bank_accounts.show', $account) }}" class="btn btn-light">إعادة ضبط</a>
-                    <a href="{{ route('bank_accounts.show', array_merge(['bank_account' => $account], request()->query(), ['export' => 'csv'])) }}" class="btn btn-outline-success"><i class="fa-solid fa-file-csv ms-1"></i> CSV</a>
-                    <button type="button" class="btn btn-outline-dark" onclick="window.print()"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
-                </div>
-            </form>
+    <form method="GET" class="filter-bar row g-2 align-items-end mb-3">
+        <div class="col-6 col-md-2">
+            <label class="form-label">من تاريخ</label>
+            <input type="date" name="from" value="{{ $filters['from'] }}" class="form-control">
         </div>
-    </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label">إلى تاريخ</label>
+            <input type="date" name="to" value="{{ $filters['to'] }}" class="form-control">
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label">النوع</label>
+            <select name="type" class="form-select">
+                <option value="">الكل</option>
+                @foreach (\App\Models\BankTransaction::TYPES as $key => $label)
+                    <option value="{{ $key }}" @selected($filters['type'] === $key)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-6 col-md-2">
+            <label class="form-label">المطابقة</label>
+            <select name="reconciled" class="form-select">
+                <option value="" @selected($filters['reconciled'] === '')>الكل</option>
+                <option value="reconciled" @selected($filters['reconciled'] === 'reconciled')>مطابَق</option>
+                <option value="unreconciled" @selected($filters['reconciled'] === 'unreconciled')>غير مطابَق</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-auto">
+            <div class="filter-actions flex-wrap">
+                <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass ms-1"></i> فلترة</button>
+                @if (request()->query())
+                    <a href="{{ route('bank_accounts.show', $account) }}" class="btn btn-light">إعادة ضبط</a>
+                @endif
+                <a href="{{ route('bank_accounts.show', array_merge(['bank_account' => $account], request()->query(), ['export' => 'csv'])) }}" class="btn btn-outline-success"><i class="fa-solid fa-file-csv ms-1"></i> CSV</a>
+                <button type="button" class="btn btn-outline-dark" onclick="window.print()"><i class="fa-solid fa-print ms-1"></i> طباعة</button>
+            </div>
+        </div>
+    </form>
 
     <div class="card">
         <div class="card-body">
