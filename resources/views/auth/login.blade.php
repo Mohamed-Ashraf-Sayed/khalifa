@@ -10,7 +10,8 @@
     <style>
         * { font-family: 'Cairo', sans-serif; }
         body {
-            background: linear-gradient(160deg, #1f3a63 0%, #14264a 100%);
+            background: linear-gradient(160deg, rgba(31,58,99,.34) 0%, rgba(20,38,74,.46) 100%), url('/images/login-bg.png') center center / cover no-repeat fixed;
+            background-color: #14264a;
             min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;
             position: relative; overflow: hidden;
         }
@@ -34,7 +35,7 @@
         .btn-brown { background: #2b4c80; color: #fff; border: none; border-radius: .7rem; font-weight: 700;
             box-shadow: 0 2px 8px rgba(43,76,128,.25); transition: all .15s; }
         .btn-brown:hover { color: #fff; filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(43,76,128,.3); }
-        .login-foot { color: rgba(255,255,255,.65); font-size: .8rem; text-align: center; margin-top: 1.1rem; position: relative; z-index: 2; }
+        .login-foot { color: rgba(255,255,255,.92); font-size: .8rem; text-align: center; margin-top: 1.1rem; position: relative; z-index: 2; text-shadow: 0 1px 4px rgba(0,0,0,.55); }
     </style>
 </head>
 <body>
