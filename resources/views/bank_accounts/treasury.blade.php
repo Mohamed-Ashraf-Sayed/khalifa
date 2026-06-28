@@ -52,6 +52,12 @@
                                     @can('bank_accounts.edit')
                                         <a href="{{ route('bank_accounts.edit', $t) }}" class="btn btn-sm btn-outline-primary" title="تعديل"><i class="fa-solid fa-pen"></i></a>
                                     @endcan
+                                    @can('bank_accounts.delete')
+                                        <form method="POST" action="{{ route('bank_accounts.destroy', $t) }}" class="d-inline" data-confirm="حذف الخزنة «{{ $t->name }}»؟ (لا يمكن حذف خزنة بها حركات)">
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger" title="حذف"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty
