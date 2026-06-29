@@ -106,10 +106,7 @@ class InsurancePolicyController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = InsurancePolicy::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('INS-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(InsurancePolicy::class, 'INS');
     }
 
     private function validateData(Request $request, ?InsurancePolicy $insurancePolicy = null): array

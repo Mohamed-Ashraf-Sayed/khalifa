@@ -123,10 +123,7 @@ class LetterOfGuaranteeController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = LetterOfGuarantee::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('LG-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(LetterOfGuarantee::class, 'LG');
     }
 
     private function validateData(Request $request): array

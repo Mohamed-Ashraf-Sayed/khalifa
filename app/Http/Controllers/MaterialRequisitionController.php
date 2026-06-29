@@ -202,10 +202,7 @@ class MaterialRequisitionController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = MaterialRequisition::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('MR-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(MaterialRequisition::class, 'MR');
     }
 
     private function formData(MaterialRequisition $materialRequisition): array

@@ -132,10 +132,7 @@ class InspectionRequestController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = InspectionRequest::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('IR-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(InspectionRequest::class, 'IR');
     }
 
     private function validateData(Request $request): array

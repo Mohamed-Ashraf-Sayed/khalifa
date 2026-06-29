@@ -131,10 +131,7 @@ class SubmittalController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = Submittal::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('SUB-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(Submittal::class, 'SUB');
     }
 
     private function validateData(Request $request): array

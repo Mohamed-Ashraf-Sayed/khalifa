@@ -131,10 +131,7 @@ class TenderController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = Tender::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('TND-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(Tender::class, 'TND');
     }
 
     private function formData(Tender $tender): array

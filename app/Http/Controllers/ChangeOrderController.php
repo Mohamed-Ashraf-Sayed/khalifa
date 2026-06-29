@@ -142,10 +142,7 @@ class ChangeOrderController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = ChangeOrder::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('CO-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(ChangeOrder::class, 'CO');
     }
 
     private function formData(ChangeOrder $changeOrder): array

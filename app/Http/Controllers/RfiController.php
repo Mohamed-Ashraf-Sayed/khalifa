@@ -134,10 +134,7 @@ class RfiController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = Rfi::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('RFI-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(Rfi::class, 'RFI');
     }
 
     private function validateData(Request $request): array

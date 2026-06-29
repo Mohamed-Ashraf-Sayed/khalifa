@@ -172,10 +172,7 @@ class PurchaseOrderController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = PurchaseOrder::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('PO-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(PurchaseOrder::class, 'PO');
     }
 
     private function formData(PurchaseOrder $purchaseOrder): array

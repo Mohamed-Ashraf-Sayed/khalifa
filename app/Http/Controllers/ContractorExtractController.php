@@ -116,10 +116,7 @@ class ContractorExtractController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->format('Y');
-        $count = ContractorExtract::whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('EXT-%s-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(ContractorExtract::class, 'EXT');
     }
 
     private function formData(ContractorExtract $contractorExtract): array

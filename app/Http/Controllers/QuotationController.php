@@ -136,10 +136,7 @@ class QuotationController extends Controller implements HasMiddleware
 
     private function nextNumber(): string
     {
-        $year = now()->year;
-        $count = Quotation::withTrashed()->whereYear('created_at', $year)->count() + 1;
-
-        return sprintf('QUO-%d-%04d', $year, $count);
+        return app(\App\Services\DocumentNumberGenerator::class)->generate(Quotation::class, 'QUO', withTrashed: true);
     }
 
     private function nextInvoiceNumber(): string
