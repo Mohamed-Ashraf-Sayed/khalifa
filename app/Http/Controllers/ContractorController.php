@@ -235,13 +235,13 @@ class ContractorController extends Controller implements HasMiddleware
     public function report(Request $request): View|StreamedResponse
     {
         $contractors = Contractor::query()
+            ->withSum(['extracts as earned_sum' => fn ($q) => $q->whereIn('status', ['approved', 'partial', 'paid'])], 'net_amount')
+            ->withSum('payments as paid_sum', 'amount')
             ->orderBy('name')
             ->get()
             ->map(function (Contractor $contractor) {
-                $totalEarned = (string) $contractor->extracts()
-                    ->whereIn('status', ['approved', 'partial', 'paid'])
-                    ->sum('net_amount');
-                $totalPaid = (string) $contractor->payments()->sum('amount');
+                $totalEarned = (string) ($contractor->earned_sum ?? 0);
+                $totalPaid = (string) ($contractor->paid_sum ?? 0);
 
                 return [
                     'contractor' => $contractor,

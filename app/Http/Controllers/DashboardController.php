@@ -55,21 +55,29 @@ class DashboardController extends Controller
         $revByMonth = $this->sumByMonth(Revenue::query(), 'revenue_date', $months);
         $expByMonth = $this->sumByMonth(Expense::query(), 'expense_date', $months);
 
-        // المصروفات حسب الفئة
+        // المصروفات حسب الفئة (تجميع في قاعدة البيانات)
         $byCategory = Expense::query()
-            ->get()
+            ->selectRaw('category, SUM(amount) as total')
             ->groupBy('category')
-            ->map(fn ($g) => (float) $g->sum('amount'));
+            ->pluck('total', 'category')
+            ->map(fn ($v) => (float) $v);
 
-        // المشاريع حسب الحالة
-        $byStatus = Project::query()->get()->groupBy('status')->map(fn ($g) => $g->count());
+        // المشاريع حسب الحالة (تجميع في قاعدة البيانات)
+        $byStatus = Project::query()
+            ->selectRaw('status, COUNT(*) as cnt')
+            ->groupBy('status')
+            ->pluck('cnt', 'status')
+            ->map(fn ($v) => (int) $v);
 
         // أرصدة البنوك
         $banks = BankAccount::where('is_active', true)->get(['name', 'current_balance']);
 
-        // أعلى المقاولين رصيداً مستحقاً
-        $topContractors = Contractor::all()
-            ->map(fn ($c) => ['name' => $c->name, 'balance' => (float) $c->balanceDue()])
+        // أعلى المقاولين رصيداً مستحقاً (تجميع بدل N+1)
+        $topContractors = Contractor::query()
+            ->withSum(['extracts as earned_sum' => fn ($q) => $q->whereIn('status', ['approved', 'partial', 'paid'])], 'net_amount')
+            ->withSum('payments as paid_sum', 'amount')
+            ->get()
+            ->map(fn ($c) => ['name' => $c->name, 'balance' => (float) bcadd((string) $c->opening_balance, bcsub((string) ($c->earned_sum ?? 0), (string) ($c->paid_sum ?? 0), 2), 2)])
             ->sortByDesc('balance')->take(5)->values();
 
         $recentProjects = Project::with('client')->latest()->take(5)->get();

@@ -150,22 +150,33 @@ class ReportController extends Controller implements HasMiddleware
 
         // ===== الخصوم =====
         // الذمم الدائنة: أرصدة المورّدين والمقاولين المستحقّة (موجبة فقط).
-        $supplierPayables = Supplier::all()->reduce(
-            fn (string $carry, Supplier $s) => bcadd($carry, $this->positive($s->balanceDue()), 2),
-            '0'
-        );
-        $contractorPayables = Contractor::all()->reduce(
-            fn (string $carry, Contractor $c) => bcadd($carry, $this->positive($c->balanceDue()), 2),
-            '0'
-        );
+        $supplierPayables = Supplier::query()
+            ->withSum(['purchaseOrders as po_recv' => fn ($q) => $q->whereIn('status', ['partial', 'received'])], 'net_amount')
+            ->withSum('transactions as txn_net', 'net_amount')
+            ->withSum('payments as pay_sum', 'amount')
+            ->withSum('transactions as txn_paid', 'paid_amount')
+            ->get()
+            ->reduce(function (string $carry, Supplier $s) {
+                $owed = bcadd((string) ($s->po_recv ?? 0), (string) ($s->txn_net ?? 0), 2);
+                $paid = bcadd((string) ($s->pay_sum ?? 0), (string) ($s->txn_paid ?? 0), 2);
+                $bal = bcadd((string) $s->opening_balance, bcsub($owed, $paid, 2), 2);
+
+                return bcadd($carry, $this->positive($bal), 2);
+            }, '0');
+        $contractorPayables = Contractor::query()
+            ->withSum(['extracts as earned_sum' => fn ($q) => $q->whereIn('status', ['approved', 'partial', 'paid'])], 'net_amount')
+            ->withSum('payments as paid_sum', 'amount')
+            ->get()
+            ->reduce(function (string $carry, Contractor $c) {
+                $bal = bcadd((string) $c->opening_balance, bcsub((string) ($c->earned_sum ?? 0), (string) ($c->paid_sum ?? 0), 2), 2);
+
+                return bcadd($carry, $this->positive($bal), 2);
+            }, '0');
         $payables = bcadd($supplierPayables, $contractorPayables, 2);
 
         // ===== حقوق الملكية =====
-        // رأس مال الشركاء: مجموع رأس المال النشط.
-        $partnerCapital = Partner::all()->reduce(
-            fn (string $carry, Partner $p) => bcadd($carry, $p->activeCapital(), 2),
-            '0'
-        );
+        // رأس مال الشركاء: مجموع رأس المال النشط (إيداعات نشطة) — تجميع مباشر.
+        $partnerCapital = (string) \App\Models\PartnerDeposit::where('status', 'active')->sum('amount');
 
         // الأرباح المحتجزة = إجمالي الإيرادات − إجمالي المصروفات (حتى تاريخ "كما في" إن وُجد).
         $totalRevenue = (string) Revenue::query()

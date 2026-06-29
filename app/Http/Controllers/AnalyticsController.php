@@ -224,7 +224,8 @@ class AnalyticsController extends Controller implements HasMiddleware
                 'name' => $supplier->name,
                 'purchases' => $purchases,
                 'paid' => $paid,
-                'balance' => $supplier->balanceDue(),
+                // نفس ناتج balanceDue() لكن من العلاقات المحمّلة (بدون إعادة استعلام)
+                'balance' => bcadd((string) $supplier->opening_balance, bcsub($purchases, $paid, 2), 2),
                 'orders' => $supplier->purchaseOrders->count(),
             ];
         }
@@ -288,7 +289,8 @@ class AnalyticsController extends Controller implements HasMiddleware
                 'extractsCount' => $contractor->extracts->count(),
                 'earned' => $earned,
                 'paid' => $paid,
-                'balance' => $contractor->balanceDue(),
+                // نفس ناتج balanceDue() لكن من العلاقات المحمّلة (بدون إعادة استعلام)
+                'balance' => bcadd((string) $contractor->opening_balance, bcsub($earned, $paid, 2), 2),
                 'avgExecution' => $avgExecution,
             ];
         }
