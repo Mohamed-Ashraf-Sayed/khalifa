@@ -17,8 +17,8 @@ class ExportService
     public function pdf(string $html, string $filename): \Illuminate\Http\Response
     {
         $tmp = storage_path('app/mpdf');
-        if (! is_dir($tmp)) {
-            @mkdir($tmp, 0775, true);
+        if (! is_dir($tmp) && ! mkdir($tmp, 0775, true) && ! is_dir($tmp)) {
+            throw new \RuntimeException('تعذّر إنشاء مجلد ملفات PDF المؤقّت: '.$tmp);
         }
 
         $mpdf = new \Mpdf\Mpdf([

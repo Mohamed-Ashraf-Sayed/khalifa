@@ -123,7 +123,8 @@ class JournalPostingService
 
         [$date, $desc, $lines] = $this->build($type, $doc);
 
-        if (! $lines || count($lines) < 2) {
+        // تاريخ غير صالح (مستند بلا تاريخ) → لا تُنشئ قيداً بصمت بتاريخ فاضٍ
+        if (! $date || ! $lines || count($lines) < 2) {
             return null;
         }
 

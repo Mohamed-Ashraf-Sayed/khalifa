@@ -190,7 +190,7 @@ class PayrollController extends Controller implements HasMiddleware
             $payrollRun->bank_account_id = $data['bank_account_id'];
             $payrollRun->save();
 
-            $account = BankAccount::find($data['bank_account_id']);
+            $account = BankAccount::findOrFail($data['bank_account_id']);
             $ledger = app(BankLedgerService::class);
             $userId = $request->user()->id;
 
